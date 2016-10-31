@@ -40,6 +40,7 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
-credentials.*
+credentials*
 *.eml
 target/
+.DS_Store
