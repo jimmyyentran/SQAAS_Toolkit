@@ -1,7 +1,9 @@
 package com.sqasquared.toolkit.email;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.EmailException;
+import org.apache.commons.mail.HtmlEmail;
 import org.apache.commons.mail.ImageHtmlEmail;
 import org.apache.commons.mail.resolver.DataSourceUrlResolver;
 
@@ -18,14 +20,17 @@ import java.util.Date;
  */
 public class EmailGenerator {
     public EmailGenerator() throws IOException, EmailException, MessagingException {
-        String htmlEmailTemplate = ".... <img src=\"http://www.apache.org/images/feather.gif\"> ....";
+        File template = new File(System.getProperty("user.home") + "\\Desktop\\eod_template.html");
+        String htmlEmailTemplate = FileUtils.readFileToString(template);
+        System.out.println("htmlEmailTemplate = " + htmlEmailTemplate);
 
         // define you base URL to resolve relative resource locations
         URL url = new URL("http://www.apache.org");
 
         // create the email message
-        ImageHtmlEmail email = new ImageHtmlEmail();
-        email.setDataSourceResolver(new DataSourceUrlResolver(url));
+//        ImageHtmlEmail email = new ImageHtmlEmail();
+        HtmlEmail email = new HtmlEmail();
+//        email.setDataSourceResolver(new DataSourceUrlResolver(url));
         email.setHostName("smtp.googlemail.com");
         email.setSmtpPort(465);
         email.setAuthenticator(new DefaultAuthenticator("username@gmail.com", "password"));
@@ -44,7 +49,10 @@ public class EmailGenerator {
         System.out.println(mimeMessage);
 
         Date now = new Date();
-        File tempFile = new File(now.toString() + ".eml");
+//        File tempFile = new File("c:\\" + now.toString().replaceAll("\\s", "") + ".eml");
+        File tempFile = new File(System.getProperty("user.home") + "\\Desktop\\newemail.eml");
+        System.out.println(tempFile);
+        tempFile.createNewFile();
         System.out.println("tempFile = " + tempFile);
         FileOutputStream fos = new FileOutputStream(tempFile);
         mimeMessage.writeTo(fos);

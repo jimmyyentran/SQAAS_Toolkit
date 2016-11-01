@@ -14,13 +14,29 @@ import java.net.URISyntaxException;
 public class App {
 
     public static void main(String[] args) throws URISyntaxException, IOException {
-        RallyWrapper rally = new RallyWrapper("https://rally1.rallydev.com", "api_credentials");
-        try {
-            new EmailGenerator();
-        } catch (EmailException e) {
-            e.printStackTrace();
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
+        RallyWrapper rally = new RallyWrapper("https://rally1.rallydev.com", "_UwISDwnRRurwZLKCQkdbewTPlpqkuhuCbGEgFE");
+//        ConfigLoader properties = new ConfigLoader();
+//        properties.getPropValues();
+//        try {
+//            new EmailGenerator();
+//        } catch (EmailException e) {
+//            e.printStackTrace();
+//        } catch (MessagingException e) {
+//            e.printStackTrace();
+//        }
+//        try {
+//
+//            File file = new File(System.getProperty("user.home") + "\\Desktop\\newfile.txt");
+//            System.out.println("file = " + file);
+//
+//            if (file.createNewFile()){
+//                System.out.println("File is created!");
+//            }else{
+//                System.out.println("File already exists.");
+//            }
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 }
