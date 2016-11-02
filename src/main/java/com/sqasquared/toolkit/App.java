@@ -17,7 +17,8 @@ public class App {
         Loader loader = new Loader();
         EmailGenerator gen = new EmailGenerator();
         loader.loadUserSession(userSession);
-        System.out.println("userSession = " + userSession);
+        userSession.setAlg(new TimeAlgorithm()).run();
+//        System.out.println("userSession = " + userSession);
 //        System.out.println(java.util.TimeZone.getDefault());
 //        loader.loadTemplates(userSession);
 //        try {

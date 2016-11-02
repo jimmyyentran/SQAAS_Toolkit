@@ -1,33 +1,42 @@
 package com.sqasquared.toolkit.rally;
 
 import java.lang.reflect.Field;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * Created by jimmytran on 10/30/16.
  */
-public class TaskObject {
-    private String formattedUserTasksLink = "https://rally1.rallydev.com/#/%s/detail/userstory/%s/tasks";
 
-    private String taskName, creationDate, lastUpdateDate, state, storyName, storyRef, projectRef, formattedID;
+public class TaskRallyObject extends RallyObject{
+    public final String formattedUserTasksLink = "https://rally1.rallydev.com/#/%s/detail/userstory/%s/tasks";
+
+    private String objectID, state, storyName, formattedID, projectName;
     private String storyID, projectID, storyTaskLink;
     private double estimate;
+    Date lastUpdateDate;
+    Date creationDate;
 
     public String getFormattedID() {
         return formattedID;
     }
 
-    public TaskObject(String taskName, String formattedID, String state, String storyName, String storyRef,
-                      String projectRef, String creationDate, String lastUpdateDate, double estimate) {
-        this.taskName = taskName;
+    public TaskRallyObject(String taskName, String objectID, String formattedID, String state, String storyName,
+                           String storyRef, String projectName, String projectRef, String creationDate, String lastUpdateDate,
+                           double estimate) {
+        super("task", objectID, taskName);
+        this.objectID = objectID;
         this.formattedID = formattedID;
         this.state = state;
         this.storyName = storyName;
-        this.storyRef = storyRef;
-        this.creationDate = creationDate;
-        this.lastUpdateDate = lastUpdateDate;
+        this.projectName = projectName;
         this.estimate = estimate;
+
+        this.lastUpdateDate = stringToDate(lastUpdateDate);
+        this.creationDate = stringToDate(creationDate);
 
         this.storyID = parseID(storyRef);
         this.projectID = parseID(projectRef);
@@ -44,6 +53,20 @@ public class TaskObject {
 
     public String generateStoryTasksLink(String pID, String sID){
         return String.format(formattedUserTasksLink, pID, sID);
+    }
+
+    public Date stringToDate(String date){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        try {
+            return sdf.parse(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public Date getLastUpdateDate(){
+        return lastUpdateDate;
     }
 
     public String toString() {

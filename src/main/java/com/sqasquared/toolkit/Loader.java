@@ -4,7 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.sqasquared.toolkit.rally.RallyWrapper;
-import com.sqasquared.toolkit.rally.TaskObject;
+import com.sqasquared.toolkit.rally.TaskRallyObject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
@@ -13,9 +13,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.Date;
-import java.util.Enumeration;
 import java.util.Properties;
 
 /**
@@ -74,6 +71,7 @@ public class Loader {
         for(JsonElement result: response){
             JsonObject task = result.getAsJsonObject();
             String taskName = task.get("Name").getAsString();
+            String objectID = task.get("ObjectID").getAsString();
             String formattedID = task.get("FormattedID").getAsString();
             String state = task.get("State").getAsString();
 
@@ -81,7 +79,9 @@ public class Loader {
             String storyName = storyObject.get("_refObjectName").getAsString();
             String storyRef = storyObject.get("_ref").getAsString();
 
-            String projectRef = task.getAsJsonObject("Project").get("_ref").getAsString();
+            JsonObject projectObject = task.getAsJsonObject("Project");
+            String projectName = projectObject.get("_refObjectName").getAsString();
+            String projectRef = projectObject.get("_ref").getAsString();
 
             String creationDate = task.get("CreationDate").getAsString();
             String lastUpdateDate = task.get("LastUpdateDate").getAsString();
@@ -92,8 +92,8 @@ public class Loader {
                 estimate = 1.0;
             }
 //            System.out.println(result);
-            userSession.addTask(new TaskObject(taskName, formattedID, state, storyName, storyRef, projectRef,
-                    creationDate, lastUpdateDate, estimate));
+            userSession.addTask(new TaskRallyObject(taskName, objectID, formattedID, state, storyName,
+                    storyRef, projectName, projectRef, creationDate, lastUpdateDate, estimate));
         }
     }
 
