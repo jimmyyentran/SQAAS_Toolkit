@@ -14,5 +14,6 @@
     <orderEntry type="library" name="com.rallydev.rest:rally-rest-api:2.2.1" level="project" />
     <orderEntry type="library" name="org.apache.commons:commons-email:1.4" level="project" />
     <orderEntry type="library" name="org.apache.directory.studio:org.apache.commons.io:2.4" level="project" />
+    <orderEntry type="library" name="org.jsoup:jsoup:1.10.1" level="project" />
   </component>
 </module>
