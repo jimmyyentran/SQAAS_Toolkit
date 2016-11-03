@@ -9,10 +9,13 @@ import com.rallydev.rest.request.QueryRequest;
 import com.rallydev.rest.response.GetResponse;
 import com.rallydev.rest.response.QueryResponse;
 import com.rallydev.rest.util.QueryFilter;
+import com.sqasquared.toolkit.UserSession;
 
+import javax.jws.soap.SOAPBinding;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
 
 /**
  * Created by jimmytran on 10/29/16.
@@ -55,8 +58,9 @@ public class RallyWrapper {
     public static JsonArray getTasks(String email) throws IOException {
         QueryRequest tasks = new QueryRequest("tasks");
 
+        String past = new SimpleDateFormat(RallyObject.DATEFORMAT).format(UserSession.YESTERDAY_WORK_HOUR);
         tasks.setQueryFilter(new QueryFilter("Owner.name", "=", email)
-                .and(new QueryFilter("LastUpdateDate", ">", "2016-10-27")));
+                .and(new QueryFilter("LastUpdateDate", ">", past)));
 
         QueryResponse response = rallyAPIConnection.query(tasks);
         if(response.wasSuccessful()) {

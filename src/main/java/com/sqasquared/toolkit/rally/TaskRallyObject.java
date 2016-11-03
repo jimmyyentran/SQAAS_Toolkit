@@ -15,7 +15,7 @@ public class TaskRallyObject extends RallyObject{
     public final String formattedUserTasksLink = "https://rally1.rallydev.com/#/%s/detail/userstory/%s/tasks";
 
     private String objectID, state, storyName, formattedID, projectName;
-    private String storyID, projectID, storyTaskLink;
+    private String storyID, projectID, storyLink;
     private double estimate;
     Date lastUpdateDate;
     Date creationDate;
@@ -40,7 +40,7 @@ public class TaskRallyObject extends RallyObject{
 
         this.storyID = parseID(storyRef);
         this.projectID = parseID(projectRef);
-        this.storyTaskLink = generateStoryTasksLink(projectID, storyID);
+        this.storyLink = generateStoryTasksLink(projectID, storyID);
     }
 
     public String parseID(String ref){
@@ -56,7 +56,7 @@ public class TaskRallyObject extends RallyObject{
     }
 
     public Date stringToDate(String date){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        SimpleDateFormat sdf = new SimpleDateFormat(super.DATEFORMAT);
         try {
             return sdf.parse(date);
         } catch (ParseException e) {
@@ -67,6 +67,32 @@ public class TaskRallyObject extends RallyObject{
 
     public Date getLastUpdateDate(){
         return lastUpdateDate;
+    }
+
+    public String getStoryID() {return storyID;}
+
+    public String getStoryName() {
+        return storyName;
+    }
+
+    public String getState(){
+        return state;
+    }
+
+    public String getStoryLink(){
+        return storyLink;
+    }
+
+    public void print(int indentation, int relictIndentation){
+        String indent;
+        try {
+            indent = String.format("%" + relictIndentation + "s", "");
+        }catch (Exception ex){
+            indent = "";
+        }
+        String toBePrinted = indent + "Type: " + type + ", ID: " + id + ", Name: " + name +
+                ", Status: " + state + ", LastUpdated: " + lastUpdateDate;
+        System.out.println(toBePrinted);
     }
 
     public String toString() {

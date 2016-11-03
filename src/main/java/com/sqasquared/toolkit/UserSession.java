@@ -1,8 +1,11 @@
 package com.sqasquared.toolkit;
 
+import com.sqasquared.toolkit.rally.RallyObject;
 import com.sqasquared.toolkit.rally.TaskRallyObject;
 
 import java.lang.reflect.Field;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -10,15 +13,28 @@ import java.util.HashMap;
  */
 public class UserSession {
 
+    public static Date TODAY_WORK_HOUR;
+    public static Date YESTERDAY_WORK_HOUR;
+
     String firstName, lastName, email;
     String user, api_key, server;
 
     TreeAlgorithmInterface alg;
     HashMap<String, TaskRallyObject> taskContainer = new HashMap();
     HashMap<String, String> templateContainer = new HashMap();
+    RallyObject topNode = null;
+
+    public UserSession() {
+        Calendar today = Calendar.getInstance();
+        today.clear(Calendar.MINUTE); today.clear(Calendar.SECOND); today.clear(Calendar.MILLISECOND);
+        today.set(Calendar.HOUR_OF_DAY, 6);
+        TODAY_WORK_HOUR = today.getTime();
+        today.add(Calendar.DATE, -1);
+        YESTERDAY_WORK_HOUR = today.getTime();
+    }
 
     public void run(){
-        this.alg.constructTree(taskContainer);
+        topNode = this.alg.constructTree(taskContainer);
     }
 
     public String toString() {
@@ -113,6 +129,10 @@ public class UserSession {
     public UserSession setAlg(TreeAlgorithmInterface alg) {
         this.alg = alg;
         return this;
+    }
+
+    public RallyObject getTopNode(){
+        return topNode;
     }
 
 }
