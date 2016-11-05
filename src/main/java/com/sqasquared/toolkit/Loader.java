@@ -52,7 +52,9 @@ public class Loader {
     }
 
     public void loadUserInfo(UserSession userSession) throws IOException {
-        JsonObject info = RallyWrapper.getUserInfo();
+//        JsonObject info = RallyWrapper.getUserInfo();
+//        JsonObject info = RallyWrapper.getUserInfo("resources/json/", null);
+        JsonObject info = RallyWrapper.getUserInfo(null, "resources/json/");
         String firstName = info.get("FirstName").getAsString();
         String lastName = info.get("LastName").getAsString();
         String email = info.get("EmailAddress").getAsString();
@@ -67,7 +69,8 @@ public class Loader {
     }
 
     public void loadTasks(UserSession userSession) throws IOException {
-        JsonArray response = RallyWrapper.getTasks(userSession.getEmail());
+//        JsonArray response = RallyWrapper.getTasks(userSession.getEmail());
+        JsonArray response = RallyWrapper.getTasks(userSession.getEmail(), "resources/json/", null);
         for(JsonElement result: response){
             JsonObject task = result.getAsJsonObject();
             String taskName = task.get("Name").getAsString();

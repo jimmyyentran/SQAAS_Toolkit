@@ -10,12 +10,17 @@ import com.rallydev.rest.response.GetResponse;
 import com.rallydev.rest.response.QueryResponse;
 import com.rallydev.rest.util.QueryFilter;
 import com.sqasquared.toolkit.UserSession;
+import org.apache.commons.io.FileUtils;
 
 import javax.jws.soap.SOAPBinding;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by jimmytran on 10/29/16.
@@ -41,9 +46,26 @@ public class RallyWrapper {
         }
     }
 
+
     public static JsonObject getUserInfo() throws IOException {
+        return getUserInfo(null, null);
+    }
+
+    public static JsonObject getUserInfo(String saveJsonToDir, String jsonLoc) throws IOException {
         GetResponse response = rallyAPIConnection.get(new GetRequest("user"));
         if(response.wasSuccessful()) {
+            if(saveJsonToDir != null){
+                DateFormat df = new SimpleDateFormat("MM_dd_yyyy'T'HH:mm:ss");
+                Date today = Calendar.getInstance().getTime();
+                String reportDate = df.format(today);
+                File file = new File(saveJsonToDir + "/UserInfo_" + reportDate + ".json");
+//                FileUtils.writeStringToFile(file, response.getObject().getAsString());
+                FileUtils.writeStringToFile(file, response.getObject().toString());
+            }
+            if(jsonLoc != null){
+                File file = new File(jsonLoc);
+                return new GetResponse(FileUtils.readFileToString(file)).getObject();
+            }
             return response.getObject();
         } else {
             System.err.println("The following errors occurred: ");
@@ -54,8 +76,12 @@ public class RallyWrapper {
         return null;
     }
 
-//     Get tasks updated within a time frame
     public static JsonArray getTasks(String email) throws IOException {
+        return getTasks(email, null, null);
+    }
+
+//     Get tasks updated within a time frame
+    public static JsonArray getTasks(String email, String saveJsonToDir, String jsonLoc) throws IOException {
         QueryRequest tasks = new QueryRequest("tasks");
 
         String past = new SimpleDateFormat(RallyObject.DATEFORMAT).format(UserSession.YESTERDAY_WORK_HOUR);
@@ -64,6 +90,19 @@ public class RallyWrapper {
 
         QueryResponse response = rallyAPIConnection.query(tasks);
         if(response.wasSuccessful()) {
+            if(saveJsonToDir != null){
+                DateFormat df = new SimpleDateFormat("MM_dd_yyyy'T'HH:mm:ss");
+                Date today = Calendar.getInstance().getTime();
+                String reportDate = df.format(today);
+                File file = new File(saveJsonToDir + "/Tasks_" + reportDate + ".json");
+//                FileUtils.writeStringToFile(file, response.getObject().getAsString());
+//                FileUtils.writeStringToFile(file, response.getObject().toString());
+                FileUtils.writeStringToFile(file, response.getResults().toString());
+            }
+            if(jsonLoc != null){
+                File file = new File(jsonLoc);
+                return new QueryResponse(FileUtils.readFileToString(file)).getResults();
+            }
             return response.getResults();
         } else {
             System.err.println("The following errors occurred: ");

@@ -21,13 +21,13 @@ public class App {
         userSession.getTopNode().print(4);
 //        System.out.println("userSession = " + userSession);
 //        System.out.println(java.util.TimeZone.getDefault());
-        loader.loadTemplates(userSession);
-        try {
-            gen.generate(userSession, "eod_template_org");
-        } catch (EmailException e) {
-            e.printStackTrace();
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
+//        loader.loadTemplates(userSession);
+//        try {
+//            gen.generate(userSession, "eod_template_org");
+//        } catch (EmailException e) {
+//            e.printStackTrace();
+//        } catch (MessagingException e) {
+//            e.printStackTrace();
+//        }
     }
 }

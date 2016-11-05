@@ -30,71 +30,76 @@ import java.util.UUID;
  * Created by jimmytran on 10/30/16.
  */
 public class EmailGenerator {
-    public EmailGenerator(){
+    public EmailGenerator() {
 
     }
 
-    public void mapListItem(String formattedId, String taskName, Element listItem){
+    public void mapListItem(String formattedId, String taskName, Element listItem) {
         Element fi = listItem.select("sqaas[type='formattedID']").first();
         fi.replaceWith(new TextNode(formattedId, ""));
         Element tn = listItem.select("sqaas[type='taskName']").first();
         tn.replaceWith(new TextNode(taskName, ""));
     }
 
-    public void mapStory(RallyObject node, Element completed, int order){
+    public Element mapStory(RallyObject node, Element completedRoot, int order) {
+        Element completed = completedRoot.clone();
         String storyName = null;
         String storyLink = null;
         Element list = completed.select("ul").first();
         Element listItem = completed.select("li").first();
-        for(RallyObject st: node.getChildren().values()){
-            if(st.getType().equals("task")){
-                TaskRallyObject task = (TaskRallyObject)st;
-                if(storyName == null || storyLink == null){
+        for (RallyObject st : node.getChildren().values()) {
+            // loop over tasks
+            if (st.getType().equals("task")) {
+                TaskRallyObject task = (TaskRallyObject) st;
+                if (storyName == null || storyLink == null) {
                     storyName = task.getStoryName();
                     storyLink = task.getStoryLink();
                 }
                 Element listItemMapped = listItem.clone();
                 mapListItem(task.getFormattedID(), task.getName(), listItemMapped);
                 list.appendChild(listItemMapped);
-            }else{
+            } else {
                 throw new RuntimeException(
                         String.format("Wrong children node type. Expected %s, got %s", "task", node.getType()));
             }
-
-            // remove order template
-            if(order > 1){
-                completed.select("sqaas[type='first']").remove();
-            } else {
-                completed.select("sqaas[type='second']").remove();
-            }
-
-            // sub-project
-            Elements project = completed.select("sqaas[type='subProject'");
-            project.first().text("[PROJECT]");
-
-            // href links
-            Element a = completed.select("a").first();
-            a.attr("href", storyLink);
-
-            // story name
-            System.out.println(completed);
-            Element sn = completed.select("sqaas[type='storyName']").first();
-            sn.replaceWith(new TextNode(storyName, ""));
-
-            // delete the list item template
-            listItem.remove();
         }
+
+        // remove order template
+        if (order > 1) {
+            completed.select("sqaas[type='first']").remove();
+        } else {
+            completed.select("sqaas[type='second']").remove();
+        }
+
+        // sub-project
+        Element subProject = completed.select("sqaas[type='subProject'").first();
+        subProject.replaceWith(new TextNode("[PROJECT]", ""));
+
+        // href links
+        Element a = completed.select("a").first();
+        a.attr("href", storyLink);
+
+        // story name
+        Element sn = completed.select("sqaas[type='storyName']").first();
+        sn.replaceWith(new TextNode(storyName, ""));
+
+        // delete the list item template
+        listItem.remove();
+
+        return completed;
     }
 
-    public void mapCompleted(RallyObject node, Element completed){
+    public void mapCompleted(RallyObject node, Element completed) {
         int order = 1;
-        for(RallyObject story : node.getChildren().values()){
-            if(story.getType().equals("story")){
-                Element completedItemMapped = completed.clone();
-                System.out.println(completedItemMapped);
-                mapStory(story, completedItemMapped, order);
-                completed.before(completedItemMapped);
-            }else{
+        for (RallyObject story : node.getChildren().values()) {
+            if (story.getType().equals("story")) {
+//                Element completedItemMapped = completed.clone();
+//                System.out.println(completedItemMapped);
+//                mapStory(story, completedItemMapped, order);
+//                completed.before(completedItemMapped);
+                Element completedMapped = mapStory(story, completed, order);
+                completed.before(completedMapped);
+            } else {
                 throw new RuntimeException(
                         String.format("Wrong children node type. Expected %s, got %s", "story", story.getType()));
             }
@@ -111,26 +116,26 @@ public class EmailGenerator {
         Element completed = doc.select("sqaas[type='completed']").first();
         mapCompleted(userSession.getTopNode().getChildren().get("today").getChildren().get("completed"), completed);
 //        System.out.println("completed = " + completed);
-//        System.out.println("doc.toString() = " + doc.toString());
+        System.out.println("doc.toString() = " + doc.toString());
 
 //        Compose email
-        HtmlEmail email = new HtmlEmail();
-        email.setHostName("smtp.googlemail.com");
-        email.setFrom("me@apache.org");
-        email.addTo("JTran@sqasquared.com");
-        email.setSubject("Test email with inline image");
-//        email.setHtmlMsg(htmlEmailTemplate);
-        email.setHtmlMsg(doc.toString());
-        email.buildMimeMessage();
-        MimeMessage mimeMessage = email.getMimeMessage();
-
-        //Create random output
-        String uuid = UUID.randomUUID().toString();
-        File tempFile = new File(System.getProperty("user.home") + "\\Desktop\\newemail"+uuid+".eml");
-        tempFile.createNewFile();
-        FileOutputStream fos = new FileOutputStream(tempFile);
-        mimeMessage.writeTo(fos);
-        fos.flush();
-        fos.close();
+//        HtmlEmail email = new HtmlEmail();
+//        email.setHostName("smtp.googlemail.com");
+//        email.setFrom("me@apache.org");
+//        email.addTo("JTran@sqasquared.com");
+//        email.setSubject("Test email with inline image");
+////        email.setHtmlMsg(htmlEmailTemplate);
+//        email.setHtmlMsg(doc.toString());
+//        email.buildMimeMessage();
+//        MimeMessage mimeMessage = email.getMimeMessage();
+//
+//        //Create random output
+//        String uuid = UUID.randomUUID().toString();
+//        File tempFile = new File(System.getProperty("user.home") + "\\Desktop\\newemail" + uuid + ".eml");
+//        tempFile.createNewFile();
+//        FileOutputStream fos = new FileOutputStream(tempFile);
+//        mimeMessage.writeTo(fos);
+//        fos.flush();
+//        fos.close();
     }
 }

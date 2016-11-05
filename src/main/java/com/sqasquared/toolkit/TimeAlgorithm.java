@@ -22,7 +22,6 @@ public class TimeAlgorithm implements TreeAlgorithmInterface{
         }
 
         buildTree(top);
-//        top.print(4);
         return top;
     }
 
