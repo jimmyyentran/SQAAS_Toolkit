@@ -45,6 +45,7 @@ public class EmailGenerator {
         Element completed = completedRoot.clone();
         String storyName = null;
         String storyLink = null;
+        String storySubTag = null;
         Element list = completed.select("ul").first();
         Element listItem = completed.select("li").first();
         for (RallyObject st : node.getChildren().values()) {
@@ -54,10 +55,12 @@ public class EmailGenerator {
                 if (storyName == null || storyLink == null) {
                     storyName = task.getStoryName();
                     storyLink = task.getStoryLink();
+                    storySubTag = task.getSubProjectTag();
                 }
                 Element listItemMapped = listItem.clone();
                 mapListItem(task.getFormattedID(), task.getName(), listItemMapped);
                 list.appendChild(listItemMapped);
+//                list.prependChild(listItemMapped);
             } else {
                 throw new RuntimeException(
                         String.format("Wrong children node type. Expected %s, got %s", "task", node.getType()));
@@ -73,7 +76,7 @@ public class EmailGenerator {
 
         // sub-project
         Element subProject = completed.select("sqaas[type='subProject'").first();
-        subProject.replaceWith(new TextNode("[PROJECT]", ""));
+        subProject.replaceWith(new TextNode(storySubTag, ""));
 
         // href links
         Element a = completed.select("a").first();
@@ -111,31 +114,35 @@ public class EmailGenerator {
 
     public void generate(UserSession userSession, String temp) throws EmailException, IOException, MessagingException {
         String htmlEmailTemplate = userSession.getTemplate(temp);
-
         Document doc = Jsoup.parse(htmlEmailTemplate);
-        Element completed = doc.select("sqaas[type='completed']").first();
-        mapCompleted(userSession.getTopNode().getChildren().get("today").getChildren().get("completed"), completed);
+        if(temp.startsWith("story_status_update")){
+            Element completed = doc.select("body").first();
+            mapCompleted(userSession.getTopNode().getChildren().get("today").getChildren().get("notCompleted"), completed);
+        } else {
+            Element completed = doc.select("sqaas[type='completed']").first();
+            mapCompleted(userSession.getTopNode().getChildren().get("today").getChildren().get("completed"), completed);
 //        System.out.println("completed = " + completed);
-        System.out.println("doc.toString() = " + doc.toString());
+            System.out.println("doc.toString() = " + doc.toString());
+        }
 
 //        Compose email
-//        HtmlEmail email = new HtmlEmail();
-//        email.setHostName("smtp.googlemail.com");
-//        email.setFrom("me@apache.org");
-//        email.addTo("JTran@sqasquared.com");
-//        email.setSubject("Test email with inline image");
-////        email.setHtmlMsg(htmlEmailTemplate);
-//        email.setHtmlMsg(doc.toString());
-//        email.buildMimeMessage();
-//        MimeMessage mimeMessage = email.getMimeMessage();
-//
+        HtmlEmail email = new HtmlEmail();
+        email.setHostName("smtp.googlemail.com");
+        email.setFrom("me@apache.org");
+        email.addTo("JTran@sqasquared.com");
+        email.setSubject("Test email with inline image");
+//        email.setHtmlMsg(htmlEmailTemplate);
+        email.setHtmlMsg(doc.toString());
+        email.buildMimeMessage();
+        MimeMessage mimeMessage = email.getMimeMessage();
+
 //        //Create random output
-//        String uuid = UUID.randomUUID().toString();
-//        File tempFile = new File(System.getProperty("user.home") + "\\Desktop\\newemail" + uuid + ".eml");
-//        tempFile.createNewFile();
-//        FileOutputStream fos = new FileOutputStream(tempFile);
-//        mimeMessage.writeTo(fos);
-//        fos.flush();
-//        fos.close();
+        String uuid = UUID.randomUUID().toString();
+        File tempFile = new File(System.getProperty("user.home") + "\\Desktop\\newemail" + uuid + ".eml");
+        tempFile.createNewFile();
+        FileOutputStream fos = new FileOutputStream(tempFile);
+        mimeMessage.writeTo(fos);
+        fos.flush();
+        fos.close();
     }
 }

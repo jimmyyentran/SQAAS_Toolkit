@@ -3,7 +3,9 @@ package com.sqasquared.toolkit.rally;
 import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,8 +19,11 @@ public class TaskRallyObject extends RallyObject{
     private String objectID, state, storyName, formattedID, projectName;
     private String storyID, projectID, storyLink;
     private double estimate;
-    Date lastUpdateDate;
-    Date creationDate;
+    private Date lastUpdateDate;
+    private Date creationDate;
+    private List<String> storyTags;
+    private String baseStoryName;
+
 
     public String getFormattedID() {
         return formattedID;
@@ -41,6 +46,8 @@ public class TaskRallyObject extends RallyObject{
         this.storyID = parseID(storyRef);
         this.projectID = parseID(projectRef);
         this.storyLink = generateStoryTasksLink(projectID, storyID);
+
+        setSplitTags(storyName);
     }
 
     public String parseID(String ref){
@@ -93,6 +100,7 @@ public class TaskRallyObject extends RallyObject{
         String toBePrinted = indent + "Type: " + type + ", ID: " + id + ", Name: " + name +
                 ", Status: " + state + ", LastUpdated: " + lastUpdateDate;
         System.out.println(toBePrinted);
+//        System.out.println(this.toString());
     }
 
     public String toString() {
@@ -122,6 +130,41 @@ public class TaskRallyObject extends RallyObject{
         result.append("}");
 
         return result.toString();
+    }
+
+    public void setSplitTags(String storyName){
+        String[] story = storyName.split(" ");
+        List<String> parsedTags = new ArrayList<String>();
+        String baseStoryName = null;
+        for (int i = 0; i < story.length; i++) {
+            if(story[i].startsWith("[")){
+                parsedTags.add(story[i]);
+            } else {
+                String[] base = storyName.split(" ", i+1);
+                baseStoryName = base[base.length - 1];
+                break;
+            }
+        }
+        this.baseStoryName = baseStoryName;
+        this.storyTags = parsedTags;
+    }
+
+    public String getBaseStoryName(){
+        return this.baseStoryName;
+    }
+
+    public String getSubProjectTag(){
+        int size = this.storyTags.size();
+        if(size == 0){
+            return null;
+        }else if(size == 1){
+            //first tag
+            return storyTags.get(0);
+        }else if (size >= 2){
+            //second tag
+            return storyTags.get(1);
+        }
+        return null;
     }
 
 }

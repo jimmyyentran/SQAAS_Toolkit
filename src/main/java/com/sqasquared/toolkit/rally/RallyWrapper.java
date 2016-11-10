@@ -3,6 +3,7 @@ package com.sqasquared.toolkit.rally;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.rallydev.rest.RallyRestApi;
 import com.rallydev.rest.request.GetRequest;
 import com.rallydev.rest.request.QueryRequest;
@@ -55,7 +56,7 @@ public class RallyWrapper {
         GetResponse response = rallyAPIConnection.get(new GetRequest("user"));
         if(response.wasSuccessful()) {
             if(saveJsonToDir != null){
-                DateFormat df = new SimpleDateFormat("MM_dd_yyyy'T'HH:mm:ss");
+                DateFormat df = new SimpleDateFormat("MM_dd_yyyy'T'HH_mm_ss");
                 Date today = Calendar.getInstance().getTime();
                 String reportDate = df.format(today);
                 File file = new File(saveJsonToDir + "/UserInfo_" + reportDate + ".json");
@@ -63,8 +64,11 @@ public class RallyWrapper {
                 FileUtils.writeStringToFile(file, response.getObject().toString());
             }
             if(jsonLoc != null){
-                File file = new File(jsonLoc);
-                return new GetResponse(FileUtils.readFileToString(file)).getObject();
+                //TODO
+                File file = getLatestFileWithPrefix("UserInfo", jsonLoc);
+                GetResponse res = new GetResponse(FileUtils.readFileToString(file));
+//                result = ((JsonObject)(new JsonParser()).parse(response)).getAsJsonObject(this.getRoot());
+                return res.getObject();
             }
             return response.getObject();
         } else {
@@ -91,7 +95,7 @@ public class RallyWrapper {
         QueryResponse response = rallyAPIConnection.query(tasks);
         if(response.wasSuccessful()) {
             if(saveJsonToDir != null){
-                DateFormat df = new SimpleDateFormat("MM_dd_yyyy'T'HH:mm:ss");
+                DateFormat df = new SimpleDateFormat("MM_dd_yyyy'T'HH_mm_ss");
                 Date today = Calendar.getInstance().getTime();
                 String reportDate = df.format(today);
                 File file = new File(saveJsonToDir + "/Tasks_" + reportDate + ".json");
@@ -100,7 +104,8 @@ public class RallyWrapper {
                 FileUtils.writeStringToFile(file, response.getResults().toString());
             }
             if(jsonLoc != null){
-                File file = new File(jsonLoc);
+//                File file = new File(jsonLoc);
+                File file = getLatestFileWithPrefix("Tasks", jsonLoc);
                 return new QueryResponse(FileUtils.readFileToString(file)).getResults();
             }
             return response.getResults();
@@ -108,6 +113,20 @@ public class RallyWrapper {
             System.err.println("The following errors occurred: ");
             for (String err : response.getErrors()) {
                 System.err.println("\t" + err);
+            }
+        }
+        return null;
+    }
+
+    public static File getLatestFileWithPrefix(String prefix, String dir){
+        File directory = new File(dir);
+        File[] listOfFiles = directory.listFiles();
+        for(int i = 0; i < listOfFiles.length; i++){
+            File file = listOfFiles[i];
+            if(file.isFile()){
+                if(file.getName().startsWith(prefix)){
+                    return file;
+                }
             }
         }
         return null;
