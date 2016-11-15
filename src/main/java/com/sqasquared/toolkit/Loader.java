@@ -13,10 +13,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Created by JTran on 10/31/2016.
@@ -43,10 +40,12 @@ public class Loader {
             String user = prop.getProperty("user");
             String api_key = prop.getProperty("api_key");
             String server  = prop.getProperty("server");
+            String bp = prop.getProperty("business_partner");
 
             userSession.setUser(user);
             userSession.setApi_key(api_key);
             userSession.setServer(server);
+            userSession.setBusiness_partner(bp);
         } catch (Exception e) {
             System.out.println("Exception: " + e);
         } finally {
@@ -93,24 +92,41 @@ public class Loader {
 
             String creationDate = task.get("CreationDate").getAsString();
             String lastUpdateDate = task.get("LastUpdateDate").getAsString();
-            double estimate;
+            String estimate;
             try {
-                estimate = task.get("Estimate").getAsDouble();
+                estimate = task.get("Estimate").getAsString();
             } catch (UnsupportedOperationException ex) {
-                estimate = 1.0;
+                estimate = "0.0";
             }
-//            System.out.println(result);
             userSession.addTask(new TaskRallyObject(taskName, objectID, formattedID, state, storyName,
                     storyRef, projectName, projectRef, creationDate, lastUpdateDate, estimate));
         }
     }
 
+    /**
+     * Takes each task's userStoryID and insert userStoryFormattedID
+     * @param userSession   current session persistent variables
+     * @throws IOException
+     */
     public void loadUserStory(UserSession userSession) throws IOException {
-        List<String> storyIds = new ArrayList<String>();
+        Map<String, String> storyIds = new HashMap<String, String>();
+
+        // Get story ID's and insert as keys into hash-map
         for(TaskRallyObject obj : userSession.getTaskContainer().values()){
-            storyIds.add(obj.getStoryID());
+            storyIds.put(obj.getStoryID(), null);
         }
-        RallyWrapper.getUserStory(storyIds, null, null);
+
+        // Append formattedID's into map
+        JsonArray response = RallyWrapper.getUserStory(storyIds, null, null);
+        for(JsonElement res : response){
+            JsonObject userStory = res.getAsJsonObject();
+            storyIds.put(userStory.get("ObjectID").toString(), userStory.get("FormattedID").toString().replace("\"", ""));
+        }
+
+        // Loop over tasks and set storyFormattedID
+        for(TaskRallyObject obj : userSession.getTaskContainer().values()){
+            obj.setStoryFormattedID(storyIds.get(obj.getStoryID()));
+        }
     }
 
     public void loadTemplates (UserSession userSession) throws IOException {

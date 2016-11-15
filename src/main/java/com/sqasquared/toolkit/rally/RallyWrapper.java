@@ -77,7 +77,7 @@ public class RallyWrapper {
         return null;
     }
 
-    public static JsonArray getUserStory(List<String> storyIds, String saveJsonToDir, String jsonLoc) throws IOException {
+    public static JsonArray getUserStory(Map<String, String> storyIds, String saveJsonToDir, String jsonLoc) throws IOException {
 //        if(jsonLoc != null){
 //            File file = getLatestFileWithPrefix("UserInfo", jsonLoc);
 //            String raw = FileUtils.readFileToString(file);
@@ -85,30 +85,26 @@ public class RallyWrapper {
 //            return result;
 //        }
         List<QueryFilter> filters = new ArrayList<QueryFilter>();
-        for(String storyId : storyIds){
+
+        // Create query for each story id
+        for(String storyId : storyIds.keySet()){
             filters.add(new QueryFilter("ObjectId", "=", storyId));
         }
+
+        // Append QueryFilters to QueryRequest
         QueryRequest userStory = new QueryRequest("HierarchicalRequirement");
-
         QueryFilter queryFilter = null;
-
         for(QueryFilter qf : filters){
             if(queryFilter == null){
                 queryFilter = qf;
             }else{
-                queryFilter.or(qf);
+                queryFilter = queryFilter.or(qf);
             }
         }
+        userStory.setQueryFilter(queryFilter);
 
-//        userStory.setQueryFilter(new QueryFilter("ObjectId", "=", "1725151181"));
-//                .and(new QueryFilter("LastUpdateDate", ">", past)));
         QueryResponse response = rallyAPIConnection.query(userStory);
         if(response.wasSuccessful()) {
-            System.out.println(response.toString());
-            for(JsonElement e : response.getResults()){
-                System.out.println("e = " + e);
-            }
-            
 //            if(saveJsonToDir != null){
 //                DateFormat df = new SimpleDateFormat("MM_dd_yyyy'T'HH_mm_ss");
 //                Date today = Calendar.getInstance().getTime();

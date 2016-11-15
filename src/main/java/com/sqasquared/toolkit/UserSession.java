@@ -17,8 +17,10 @@ public class UserSession {
     public static Date YESTERDAY_WORK_HOUR;
 
     String firstName, lastName, email;
-    String user, api_key, server;
-
+    String user;
+    String api_key;
+    String server;
+    String business_partner;
     TreeAlgorithmInterface alg;
     HashMap<String, TaskRallyObject> taskContainer = new HashMap();
     HashMap<String, String> templateContainer = new HashMap();
@@ -136,5 +138,14 @@ public class UserSession {
     }
 
     public HashMap<String, TaskRallyObject> getTaskContainer(){return taskContainer;}
+
+    public String getBusiness_partner() {
+        return business_partner;
+    }
+
+    public void setBusiness_partner(String business_partner) {
+        this.business_partner = business_partner;
+    }
+
 
 }

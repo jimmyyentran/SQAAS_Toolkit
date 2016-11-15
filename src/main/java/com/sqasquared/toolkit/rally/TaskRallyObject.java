@@ -17,21 +17,19 @@ public class TaskRallyObject extends RallyObject{
     public final String formattedUserTasksLink = "https://rally1.rallydev.com/#/%s/detail/userstory/%s/tasks";
 
     private String objectID, state, storyName, formattedID, projectName;
-    private String storyID, projectID, storyLink;
-    private double estimate;
+    private String storyID;
+    private String projectID;
+    private String storyLink;
+    private String estimate;
     private Date lastUpdateDate;
     private Date creationDate;
     private List<String> storyTags;
     private String baseStoryName;
-
-
-    public String getFormattedID() {
-        return formattedID;
-    }
+    private String storyFormattedID;
 
     public TaskRallyObject(String taskName, String objectID, String formattedID, String state, String storyName,
                            String storyRef, String projectName, String projectRef, String creationDate, String lastUpdateDate,
-                           double estimate) {
+                           String estimate) {
         super("task", objectID, taskName);
         this.objectID = objectID;
         this.formattedID = formattedID;
@@ -90,6 +88,22 @@ public class TaskRallyObject extends RallyObject{
         return storyLink;
     }
 
+    public String getStoryFormattedID() {
+        return storyFormattedID;
+    }
+
+    public void setStoryFormattedID(String storyFormattedID) {
+        this.storyFormattedID = storyFormattedID;
+    }
+
+    public String getFormattedID() {
+        return formattedID;
+    }
+
+    public String getEstimate() {
+        return estimate;
+    }
+
     public void print(int indentation, int relictIndentation){
         String indent;
         try {
@@ -133,19 +147,17 @@ public class TaskRallyObject extends RallyObject{
     }
 
     public void setSplitTags(String storyName){
-        String[] story = storyName.split(" ");
         List<String> parsedTags = new ArrayList<String>();
-        String baseStoryName = null;
-        for (int i = 0; i < story.length; i++) {
-            if(story[i].startsWith("[")){
-                parsedTags.add(story[i]);
-            } else {
-                String[] base = storyName.split(" ", i+1);
-                baseStoryName = base[base.length - 1];
-                break;
-            }
+        Matcher m = Pattern.compile("\\[(.*?)\\]").matcher(storyName);
+        while(m.find()){
+            parsedTags.add(m.group(1));
         }
-        this.baseStoryName = baseStoryName;
+
+        // Get "]" to end of string
+        int i = storyName.lastIndexOf("]");
+        String a = storyName.substring(i+1,storyName.length());
+        this.baseStoryName = a.trim();
+
         this.storyTags = parsedTags;
     }
 

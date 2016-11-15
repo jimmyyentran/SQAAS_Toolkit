@@ -10,8 +10,14 @@ import java.util.List;
  * Created by jimmytran on 11/1/16.
  */
 public class RallyObject {
-    //    private ArrayList<RallyObject> children;
     public static String DATEFORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    public static String COMPLETED = "Completed";
+    public static String DEFINED = "Defined";
+    public static String INPROGRESS= "In-Progress";
+
+
+
+
     private HashMap<String, RallyObject> children;
     private RallyObject parent;
     protected String type;
@@ -48,6 +54,10 @@ public class RallyObject {
             this.children.put(child.getId(), child);
             child.setParent(this);
         }
+    }
+
+    public boolean isEmpty(){
+        return children.isEmpty();
     }
 
     public void setParent(RallyObject par){

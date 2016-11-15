@@ -20,18 +20,15 @@ public class App {
         EmailGenerator gen = new EmailGenerator();
         loader.loadUserSession(userSession);
         userSession.setAlg(new TimeAlgorithm()).run();
-//        userSession.getTopNode().print(4);
 
+//        userSession.getTopNode().print(4);
 //        System.out.println("userSession = " + userSession);
-//        System.out.println(java.util.TimeZone.getDefault());
-        loader.loadTemplates(userSession);
-        try {
+//        loader.loadTemplates(userSession);
+//        try {
 //            gen.generate(userSession, "story_status_update");
-            gen.generate(userSession, "eod_template_org");
-        } catch (EmailException e) {
-            e.printStackTrace();
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
+////            gen.generate(userSession, "eod_template_org");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 }

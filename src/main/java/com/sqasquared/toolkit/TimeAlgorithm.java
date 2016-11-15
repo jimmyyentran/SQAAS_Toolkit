@@ -52,23 +52,27 @@ public class TimeAlgorithm implements TreeAlgorithmInterface{
             buildTree(tdy);
             buildTree(past);
         } else if(node.getType().equals("time")){
-            RallyObject completed = new RallyObject("state", "completed", "completed");
-            RallyObject notCompleted = new RallyObject("state", "notCompleted", "notCompleted");
+            RallyObject completed = new RallyObject("state", RallyObject.COMPLETED, null);
+            RallyObject inProgress= new RallyObject("state", RallyObject.INPROGRESS, null);
+            RallyObject defined = new RallyObject("state", RallyObject.DEFINED, null);
             for(RallyObject obj: node.getChildren().values()){
                 if(obj.getType().equals("task")){
                     TaskRallyObject taskRallyObject = ((TaskRallyObject)obj);
-                    String storyID = taskRallyObject.getState();
-                    if(storyID.equals("Completed")){
+                    String storyState = taskRallyObject.getState();
+                    if(storyState.equals(RallyObject.COMPLETED)){
                         completed.addChild(obj);
-                    }else{
-                        notCompleted.addChild(obj);
+                    }else if(storyState.equals(RallyObject.INPROGRESS)){
+                        inProgress.addChild(obj);
+                    }else if(storyState.equals(RallyObject.DEFINED)){
+                        defined.addChild(obj);
                     }
                 }
             }
             node.clearChildren();
-            node.addChild(completed, notCompleted);
+            node.addChild(completed, inProgress, defined);
             buildTree(completed);
-            buildTree(notCompleted);
+            buildTree(inProgress);
+            buildTree(defined);
         } else if(node.getType().equals("state")){
             HashMap<String, RallyObject> objectContainer = new HashMap<String, RallyObject>();
             for(RallyObject obj: node.getChildren().values()){
