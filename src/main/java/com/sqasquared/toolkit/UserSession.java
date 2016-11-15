@@ -135,4 +135,6 @@ public class UserSession {
         return topNode;
     }
 
+    public HashMap<String, TaskRallyObject> getTaskContainer(){return taskContainer;}
+
 }

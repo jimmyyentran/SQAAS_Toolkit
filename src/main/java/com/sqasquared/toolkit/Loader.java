@@ -13,6 +13,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -52,9 +55,9 @@ public class Loader {
     }
 
     public void loadUserInfo(UserSession userSession) throws IOException {
-        JsonObject info = RallyWrapper.getUserInfo();
+//        JsonObject info = RallyWrapper.getUserInfo();
 //        JsonObject info = RallyWrapper.getUserInfo("resources/json/", null);
-//        JsonObject info = RallyWrapper.getUserInfo(null, "resources/json/");
+        JsonObject info = RallyWrapper.getUserInfo(null, "resources/json/");
         String firstName = info.get("FirstName").getAsString();
         String lastName = info.get("LastName").getAsString();
         String email = info.get("EmailAddress").getAsString();
@@ -72,6 +75,7 @@ public class Loader {
         JsonArray response = RallyWrapper.getTasks(userSession.getEmail());
 //        JsonArray response = RallyWrapper.getTasks(userSession.getEmail(), "resources/json/", null);
 //        JsonArray response = RallyWrapper.getTasks(userSession.getEmail(), null, "resources/json/");
+//        JsonArray response = RallyWrapper.getTasks(userSession.getEmail(), "resources/json/", "resources/json/");
         for(JsonElement result: response){
             JsonObject task = result.getAsJsonObject();
             String taskName = task.get("Name").getAsString();
@@ -101,6 +105,14 @@ public class Loader {
         }
     }
 
+    public void loadUserStory(UserSession userSession) throws IOException {
+        List<String> storyIds = new ArrayList<String>();
+        for(TaskRallyObject obj : userSession.getTaskContainer().values()){
+            storyIds.add(obj.getStoryID());
+        }
+        RallyWrapper.getUserStory(storyIds, null, null);
+    }
+
     public void loadTemplates (UserSession userSession) throws IOException {
         String dirName = "resources/template/";
         File directory = new File(dirName);
@@ -120,5 +132,6 @@ public class Loader {
         loadRally(userSession);
         loadUserInfo(userSession);
         loadTasks(userSession);
+        loadUserStory(userSession);
     }
 }

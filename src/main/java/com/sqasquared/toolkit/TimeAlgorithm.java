@@ -52,8 +52,6 @@ public class TimeAlgorithm implements TreeAlgorithmInterface{
             buildTree(tdy);
             buildTree(past);
         } else if(node.getType().equals("time")){
-//            RallyObject completed = new RallyObject("state", "1", "completed");
-//            RallyObject notCompleted = new RallyObject("state", "0", "notCompleted");
             RallyObject completed = new RallyObject("state", "completed", "completed");
             RallyObject notCompleted = new RallyObject("state", "notCompleted", "notCompleted");
             for(RallyObject obj: node.getChildren().values()){

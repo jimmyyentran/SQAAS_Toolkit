@@ -46,6 +46,7 @@ public class EmailGenerator {
         String storyName = null;
         String storyLink = null;
         String storySubTag = null;
+        String storyId = null;
         Element list = completed.select("ul").first();
         Element listItem = completed.select("li").first();
         for (RallyObject st : node.getChildren().values()) {
@@ -56,6 +57,7 @@ public class EmailGenerator {
                     storyName = task.getStoryName();
                     storyLink = task.getStoryLink();
                     storySubTag = task.getSubProjectTag();
+                    storyId = task.getStoryID();
                 }
                 Element listItemMapped = listItem.clone();
                 mapListItem(task.getFormattedID(), task.getName(), listItemMapped);
@@ -82,9 +84,13 @@ public class EmailGenerator {
         Element a = completed.select("a").first();
         a.attr("href", storyLink);
 
+        // story id
+        Element si = completed.select("sqaas[type='storyName']").first();
+        si.replaceWith(new TextNode(storyName, ""));
+
         // story name
-        Element sn = completed.select("sqaas[type='storyName']").first();
-        sn.replaceWith(new TextNode(storyName, ""));
+//        Element sn = completed.select("sqaas[type='storyId']").first();
+//        sn.replaceWith(new TextNode(storyId, ""));
 
         // delete the list item template
         listItem.remove();

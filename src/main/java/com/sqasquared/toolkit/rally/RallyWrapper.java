@@ -20,8 +20,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.*;
 
 /**
  * Created by jimmytran on 10/29/16.
@@ -53,6 +52,12 @@ public class RallyWrapper {
     }
 
     public static JsonObject getUserInfo(String saveJsonToDir, String jsonLoc) throws IOException {
+        if(jsonLoc != null){
+            File file = getLatestFileWithPrefix("UserInfo", jsonLoc);
+            String raw = FileUtils.readFileToString(file);
+            JsonObject result = (JsonObject)(new JsonParser()).parse(raw);
+            return result;
+        }
         GetResponse response = rallyAPIConnection.get(new GetRequest("user"));
         if(response.wasSuccessful()) {
             if(saveJsonToDir != null){
@@ -60,17 +65,58 @@ public class RallyWrapper {
                 Date today = Calendar.getInstance().getTime();
                 String reportDate = df.format(today);
                 File file = new File(saveJsonToDir + "/UserInfo_" + reportDate + ".json");
-//                FileUtils.writeStringToFile(file, response.getObject().getAsString());
                 FileUtils.writeStringToFile(file, response.getObject().toString());
             }
-            if(jsonLoc != null){
-                //TODO
-                File file = getLatestFileWithPrefix("UserInfo", jsonLoc);
-                GetResponse res = new GetResponse(FileUtils.readFileToString(file));
-//                result = ((JsonObject)(new JsonParser()).parse(response)).getAsJsonObject(this.getRoot());
-                return res.getObject();
-            }
             return response.getObject();
+        } else {
+            System.err.println("The following errors occurred: ");
+            for (String err : response.getErrors()) {
+                System.err.println("\t" + err);
+            }
+        }
+        return null;
+    }
+
+    public static JsonArray getUserStory(List<String> storyIds, String saveJsonToDir, String jsonLoc) throws IOException {
+//        if(jsonLoc != null){
+//            File file = getLatestFileWithPrefix("UserInfo", jsonLoc);
+//            String raw = FileUtils.readFileToString(file);
+//            JsonObject result = (JsonObject)(new JsonParser()).parse(raw);
+//            return result;
+//        }
+        List<QueryFilter> filters = new ArrayList<QueryFilter>();
+        for(String storyId : storyIds){
+            filters.add(new QueryFilter("ObjectId", "=", storyId));
+        }
+        QueryRequest userStory = new QueryRequest("HierarchicalRequirement");
+
+        QueryFilter queryFilter = null;
+
+        for(QueryFilter qf : filters){
+            if(queryFilter == null){
+                queryFilter = qf;
+            }else{
+                queryFilter.or(qf);
+            }
+        }
+
+//        userStory.setQueryFilter(new QueryFilter("ObjectId", "=", "1725151181"));
+//                .and(new QueryFilter("LastUpdateDate", ">", past)));
+        QueryResponse response = rallyAPIConnection.query(userStory);
+        if(response.wasSuccessful()) {
+            System.out.println(response.toString());
+            for(JsonElement e : response.getResults()){
+                System.out.println("e = " + e);
+            }
+            
+//            if(saveJsonToDir != null){
+//                DateFormat df = new SimpleDateFormat("MM_dd_yyyy'T'HH_mm_ss");
+//                Date today = Calendar.getInstance().getTime();
+//                String reportDate = df.format(today);
+//                File file = new File(saveJsonToDir + "/UserInfo_" + reportDate + ".json");
+//                FileUtils.writeStringToFile(file, response.getObject().toString());
+//            }
+            return response.getResults();
         } else {
             System.err.println("The following errors occurred: ");
             for (String err : response.getErrors()) {
@@ -86,6 +132,12 @@ public class RallyWrapper {
 
 //     Get tasks updated within a time frame
     public static JsonArray getTasks(String email, String saveJsonToDir, String jsonLoc) throws IOException {
+        if(jsonLoc != null){
+            File file = getLatestFileWithPrefix("Tasks", jsonLoc);
+            String raw = FileUtils.readFileToString(file);
+            JsonArray result = (JsonArray)(new JsonParser()).parse(raw);
+            return result;
+        }
         QueryRequest tasks = new QueryRequest("tasks");
 
         String past = new SimpleDateFormat(RallyObject.DATEFORMAT).format(UserSession.YESTERDAY_WORK_HOUR);
@@ -99,14 +151,7 @@ public class RallyWrapper {
                 Date today = Calendar.getInstance().getTime();
                 String reportDate = df.format(today);
                 File file = new File(saveJsonToDir + "/Tasks_" + reportDate + ".json");
-//                FileUtils.writeStringToFile(file, response.getObject().getAsString());
-//                FileUtils.writeStringToFile(file, response.getObject().toString());
                 FileUtils.writeStringToFile(file, response.getResults().toString());
-            }
-            if(jsonLoc != null){
-//                File file = new File(jsonLoc);
-                File file = getLatestFileWithPrefix("Tasks", jsonLoc);
-                return new QueryResponse(FileUtils.readFileToString(file)).getResults();
             }
             return response.getResults();
         } else {
