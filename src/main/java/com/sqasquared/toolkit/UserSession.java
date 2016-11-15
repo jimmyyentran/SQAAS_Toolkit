@@ -16,6 +16,16 @@ public class UserSession {
 
     public static Date TODAY_WORK_HOUR;
     public static Date YESTERDAY_WORK_HOUR;
+    public static String EOD = "end_of_day";
+    public static String SSU = "story_status_update";
+    public static String SSU_TAG = "[STORY STATUS UPDATE]";
+    public static String EOD_TAG = "[END OF DAY UPDATE]";
+    public static String SSU_KEY = "SSU";
+    public static String EOD_KEY = "EOD";
+    public static String TO = "to";
+    public static String CC = "cc";
+    public static String SEPARATOR = "_";
+    public static String EMAIL_SEPARATOR = ",";
 
     String firstName, lastName, email;
     String user, api_key, server;
@@ -39,7 +49,41 @@ public class UserSession {
         topNode = this.alg.constructTree(taskContainer);
     }
 
-//    public
+    public String[] getEmailTo(String emailType){
+        if(emailType.equals(SSU)){
+            String keyTo = formatKey(getBusinessPartner(), SSU_KEY, TO);
+            String emailTo = prop.getProperty(keyTo);
+            String[] emails = emailTo.split(EMAIL_SEPARATOR);
+            return emails;
+        }
+        return null;
+    }
+
+    public String[] getEmailCC(){
+        String emailTo = prop.getProperty(CC);
+        String[] emails = emailTo.split(EMAIL_SEPARATOR);
+        return emails;
+    }
+
+    public String getBusinessPartner(){
+        String bp = prop.getProperty("business_partner");
+        if(bp != null && bp.length() != 0){
+            return bp;
+        }
+        return "DEFAULT";
+    }
+
+    public String formatKey(String... str){
+        String formatted = "";
+        for(String s : str){
+            if(formatted.equals("")){
+                formatted += s;
+            } else {
+                formatted += (SEPARATOR + s);
+            }
+        }
+        return formatted;
+    }
 
     public String toString() {
         StringBuilder result = new StringBuilder();

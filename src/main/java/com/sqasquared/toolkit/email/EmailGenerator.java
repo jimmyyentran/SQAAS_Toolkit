@@ -41,7 +41,7 @@ public class EmailGenerator {
         Element tn = listItem.select("sqaas[type='taskName']").first();
         tn.replaceWith(new TextNode(taskName, ""));
         Element eta = listItem.select("sqaas[type='ETA']").first();
-        if(eta != null){
+        if (eta != null) {
             eta.replaceWith(new TextNode(estimate, ""));
         }
         return listItem;
@@ -107,34 +107,25 @@ public class EmailGenerator {
     }
 
     public void mapCompleted(RallyObject node, Element completed) {
-        mapCompleted(node, completed, false);
-    }
-
-    public void mapCompleted(RallyObject node, Element completed, boolean single) {
         int order = 1;
-        if(single){
-            Element mapLatestStory = mapStory(getLatestUpdatedStory(node), completed, order);
-            completed.before(mapLatestStory);
-        } else {
-            for (RallyObject story : node.getChildren().values()) {
-                if (story.getType().equals("story")) {
-                    Element completedMapped = mapStory(story, completed, order);
-                    completed.before(completedMapped);
-                } else {
-                    throw new RuntimeException(
-                            String.format("Wrong children node type. Expected %s, got %s", "story", story.getType()));
-                }
-                order++;
+        for (RallyObject story : node.getChildren().values()) {
+            if (story.getType().equals("story")) {
+                Element completedMapped = mapStory(story, completed, order);
+                completed.before(completedMapped);
+            } else {
+                throw new RuntimeException(
+                        String.format("Wrong children node type. Expected %s, got %s", "story", story.getType()));
             }
+            order++;
         }
+
         // remove template
         completed.remove();
     }
 
-    public RallyObject getLatestUpdatedStory(RallyObject node){
+    public RallyObject mapLastUpdatedStory(RallyObject node, Element completed) {
         TaskRallyObject latestTask = null;
         RallyObject latestStory = null;
-
         // Loop stories
         for (RallyObject story : node.getChildren().values()) {
             if (story.getType().equals("story")) {
@@ -142,10 +133,10 @@ public class EmailGenerator {
                 for (RallyObject st : story.getChildren().values()) {
                     if (st.getType().equals("task")) {
                         TaskRallyObject task = (TaskRallyObject) st;
-                        if(latestTask == null || latestStory == null){
+                        if (latestTask == null || latestStory == null) {
                             latestTask = task;
                             latestStory = story;
-                        } else if(latestTask.getLastUpdateDate().before(task.getLastUpdateDate())){
+                        } else if (latestTask.getLastUpdateDate().before(task.getLastUpdateDate())) {
                             latestTask = task;
                             latestStory = story;
                         }
@@ -159,24 +150,45 @@ public class EmailGenerator {
                         String.format("Wrong children node type. Expected %s, got %s", "story", story.getType()));
             }
         }
+        Element mapLatestStory = mapStory(latestStory, completed, 1);
+        completed.before(mapLatestStory);
+        completed.remove();
         return latestStory;
     }
 
-    public void generate(UserSession userSession, String temp) throws Exception {
-        String htmlEmailTemplate = userSession.getTemplate(temp);
+    public String generateSubject(RallyObject ro){
+        String subject = UserSession.SSU_TAG;
+        TaskRallyObject task = (TaskRallyObject)ro.getChildren().values().iterator().next();
+        if(task.getType().equals("task")){
+            String storyName = task.getStoryName();
+            int i = storyName.lastIndexOf("]");
+            String tags = storyName.substring(0, i+1);
+            String base = storyName.substring(i+1,storyName.length());
+            subject += (" " + tags + " " + task.getStoryFormattedID() + " " + base);
+        } else {
+            throw new RuntimeException(
+                    String.format("Wrong children node type. Expected %s, got %s", "task", task.getType()));
+        }
+        return subject;
+    }
+
+    public void generate(UserSession userSession, String template) throws Exception {
+        String htmlEmailTemplate = userSession.getTemplate(template);
         Document doc = Jsoup.parse(htmlEmailTemplate);
-        if(temp.startsWith("story_status_update")){
+        String subject = null;
+        if (template.equals(UserSession.SSU)) {
             Element inProgress = doc.select("sqaas[type='notCompleted']").first();
             RallyObject inProgressNode = userSession.getTopNode().getChildren().get("today").getChildren().get(RallyObject.INPROGRESS);
-            if(!inProgressNode.isEmpty()) {
-                mapCompleted(inProgressNode, inProgress, true);
+            if (!inProgressNode.isEmpty()) {
+                RallyObject lastUpdated = mapLastUpdatedStory(inProgressNode, inProgress);
+                subject = generateSubject(lastUpdated);
             } else {
                 throw new Exception("No in progress tasks today. Get to work!!");
             }
         } else {
             Element completed = doc.select("sqaas[type='completed']").first();
             RallyObject completedNode = userSession.getTopNode().getChildren().get("today").getChildren().get(RallyObject.COMPLETED);
-            if(!completedNode.isEmpty()) {
+            if (!completedNode.isEmpty()) {
                 mapCompleted(completedNode, completed);
             } else {
                 throw new Exception("No completed tasks today. Get to work!!");
@@ -188,8 +200,9 @@ public class EmailGenerator {
         HtmlEmail email = new HtmlEmail();
         email.setHostName("smtp.googlemail.com");
         email.setFrom(userSession.getEmail());
-        email.addTo("JTran@sqasquared.com");
-        email.setSubject("Test email with inline image");
+        email.addTo(userSession.getEmailTo(template));
+        email.addCc(userSession.getEmailCC());
+        email.setSubject(subject);
 //        email.setHtmlMsg(htmlEmailTemplate);
         email.setHtmlMsg(doc.toString());
         email.buildMimeMessage();
@@ -198,8 +211,8 @@ public class EmailGenerator {
 //      // Create random output
         String uuid = UUID.randomUUID().toString();
         File tempFile = null;
-        if(System.getProperty("os.name").startsWith("Mac")){
-            tempFile = new File("resources/email/" + temp + uuid + ".eml");
+        if (System.getProperty("os.name").startsWith("Mac")) {
+            tempFile = new File("resources/email/" + template + uuid + ".eml");
             tempFile.getParentFile().mkdir();
         } else {
             tempFile = new File(System.getProperty("user.home") + "\\Desktop\\newemail" + uuid + ".eml");
