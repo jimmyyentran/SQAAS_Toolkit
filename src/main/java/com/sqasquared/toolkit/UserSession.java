@@ -7,6 +7,7 @@ import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Properties;
 
 /**
  * Created by jimmytran on 10/30/16.
@@ -17,10 +18,9 @@ public class UserSession {
     public static Date YESTERDAY_WORK_HOUR;
 
     String firstName, lastName, email;
-    String user;
-    String api_key;
-    String server;
-    String business_partner;
+    String user, api_key, server;
+    Properties prop;
+
     TreeAlgorithmInterface alg;
     HashMap<String, TaskRallyObject> taskContainer = new HashMap();
     HashMap<String, String> templateContainer = new HashMap();
@@ -38,6 +38,8 @@ public class UserSession {
     public void run(){
         topNode = this.alg.constructTree(taskContainer);
     }
+
+//    public
 
     public String toString() {
         StringBuilder result = new StringBuilder();
@@ -139,12 +141,12 @@ public class UserSession {
 
     public HashMap<String, TaskRallyObject> getTaskContainer(){return taskContainer;}
 
-    public String getBusiness_partner() {
-        return business_partner;
+    public Properties getProp() {
+        return prop;
     }
 
-    public void setBusiness_partner(String business_partner) {
-        this.business_partner = business_partner;
+    public void setProp(Properties prop) {
+        this.prop = prop;
     }
 
 

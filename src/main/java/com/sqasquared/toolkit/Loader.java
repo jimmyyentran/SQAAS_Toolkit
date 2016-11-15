@@ -40,12 +40,11 @@ public class Loader {
             String user = prop.getProperty("user");
             String api_key = prop.getProperty("api_key");
             String server  = prop.getProperty("server");
-            String bp = prop.getProperty("business_partner");
 
             userSession.setUser(user);
             userSession.setApi_key(api_key);
             userSession.setServer(server);
-            userSession.setBusiness_partner(bp);
+            userSession.setProp(prop);
         } catch (Exception e) {
             System.out.println("Exception: " + e);
         } finally {
