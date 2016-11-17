@@ -50,13 +50,31 @@ public class UserSession {
     }
 
     public String[] getEmailTo(String emailType){
-        if(emailType.equals(SSU)){
-            String keyTo = formatKey(getBusinessPartner(), SSU_KEY, TO);
-            String emailTo = prop.getProperty(keyTo);
-            String[] emails = emailTo.split(EMAIL_SEPARATOR);
-            return emails;
+        String key = null;
+        if(emailType.equals(EOD)){
+            key = EOD_KEY;
+        }else if(emailType.equals(SSU)){
+            key = SSU_KEY;
         }
-        return null;
+        String keyTo = formatKey(getBusinessPartner(), key, TO);
+        String emailTo = prop.getProperty(keyTo);
+        String[] emails = emailTo.split(EMAIL_SEPARATOR);
+//        for (int i = 0; i < emails.length; i++) {
+//            System.out.println("emails[i] = " + emails[i]);
+//        }
+//        if(emailType.equals(SSU)){
+//            String keyTo = formatKey(getBusinessPartner(), SSU_KEY, TO);
+//            String emailTo = prop.getProperty(keyTo);
+//            String[] emails = emailTo.split(EMAIL_SEPARATOR);
+//            for (int i = 0; i < emails.length; i++) {
+//                System.out.println("emails[i] = " + emails[i]);
+//            }
+//            return emails;
+//        }else if(emailType.equals(EOD)){
+//
+//        }
+//        return null;
+        return emails;
     }
 
     public String[] getEmailCC(){
@@ -112,6 +130,10 @@ public class UserSession {
         result.append("}");
 
         return result.toString();
+    }
+
+    public String getFullName(){
+        return firstName + " " + lastName;
     }
 
     public String getFirstName() {

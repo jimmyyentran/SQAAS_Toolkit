@@ -81,7 +81,7 @@ public class EmailGenerator {
             completed.select("sqaas[type='second']").remove();
         }
 
-        // sub-project
+//        // sub-project
         Element subProject = completed.select("sqaas[type='subProject'").first();
         subProject.replaceWith(new TextNode(storySubTag, ""));
 
@@ -95,9 +95,6 @@ public class EmailGenerator {
 
         // story id
         Element si = completed.select("sqaas[type='storyId']").first();
-        System.out.println(" completed = " + completed);
-        System.out.println("si = " + si);
-        System.out.println("storyId = " + storyId);
         si.replaceWith(new TextNode(storyId, ""));
 
         // delete the list item template
@@ -175,7 +172,7 @@ public class EmailGenerator {
     public void generate(UserSession userSession, String template) throws Exception {
         String htmlEmailTemplate = userSession.getTemplate(template);
         Document doc = Jsoup.parse(htmlEmailTemplate);
-        String subject = null;
+        String subject = "";
         if (template.equals(UserSession.SSU)) {
             Element inProgress = doc.select("sqaas[type='notCompleted']").first();
             RallyObject inProgressNode = userSession.getTopNode().getChildren().get("today").getChildren().get(RallyObject.INPROGRESS);
@@ -183,7 +180,14 @@ public class EmailGenerator {
                 RallyObject lastUpdated = mapLastUpdatedStory(inProgressNode, inProgress);
                 subject = generateSubject(lastUpdated);
             } else {
-                throw new Exception("No in progress tasks today. Get to work!!");
+                RallyObject pastInProgressNode = userSession.getTopNode().getChildren().get("past")
+                        .getChildren().get(RallyObject.INPROGRESS);
+                if (!pastInProgressNode.isEmpty()) {
+                    RallyObject lastUpdated = mapLastUpdatedStory(pastInProgressNode, inProgress);
+                    subject = generateSubject(lastUpdated);
+                } else {
+                    throw new Exception("No in-progress tasks today. Get to work!!");
+                }
             }
         } else {
             Element completed = doc.select("sqaas[type='completed']").first();
@@ -193,8 +197,25 @@ public class EmailGenerator {
             } else {
                 throw new Exception("No completed tasks today. Get to work!!");
             }
-//            System.out.println("doc.toString() = " + doc.toString());
+
+            Element notCompleted = doc.select("sqaas[type='notCompleted']").first();
+            RallyObject notCompletedNode = userSession.getTopNode().getChildren().get("today").getChildren().get(RallyObject.DEFINED);
+            if (!notCompletedNode.isEmpty()) {
+                mapCompleted(notCompletedNode, notCompleted);
+            } else {
+                notCompletedNode = userSession.getTopNode().getChildren().get("today").getChildren().get(RallyObject.INPROGRESS);
+                if(!notCompletedNode.isEmpty()){
+                    mapCompleted(notCompletedNode, notCompleted);
+                }else {
+                    throw new Exception("No in-progress or declared tasks today");
+                }
+            }
         }
+
+        // Map full name
+        Element fullName = doc.select("sqaas[type='fullName']").first();
+        fullName.replaceWith(new TextNode(userSession.getFullName(), ""));
+
 
         // Compose email
         HtmlEmail email = new HtmlEmail();
@@ -203,7 +224,6 @@ public class EmailGenerator {
         email.addTo(userSession.getEmailTo(template));
         email.addCc(userSession.getEmailCC());
         email.setSubject(subject);
-//        email.setHtmlMsg(htmlEmailTemplate);
         email.setHtmlMsg(doc.toString());
         email.buildMimeMessage();
         MimeMessage mimeMessage = email.getMimeMessage();

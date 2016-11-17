@@ -52,10 +52,10 @@ public class Loader {
         }
     }
 
-    public void loadUserInfo(UserSession userSession) throws IOException {
-//        JsonObject info = RallyWrapper.getUserInfo();
+    public static void loadUserInfo(UserSession userSession) throws IOException {
+        JsonObject info = RallyWrapper.getUserInfo();
 //        JsonObject info = RallyWrapper.getUserInfo("resources/json/", null);
-        JsonObject info = RallyWrapper.getUserInfo(null, "resources/json/");
+//        JsonObject info = RallyWrapper.getUserInfo(null, "resources/json/");
         String firstName = info.get("FirstName").getAsString();
         String lastName = info.get("LastName").getAsString();
         String email = info.get("EmailAddress").getAsString();

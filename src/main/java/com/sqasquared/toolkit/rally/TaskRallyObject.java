@@ -167,16 +167,16 @@ public class TaskRallyObject extends RallyObject{
 
     public String getSubProjectTag(){
         int size = this.storyTags.size();
-        if(size == 0){
-            return null;
-        }else if(size == 1){
+        String bracketOpen = "[";
+        String bracketClose = "]";
+        if(size == 1){
             //first tag
-            return storyTags.get(0);
+            return bracketOpen + storyTags.get(0) + bracketClose;
         }else if (size >= 2){
             //second tag
-            return storyTags.get(1);
+            return bracketOpen + storyTags.get(1) + bracketClose;
         }
-        return null;
+        return bracketOpen + "" + bracketClose;
     }
 
 }
