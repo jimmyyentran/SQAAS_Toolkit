@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/SQAAS_Toolkit.iml" filepath="$PROJECT_DIR$/SQAAS_Toolkit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sqaas-toolkit.iml" filepath="$PROJECT_DIR$/sqaas-toolkit.iml" />
     </modules>
   </component>
 </project>

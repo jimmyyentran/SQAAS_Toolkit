@@ -7,6 +7,7 @@ import com.sqasquared.toolkit.rally.RallyWrapper;
 import com.sqasquared.toolkit.rally.TaskRallyObject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -129,16 +130,12 @@ public class Loader {
     }
 
     public void loadTemplates (UserSession userSession) throws IOException {
-        String dirName = "resources/template/";
-        File directory = new File(dirName);
-        //get all the files from a directory
-        File[] fList = directory.listFiles();
-        for (File file : fList){
-            if (file.isFile()){
-                String baseName = FilenameUtils.getBaseName(file.getName());
-                String htmlEmailTemplate = FileUtils.readFileToString(file);
-                userSession.addTemplate(baseName, htmlEmailTemplate);
-            }
+        List<String> fList = IOUtils.readLines(getClass().getResourceAsStream("/template"));
+        for (String file : fList){
+            //TODO: Check if dir
+            String baseName = FilenameUtils.getBaseName(file);
+            String htmlEmailTemplate = IOUtils.toString(getClass().getResourceAsStream("/template/" + file));
+            userSession.addTemplate(baseName, htmlEmailTemplate);
         }
     }
 

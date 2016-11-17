@@ -12,6 +12,8 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.Date;
+import java.util.prefs.Preferences;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -25,7 +27,7 @@ public class App extends Application{
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(new File("resources/ui.fxml").toURL());
+        Parent root = FXMLLoader.load(getClass().getResource("ui.fxml"));
         primaryStage.setTitle("Hello World");
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
@@ -36,18 +38,22 @@ public class App extends Application{
         UserSession userSession = new UserSession();
         Loader loader = new Loader();
         EmailGenerator gen = new EmailGenerator();
-        loader.loadUserSession(userSession);
-        userSession.setAlg(new TimeAlgorithm()).run();
-
-//        userSession.getTopNode().print(4);
-//        System.out.println("userSession = " + userSession);
+        Preferences prefs = Preferences.userNodeForPackage(App.class);
+        String text = prefs.get("A", "a");
+        System.out.println("text = " + text);
+        prefs.put("A", new Date().toString());
+//        loader.loadUserSession(userSession);
+//        userSession.setAlg(new TimeAlgorithm()).run();
+//
+////        userSession.getTopNode().print(4);
+////        System.out.println("userSession = " + userSession);
         loader.loadTemplates(userSession);
-        try {
-//            gen.generate(userSession, UserSession.SSU);
-            gen.generate(userSession, UserSession.EOD);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+////            gen.generate(userSession, UserSession.SSU);
+//            gen.generate(userSession, UserSession.EOD);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
 }
