@@ -30,7 +30,7 @@
             <Insets left="20.0" right="20.0" />
          </GridPane.margin>
       </TextField>
-      <Button fx:id="loginButton" mnemonicParsing="false" onAction="#LaunchToolkit" prefHeight="53.0" prefWidth="140.0" text="Login" GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.rowIndex="2">
+      <Button fx:id="loginButton" mnemonicParsing="false" onAction="#launchToolkit" prefHeight="53.0" prefWidth="140.0" text="Login" GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.rowIndex="2">
          <font>
             <Font size="24.0" />
          </font>

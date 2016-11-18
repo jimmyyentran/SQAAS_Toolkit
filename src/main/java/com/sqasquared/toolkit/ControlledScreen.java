@@ -5,4 +5,5 @@ package com.sqasquared.toolkit;
  */
 public interface ControlledScreen {
     public void setScreenParent(ScreensController screenPage);
+    public void active();
 }

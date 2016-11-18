@@ -42,8 +42,10 @@ public class App extends Application{
         mainContainer.loadScreen(App.loginScreen, App.loginScreenFile);
         mainContainer.loadScreen(App.mainScreen, App.mainScreenFile);
 
-        if(userSession.isAPIKeySet() == true){
+        if(userSession.isAPIKeySet() && userSession.isUserPreferencesValid()){
+            RallyWrapper.initialize();
             mainContainer.setScreen(App.mainScreen);
+            new Loader().loadUserSession(userSession);
         }else{
             mainContainer.setScreen(App.loginScreen);
         }

@@ -19,31 +19,37 @@ import java.util.ResourceBundle;
  */
 public class LoginController implements Initializable, ControlledScreen{
     ScreensController screensController;
+    Loader loader;
     public Button loginButton;
     public TextField apiField;
     public Label errorMessage;
 
-    public void LaunchToolkit(ActionEvent actionEvent) {
+    public LoginController(){
+        loader = new Loader();
+    }
+
+    public void launchToolkit(ActionEvent actionEvent) {
         String api_key = apiField.getText();
+        App.userSession.setAPIKey(api_key);
         try {
-            new RallyWrapper("https://rally1.rallydev.com", api_key);
-            Loader.loadUserInfo(App.userSession);
-//            goToMain();
+            RallyWrapper.initialize();
+            loader.loadUserSession(App.userSession);
+            goToMain();
         } catch (IOException e) {
             System.err.println(e);
-            errorMessage.setText("");
-//            try {
-//                Thread.sleep(100);
-//            } catch (InterruptedException e1) {
-//                e1.printStackTrace();
-//            }
             errorMessage.setText("Invalid API Key!");
+        } catch (URISyntaxException e){
+            errorMessage.setText("Something went wrong!");
         }
     }
 
 
     public void setScreenParent(ScreensController screenParent) {
         screensController = screenParent;
+    }
+
+    public void active() {
+
     }
 
     public void initialize(URL location, ResourceBundle resources) {

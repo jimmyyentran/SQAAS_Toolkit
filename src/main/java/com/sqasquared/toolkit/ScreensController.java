@@ -21,6 +21,7 @@ public class ScreensController  extends StackPane {
     //Holds the screens to be displayed
 
     private HashMap<String, Node> screens = new HashMap<String, Node>();
+    private HashMap<String, ControlledScreen> controllers = new HashMap<String, ControlledScreen>();
 
     public ScreensController() {
         super();
@@ -44,6 +45,7 @@ public class ScreensController  extends StackPane {
             Parent loadScreen = (Parent) myLoader.load();
             ControlledScreen myScreenControler = ((ControlledScreen) myLoader.getController());
             myScreenControler.setScreenParent(this);
+            controllers.put(name, myScreenControler);
             addScreen(name, loadScreen);
             return true;
         } catch (Exception e) {
@@ -68,6 +70,7 @@ public class ScreensController  extends StackPane {
                             public void handle(ActionEvent t) {
                                 getChildren().remove(0);                    //remove the displayed screen
                                 getChildren().add(0, screens.get(name));     //add the screen
+                                controllers.get(name).active();
                                 Timeline fadeIn = new Timeline(
                                         new KeyFrame(Duration.ZERO, new KeyValue(opacity, 0.0)),
                                         new KeyFrame(new Duration(800), new KeyValue(opacity, 1.0)));
@@ -79,9 +82,10 @@ public class ScreensController  extends StackPane {
             } else {
                 setOpacity(0.0);
                 getChildren().add(screens.get(name));       //no one else been displayed, then just show
+                controllers.get(name).active();
                 Timeline fadeIn = new Timeline(
                         new KeyFrame(Duration.ZERO, new KeyValue(opacity, 0.0)),
-                        new KeyFrame(new Duration(2500), new KeyValue(opacity, 1.0)));
+                        new KeyFrame(new Duration(800), new KeyValue(opacity, 1.0)));
                 fadeIn.play();
             }
             return true;

@@ -1,5 +1,6 @@
 package com.sqasquared.toolkit;
 
+import com.sqasquared.toolkit.email.EmailGenerator;
 import com.sqasquared.toolkit.rally.RallyObject;
 import com.sqasquared.toolkit.rally.TaskRallyObject;
 
@@ -8,6 +9,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 /**
@@ -28,11 +30,7 @@ public class UserSession {
     public static String SEPARATOR = "_";
     public static String EMAIL_SEPARATOR = ",";
 
-    String firstName, lastName, email;
-    String user, api_key, server;
-//    Properties prop;
-    Preferences prop;
-
+    static Preferences prop;
     TreeAlgorithmInterface alg;
     HashMap<String, TaskRallyObject> taskContainer = new HashMap();
     HashMap<String, String> templateContainer = new HashMap();
@@ -46,38 +44,64 @@ public class UserSession {
         today.add(Calendar.DATE, -1);
         YESTERDAY_WORK_HOUR = today.getTime();
 
-        //Load preferences
-        prop = Preferences.userNodeForPackage(UserSession.class);
-        this.user = prop.get("user", "");
-        this.api_key = prop.get("api_key", "");
-        this.server  = prop.get("server", "https://rally1.rallydev.com");
+        loadPreferences();
+        setAlg(new TimeAlgorithm());
+    }
 
-        prop.get("cc", "sqaas@sqasquared.com");
-        prop.get("DEFAULT_to", "sqaas@sqasquared.com");
-        prop.get("ASM_EOD_to", "jramos@sqasquared.com,abyrum@sqasquared.com,jdeleon@sqasquared.com");
-        prop.get("ASM_SSU_to", "seth.labrum@advantagesolutions.net,patricia.liu@advantagesolutions.net,joel.ramos@advantagesolutions.net,lynnyrd.raymundo@advantagesolutions.net");
+    private void loadPreferences(){
+        prop = Preferences.userNodeForPackage(UserSession.class);
+
+        if(prop.getBoolean("first", true)){
+            prop.putBoolean("first", false);
+            prop.put("user", "");
+            prop.put("api_key", "");
+            prop.put("server", "https://rally1.rallydev.com");
+            prop.put("cc", "sqaas@sqasquared.com");
+            prop.put("DEFAULT_to", "sqaas@sqasquared.com");
+            prop.put("ASM_EOD_to", "jramos@sqasquared.com,abyrum@sqasquared.com,jdeleon@sqasquared.com");
+            prop.put("ASM_SSU_to", "seth.labrum@advantagesolutions.net,patricia.liu@advantagesolutions.net," +
+                    "joel.ramos@advantagesolutions.net,lynnyrd.raymundo@advantagesolutions.net");
+        }else {
+//            try {
+//                String[] keys = prop.keys();
+//                for (int i = 0; i < keys.length; i++) {
+//                    System.out.println(keys[i] + " = " + prop.get(keys[i], ""));
+//                }
+//            } catch (BackingStoreException e) {
+//                e.printStackTrace();
+//            }
+        }
     }
 
     public void run(){
         topNode = this.alg.constructTree(taskContainer);
     }
 
+    public void setProperty(String property, String value){
+        prop.put(property, value);
+    }
+
     public boolean isUserPreferencesValid(){
-        if(prop.get("firstName","") == "" || prop.get("lastName", "") == ""
-                || prop.get("email", "") == ""){
+        if(prop.get("firstName","").equals("") || prop.get("lastName", "").equals("")
+                || prop.get("email", "").equals("")){
             return false;
         }
         return true;
     }
 
     public boolean isAPIKeySet(){
-        if(prop.get("api_key", "") == ""){
+        System.out.println(prop.get("api_key", ""));
+        if(prop.get("api_key", "").equals("")){
             return false;
         }
         return true;
     }
 
-    public String getProperty(String property){
+    public void setAPIKey(String value){
+        prop.put("api_key", value);
+    }
+
+    public static String getProperty(String property){
         String val = prop.get(property, "");
         if(val == ""){
             System.err.println("Unset property: " + property);
@@ -95,21 +119,6 @@ public class UserSession {
         String keyTo = formatKey(getBusinessPartner(), key, TO);
         String emailTo = getProperty(keyTo);
         String[] emails = emailTo.split(EMAIL_SEPARATOR);
-//        for (int i = 0; i < emails.length; i++) {
-//            System.out.println("emails[i] = " + emails[i]);
-//        }
-//        if(emailType.equals(SSU)){
-//            String keyTo = formatKey(getBusinessPartner(), SSU_KEY, TO);
-//            String emailTo = prop.getProperty(keyTo);
-//            String[] emails = emailTo.split(EMAIL_SEPARATOR);
-//            for (int i = 0; i < emails.length; i++) {
-//                System.out.println("emails[i] = " + emails[i]);
-//            }
-//            return emails;
-//        }else if(emailType.equals(EOD)){
-//
-//        }
-//        return null;
         return emails;
     }
 
@@ -168,59 +177,30 @@ public class UserSession {
         return result.toString();
     }
 
-    public String getFullName(){
-        return firstName + " " + lastName;
+    public String generateHtml(String template) throws Exception {
+        run();
+        EmailGenerator gen = new EmailGenerator();
+        return gen.generate(this, template);
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getFullName(){
+        return getProperty("firstName")+ " " + getProperty("lastName");
     }
 
     public void setFirstName(String firstName) {
         prop.put("firstName", firstName);
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
     }
 
     public void setLastName(String lastName) {
         prop.put("lastName", lastName);
-        this.lastName = lastName;
     }
 
     public String getEmail() {
-        return email;
+        return getProperty("email");
     }
 
     public void setEmail(String email) {
         prop.put("email", email);
-        this.email = email;
-    }
-
-    public String getUser() {
-        return user;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
-    }
-
-    public String getApi_key() {
-        return api_key;
-    }
-
-    public void setApi_key(String api_key) {
-        this.api_key = api_key;
-    }
-
-    public String getServer() {
-        return server;
-    }
-
-    public void setServer(String server) {
-        this.server = server;
     }
 
     public void addTask(TaskRallyObject task) {
@@ -245,9 +225,4 @@ public class UserSession {
     }
 
     public HashMap<String, TaskRallyObject> getTaskContainer(){return taskContainer;}
-
-//    public Properties getProp() {
-//        return prop;
-//    }
-
 }

@@ -29,7 +29,7 @@ public class RallyWrapper {
 
     private static RallyRestApi rallyAPIConnection;
 
-    public RallyWrapper(String server, String api_key){
+    protected RallyWrapper(String server, String api_key) throws IOException {
         try {
             rallyAPIConnection = new RallyRestApi(new URI(server), api_key);
         } catch (URISyntaxException e) {
@@ -37,8 +37,11 @@ public class RallyWrapper {
         }
     }
 
-    public static RallyRestApi getConnection(){
-        //TODO: Check if connection is closed
+    public static void initialize() throws URISyntaxException {
+        rallyAPIConnection = new RallyRestApi(new URI(UserSession.getProperty("server")), UserSession.getProperty("api_key"));
+    }
+
+    public RallyRestApi getConnection(){
         return rallyAPIConnection;
     }
 

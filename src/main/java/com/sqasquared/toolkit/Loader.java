@@ -23,41 +23,41 @@ import java.util.prefs.Preferences;
 public class Loader {
     InputStream inputStream;
 
-    public void loadPropValues(UserSession userSession) throws IOException {
-
-        try {
-//            Properties prop = new Properties();
-//            String propFileName = "resources/config/config.properties";
-//            File file = new File(propFileName);
-//            inputStream = FileUtils.openInputStream(file);
+//    public void loadPropValues(UserSession userSession) throws IOException {
 //
+//        try {
+////            Properties prop = new Properties();
+////            String propFileName = "resources/config/config.properties";
+////            File file = new File(propFileName);
+////            inputStream = FileUtils.openInputStream(file);
+////
+////
+////            if (inputStream != null) {
+////                prop.load(inputStream);
+////            } else {
+////                throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
+////            }
 //
-//            if (inputStream != null) {
-//                prop.load(inputStream);
-//            } else {
-//                throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
-//            }
+//            Preferences prop = Preferences.userNodeForPackage(UserSession.class);
+//            // get the property value and print it out
+////            String user = prop.getProperty("user");
+////            String api_key = prop.getProperty("api_key");
+////            String server  = prop.getProperty("server");
+//            String user = prop.get("user", "");
+//            String api_key = prop.get("api_key", "");
+//            String server  = prop.get("server", "https://rally1.rallydev.com");
+//
+//            userSession.setUser(user);
+//            userSession.setApi_key(api_key);
+//            userSession.setServer(server);
+//        } catch (Exception e) {
+//            System.out.println("Exception: " + e);
+//        } finally {
+//            inputStream.close();
+//        }
+//    }
 
-            Preferences prop = Preferences.userNodeForPackage(UserSession.class);
-            // get the property value and print it out
-//            String user = prop.getProperty("user");
-//            String api_key = prop.getProperty("api_key");
-//            String server  = prop.getProperty("server");
-            String user = prop.get("user", "");
-            String api_key = prop.get("api_key", "");
-            String server  = prop.get("server", "https://rally1.rallydev.com");
-
-            userSession.setUser(user);
-            userSession.setApi_key(api_key);
-            userSession.setServer(server);
-        } catch (Exception e) {
-            System.out.println("Exception: " + e);
-        } finally {
-            inputStream.close();
-        }
-    }
-
-    public static void loadUserInfo(UserSession userSession) throws IOException {
+    public void loadUserInfo(UserSession userSession) throws IOException {
         if(userSession.isUserPreferencesValid() == true){
             return;
         }
@@ -73,9 +73,9 @@ public class Loader {
         userSession.setEmail(email);
     }
 
-    public void loadRally(UserSession userSession) throws IOException, URISyntaxException {
-        new RallyWrapper(userSession.getServer(), userSession.getApi_key());
-    }
+//    public void loadRally(UserSession userSession) throws IOException, URISyntaxException {
+//        new RallyWrapper(userSession.getServer(), userSession.getApi_key());
+//    }
 
     public void loadTasks(UserSession userSession) throws IOException {
         JsonArray response = RallyWrapper.getTasks(userSession.getEmail());
@@ -146,11 +146,12 @@ public class Loader {
         }
     }
 
-    public void loadUserSession(UserSession userSession) throws IOException, URISyntaxException {
+    public void loadUserSession(UserSession userSession) throws IOException{
 //        loadPropValues(userSession);
-        loadRally(userSession);
+//        loadRally(userSession);
         loadUserInfo(userSession);
         loadTasks(userSession);
         loadUserStory(userSession);
+        loadTemplates(userSession);
     }
 }
