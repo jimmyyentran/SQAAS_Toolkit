@@ -29,8 +29,12 @@ public class RallyWrapper {
 
     private static RallyRestApi rallyAPIConnection;
 
-    public RallyWrapper(String server, String api_key) throws URISyntaxException, IOException {
-        rallyAPIConnection = new RallyRestApi(new URI(server), api_key);
+    public RallyWrapper(String server, String api_key){
+        try {
+            rallyAPIConnection = new RallyRestApi(new URI(server), api_key);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 
     public static RallyRestApi getConnection(){

@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.prefs.Preferences;
 
 /**
  * Created by jimmytran on 10/30/16.
@@ -29,7 +30,8 @@ public class UserSession {
 
     String firstName, lastName, email;
     String user, api_key, server;
-    Properties prop;
+//    Properties prop;
+    Preferences prop;
 
     TreeAlgorithmInterface alg;
     HashMap<String, TaskRallyObject> taskContainer = new HashMap();
@@ -43,10 +45,44 @@ public class UserSession {
         TODAY_WORK_HOUR = today.getTime();
         today.add(Calendar.DATE, -1);
         YESTERDAY_WORK_HOUR = today.getTime();
+
+        //Load preferences
+        prop = Preferences.userNodeForPackage(UserSession.class);
+        this.user = prop.get("user", "");
+        this.api_key = prop.get("api_key", "");
+        this.server  = prop.get("server", "https://rally1.rallydev.com");
+
+        prop.get("cc", "sqaas@sqasquared.com");
+        prop.get("DEFAULT_to", "sqaas@sqasquared.com");
+        prop.get("ASM_EOD_to", "jramos@sqasquared.com,abyrum@sqasquared.com,jdeleon@sqasquared.com");
+        prop.get("ASM_SSU_to", "seth.labrum@advantagesolutions.net,patricia.liu@advantagesolutions.net,joel.ramos@advantagesolutions.net,lynnyrd.raymundo@advantagesolutions.net");
     }
 
     public void run(){
         topNode = this.alg.constructTree(taskContainer);
+    }
+
+    public boolean isUserPreferencesValid(){
+        if(prop.get("firstName","") == "" || prop.get("lastName", "") == ""
+                || prop.get("email", "") == ""){
+            return false;
+        }
+        return true;
+    }
+
+    public boolean isAPIKeySet(){
+        if(prop.get("api_key", "") == ""){
+            return false;
+        }
+        return true;
+    }
+
+    public String getProperty(String property){
+        String val = prop.get(property, "");
+        if(val == ""){
+            System.err.println("Unset property: " + property);
+        }
+        return val;
     }
 
     public String[] getEmailTo(String emailType){
@@ -57,7 +93,7 @@ public class UserSession {
             key = SSU_KEY;
         }
         String keyTo = formatKey(getBusinessPartner(), key, TO);
-        String emailTo = prop.getProperty(keyTo);
+        String emailTo = getProperty(keyTo);
         String[] emails = emailTo.split(EMAIL_SEPARATOR);
 //        for (int i = 0; i < emails.length; i++) {
 //            System.out.println("emails[i] = " + emails[i]);
@@ -78,13 +114,13 @@ public class UserSession {
     }
 
     public String[] getEmailCC(){
-        String emailTo = prop.getProperty(CC);
+        String emailTo = getProperty(CC);
         String[] emails = emailTo.split(EMAIL_SEPARATOR);
         return emails;
     }
 
     public String getBusinessPartner(){
-        String bp = prop.getProperty("business_partner");
+        String bp = getProperty("business_partner");
         if(bp != null && bp.length() != 0){
             return bp;
         }
@@ -141,6 +177,7 @@ public class UserSession {
     }
 
     public void setFirstName(String firstName) {
+        prop.put("firstName", firstName);
         this.firstName = firstName;
     }
 
@@ -149,6 +186,7 @@ public class UserSession {
     }
 
     public void setLastName(String lastName) {
+        prop.put("lastName", lastName);
         this.lastName = lastName;
     }
 
@@ -157,6 +195,7 @@ public class UserSession {
     }
 
     public void setEmail(String email) {
+        prop.put("email", email);
         this.email = email;
     }
 
@@ -207,13 +246,8 @@ public class UserSession {
 
     public HashMap<String, TaskRallyObject> getTaskContainer(){return taskContainer;}
 
-    public Properties getProp() {
-        return prop;
-    }
-
-    public void setProp(Properties prop) {
-        this.prop = prop;
-    }
-
+//    public Properties getProp() {
+//        return prop;
+//    }
 
 }

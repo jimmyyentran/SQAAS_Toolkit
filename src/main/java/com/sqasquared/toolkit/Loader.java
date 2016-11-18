@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.prefs.Preferences;
 
 /**
  * Created by JTran on 10/31/2016.
@@ -25,27 +26,30 @@ public class Loader {
     public void loadPropValues(UserSession userSession) throws IOException {
 
         try {
-            Properties prop = new Properties();
-            String propFileName = "resources/config/config.properties";
-            File file = new File(propFileName);
-            inputStream = FileUtils.openInputStream(file);
+//            Properties prop = new Properties();
+//            String propFileName = "resources/config/config.properties";
+//            File file = new File(propFileName);
+//            inputStream = FileUtils.openInputStream(file);
+//
+//
+//            if (inputStream != null) {
+//                prop.load(inputStream);
+//            } else {
+//                throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
+//            }
 
-
-            if (inputStream != null) {
-                prop.load(inputStream);
-            } else {
-                throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
-            }
-
+            Preferences prop = Preferences.userNodeForPackage(UserSession.class);
             // get the property value and print it out
-            String user = prop.getProperty("user");
-            String api_key = prop.getProperty("api_key");
-            String server  = prop.getProperty("server");
+//            String user = prop.getProperty("user");
+//            String api_key = prop.getProperty("api_key");
+//            String server  = prop.getProperty("server");
+            String user = prop.get("user", "");
+            String api_key = prop.get("api_key", "");
+            String server  = prop.get("server", "https://rally1.rallydev.com");
 
             userSession.setUser(user);
             userSession.setApi_key(api_key);
             userSession.setServer(server);
-            userSession.setProp(prop);
         } catch (Exception e) {
             System.out.println("Exception: " + e);
         } finally {
@@ -54,6 +58,9 @@ public class Loader {
     }
 
     public static void loadUserInfo(UserSession userSession) throws IOException {
+        if(userSession.isUserPreferencesValid() == true){
+            return;
+        }
         JsonObject info = RallyWrapper.getUserInfo();
 //        JsonObject info = RallyWrapper.getUserInfo("resources/json/", null);
 //        JsonObject info = RallyWrapper.getUserInfo(null, "resources/json/");
@@ -140,7 +147,7 @@ public class Loader {
     }
 
     public void loadUserSession(UserSession userSession) throws IOException, URISyntaxException {
-        loadPropValues(userSession);
+//        loadPropValues(userSession);
         loadRally(userSession);
         loadUserInfo(userSession);
         loadTasks(userSession);
