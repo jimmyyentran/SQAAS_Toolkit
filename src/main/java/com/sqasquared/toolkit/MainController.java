@@ -1,11 +1,14 @@
 package com.sqasquared.toolkit;
 
+import com.sqasquared.toolkit.email.EmailGeneratorException;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.web.HTMLEditor;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -36,7 +39,10 @@ public class MainController implements Initializable, ControlledScreen{
             String html = App.userSession.generateHtml(UserSession.SSU);
             editor.setHtmlText(html);
         } catch (Exception e) {
-            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Email Generator Error");
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
         }
     }
 
@@ -44,7 +50,18 @@ public class MainController implements Initializable, ControlledScreen{
         try {
             String html = App.userSession.generateHtml(UserSession.EOD);
             editor.setHtmlText(html);
-        } catch (Exception e) {
+        } catch (EmailGeneratorException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Email Generator Error");
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+        }
+    }
+
+    public void refreshClick(ActionEvent actionEvent) {
+        try {
+            App.userSession.refreshTasks();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

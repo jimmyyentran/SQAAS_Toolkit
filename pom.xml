@@ -46,6 +46,7 @@
                     </descriptorRefs>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
 

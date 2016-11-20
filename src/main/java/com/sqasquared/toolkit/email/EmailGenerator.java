@@ -169,7 +169,7 @@ public class EmailGenerator {
         return subject;
     }
 
-    public String generate(UserSession userSession, String template) throws Exception {
+    public String generate(UserSession userSession, String template) throws EmailGeneratorException{
         String htmlEmailTemplate = userSession.getTemplate(template);
         Document doc = Jsoup.parse(htmlEmailTemplate);
 //        String subject = "";
@@ -186,7 +186,7 @@ public class EmailGenerator {
                     RallyObject lastUpdated = mapLastUpdatedStory(pastInProgressNode, inProgress);
 //                    subject = generateSubject(lastUpdated);
                 } else {
-                    throw new Exception("No in-progress tasks today. Get to work!!");
+                    throw new EmailGeneratorException("No in-progress tasks today. Get to work!!");
                 }
             }
         } else {
@@ -195,7 +195,7 @@ public class EmailGenerator {
             if (!completedNode.isEmpty()) {
                 mapCompleted(completedNode, completed);
             } else {
-                throw new Exception("No completed tasks today. Get to work!!");
+                throw new EmailGeneratorException("No completed tasks today. Get to work!!");
             }
 
             Element notCompleted = doc.select("sqaas[type='notCompleted']").first();
@@ -207,7 +207,7 @@ public class EmailGenerator {
                 if (!notCompletedNode.isEmpty()) {
                     mapCompleted(notCompletedNode, notCompleted);
                 } else {
-                    throw new Exception("No in-progress or declared tasks today");
+                    throw new EmailGeneratorException("No in-progress or declared tasks today");
                 }
             }
         }

@@ -1,9 +1,11 @@
 package com.sqasquared.toolkit;
 
 import com.sqasquared.toolkit.email.EmailGenerator;
+import com.sqasquared.toolkit.email.EmailGeneratorException;
 import com.sqasquared.toolkit.rally.RallyObject;
 import com.sqasquared.toolkit.rally.TaskRallyObject;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.Date;
@@ -35,6 +37,7 @@ public class UserSession {
     HashMap<String, TaskRallyObject> taskContainer = new HashMap();
     HashMap<String, String> templateContainer = new HashMap();
     RallyObject topNode = null;
+    Loader loader;
 
     public UserSession() {
         Calendar today = Calendar.getInstance();
@@ -46,6 +49,7 @@ public class UserSession {
 
         loadPreferences();
         setAlg(new TimeAlgorithm());
+        loader = new Loader();
     }
 
     private void loadPreferences(){
@@ -71,6 +75,13 @@ public class UserSession {
 //                e.printStackTrace();
 //            }
         }
+    }
+
+    public void refreshTasks() throws IOException {
+        taskContainer = new HashMap<String, TaskRallyObject>();
+        loader.loadTasks(this);
+        loader.loadUserStory(this);
+        run();
     }
 
     public void run(){
@@ -177,7 +188,7 @@ public class UserSession {
         return result.toString();
     }
 
-    public String generateHtml(String template) throws Exception {
+    public String generateHtml(String template) throws EmailGeneratorException{
         run();
         EmailGenerator gen = new EmailGenerator();
         return gen.generate(this, template);

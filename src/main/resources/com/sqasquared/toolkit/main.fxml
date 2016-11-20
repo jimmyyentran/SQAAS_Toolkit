@@ -46,6 +46,7 @@
               <items>
                 <Button fx:id="SSUButton" mnemonicParsing="false" onAction="#ssuClick" text="SSU" />
                   <Button fx:id="EODButton" mnemonicParsing="false" onAction="#eodClick" text="EOD" />
+                  <Button fx:id="refreshButton" onAction="#refreshClick" mnemonicParsing="false" text="Refresh" />
               </items>
             </ToolBar>
             <MenuBar>
