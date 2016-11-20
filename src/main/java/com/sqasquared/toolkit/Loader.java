@@ -14,8 +14,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.security.CodeSource;
 import java.util.*;
 import java.util.prefs.Preferences;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * Created by JTran on 10/31/2016.
@@ -137,13 +141,13 @@ public class Loader {
     }
 
     public void loadTemplates (UserSession userSession) throws IOException {
-        List<String> fList = IOUtils.readLines(getClass().getResourceAsStream("/template"));
-        for (String file : fList){
-            //TODO: Check if dir
-            String baseName = FilenameUtils.getBaseName(file);
-            String htmlEmailTemplate = IOUtils.toString(getClass().getResourceAsStream("/template/" + file));
-            userSession.addTemplate(baseName, htmlEmailTemplate);
-        }
+        InputStream in = getClass().getResourceAsStream("/template/end_of_day.html");
+        String eod = IOUtils.toString(in);
+        userSession.addTemplate(UserSession.EOD, eod);
+
+        in = getClass().getResourceAsStream("/template/story_status_update.html");
+        String ssu = IOUtils.toString(in);
+        userSession.addTemplate(UserSession.SSU, ssu);
     }
 
     public void loadUserSession(UserSession userSession) throws IOException{
