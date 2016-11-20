@@ -12,7 +12,7 @@ Windows is the primary platform but Mac is also supported as well.
 
 You will need [Maven](https://maven.apache.org/install.html) and [Java JDK 1.8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html).
 
-You will also need [Rally API key](https://rally1.rallydev.com/login)
+You will also need [Rally API key](https://rally1.rallydev.com/login). 
 
 ### Installing & Running
 
@@ -33,3 +33,7 @@ Run the project
 ```
 mvn exec:java
 ```
+
+### How it works
+
+Enter your API key, login, and click EOD or SSU (story status update)
