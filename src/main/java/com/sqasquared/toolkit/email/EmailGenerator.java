@@ -22,7 +22,7 @@ public class EmailGenerator {
 
     }
 
-    public Element mapListItem(String formattedId, String taskName, String estimate, Element listItemTemplate) {
+    private Element mapListItem(String formattedId, String taskName, String estimate, Element listItemTemplate) {
         Element listItem = listItemTemplate.clone();
         Element fi = listItem.select("sqaas[type='formattedID']").first();
         fi.replaceWith(new TextNode(formattedId, ""));
@@ -35,7 +35,7 @@ public class EmailGenerator {
         return listItem;
     }
 
-    public Element mapStory(RallyObject node, Element completedRoot, int order) {
+    private Element mapStory(RallyObject node, Element completedRoot, int order) {
         Element completed = completedRoot.clone();
         String storyName = null;
         String storyLink = null;
@@ -90,7 +90,7 @@ public class EmailGenerator {
         return completed;
     }
 
-    public void mapCompleted(RallyObject node, Element completed) {
+    private void mapStory(RallyObject node, Element completed) {
         int order = 1;
         for (RallyObject story : node.getChildren().values()) {
             if (story.getType().equals("story")) {
@@ -107,7 +107,7 @@ public class EmailGenerator {
         completed.remove();
     }
 
-    public RallyObject mapLastUpdatedStory(RallyObject node, Element completed) {
+    private RallyObject mapLastUpdatedStory(RallyObject node, Element completed) {
         TaskRallyObject latestTask = null;
         RallyObject latestStory = null;
         // Loop stories
@@ -160,24 +160,29 @@ public class EmailGenerator {
         String htmlEmailTemplate = userSession.getTemplate(template);
         Document doc = Jsoup.parse(htmlEmailTemplate);
         if (template.equals(UserSession.SSU)) {
+            // story status updates
             Element inProgress = doc.select("sqaas[type='notCompleted']").first();
+
+            // use today's in-progress task
             RallyObject inProgressNode = userSession.getTopNode().getChildren().get("today").getChildren().get(RallyObject.INPROGRESS);
             if (!inProgressNode.isEmpty()) {
-                RallyObject lastUpdated = mapLastUpdatedStory(inProgressNode, inProgress);
+                mapLastUpdatedStory(inProgressNode, inProgress);
             } else {
+                // Use yesterday's in-progress task
                 RallyObject pastInProgressNode = userSession.getTopNode().getChildren().get("past")
                         .getChildren().get(RallyObject.INPROGRESS);
                 if (!pastInProgressNode.isEmpty()) {
-                    RallyObject lastUpdated = mapLastUpdatedStory(pastInProgressNode, inProgress);
+                    mapLastUpdatedStory(pastInProgressNode, inProgress);
                 } else {
                     throw new EmailGeneratorException("No in-progress tasks today. Get to work!!");
                 }
             }
         } else {
             Element completed = doc.select("sqaas[type='completed']").first();
+            // End of day
             RallyObject completedNode = userSession.getTopNode().getChildren().get("today").getChildren().get(RallyObject.COMPLETED);
             if (!completedNode.isEmpty()) {
-                mapCompleted(completedNode, completed);
+                mapStory(completedNode, completed);
             } else {
                 throw new EmailGeneratorException("No completed tasks today. Get to work!!");
             }
@@ -185,11 +190,11 @@ public class EmailGenerator {
             Element notCompleted = doc.select("sqaas[type='notCompleted']").first();
             RallyObject notCompletedNode = userSession.getTopNode().getChildren().get("today").getChildren().get(RallyObject.DEFINED);
             if (!notCompletedNode.isEmpty()) {
-                mapCompleted(notCompletedNode, notCompleted);
+                mapStory(notCompletedNode, notCompleted);
             } else {
                 notCompletedNode = userSession.getTopNode().getChildren().get("today").getChildren().get(RallyObject.INPROGRESS);
                 if (!notCompletedNode.isEmpty()) {
-                    mapCompleted(notCompletedNode, notCompleted);
+                    mapStory(notCompletedNode, notCompleted);
                 } else {
                     throw new EmailGeneratorException("No in-progress or declared tasks today");
                 }
@@ -219,7 +224,7 @@ public class EmailGenerator {
         email.buildMimeMessage();
         MimeMessage mimeMessage = email.getMimeMessage();
 
-//      // Create random output
+        // Create random output
         String uuid = UUID.randomUUID().toString();
         File tempFile = null;
         if (System.getProperty("os.name").startsWith("Mac")) {

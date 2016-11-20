@@ -19,15 +19,18 @@ import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by jimmytran on 10/29/16.
  */
 public class RallyWrapper {
+    private static Logger LOG = Logger.getLogger(RallyWrapper.class.getName());
 
     private static RallyRestApi rallyAPIConnection;
 
-    protected RallyWrapper(String server, String api_key) throws IOException {
+    protected RallyWrapper(String server, String api_key) {
         try {
             rallyAPIConnection = new RallyRestApi(new URI(server), api_key);
         } catch (URISyntaxException e) {
@@ -35,6 +38,11 @@ public class RallyWrapper {
         }
     }
 
+    /**
+     * Initializes the RallyRestApi by using the server and api key. No actual network connections are made here.
+     *
+     * @throws URISyntaxException Malformed URI from server preferences
+     */
     public static void initialize() throws URISyntaxException {
         rallyAPIConnection = new RallyRestApi(new URI(UserSession.getProperty("server")), UserSession.getProperty("api_key"));
     }
@@ -52,11 +60,26 @@ public class RallyWrapper {
     }
 
 
+    /**
+     * Query Rally for the user information such as full name and email address
+     *
+     * @return JsonObject containing the Rally user information
+     * @throws IOException
+     */
     public static JsonObject getUserInfo() throws IOException {
         return getUserInfo(null, null);
     }
 
-    public static JsonObject getUserInfo(String saveJsonToDir, String jsonLoc) throws IOException {
+    /**
+     * Query Rally for the user information such as full name and email address.
+     *
+     * @param saveJsonToDir Directory to save JSON responses with a time tag
+     * @param jsonLoc       Directory to load JSON test files from (latest file)
+     * @return JsonObject containing the Rally user information
+     * @throws IOException
+     */
+    private static JsonObject getUserInfo(String saveJsonToDir, String jsonLoc) throws IOException {
+        LOG.log(Level.FINE, "Fetching user info");
         if (jsonLoc != null) {
             File file = getLatestFileWithPrefix("UserInfo", jsonLoc);
             String raw = FileUtils.readFileToString(file);
@@ -82,7 +105,18 @@ public class RallyWrapper {
         return null;
     }
 
+    /**
+     * Query formattedID of Rally stories using it's objectID. Formatted story ID takes the form of US#####.
+     * Example: US17781
+     *
+     * @param storyIds      ObjectIDs of stories to be fetched
+     * @param saveJsonToDir Directory to save JSON response with time tag
+     * @param jsonLoc       Directory to load JSON test files form (latest file)
+     * @return JsonArray containing information of story objects
+     * @throws IOException File IO
+     */
     public static JsonArray getUserStory(Map<String, String> storyIds, String saveJsonToDir, String jsonLoc) throws IOException {
+        LOG.log(Level.FINE, "Fetching user story info");
 //        if(jsonLoc != null){
 //            File file = getLatestFileWithPrefix("UserInfo", jsonLoc);
 //            String raw = FileUtils.readFileToString(file);
@@ -127,12 +161,27 @@ public class RallyWrapper {
         return null;
     }
 
+    /**
+     * Query Rally for today's and yesterday's modified tasks.
+     *
+     * @param email Email of the current user
+     * @return JsonArray containing JSON tasks
+     * @throws IOException File IO
+     */
     public static JsonArray getTasks(String email) throws IOException {
         return getTasks(email, null, null);
     }
 
-    //     Get tasks updated within a time frame
-    public static JsonArray getTasks(String email, String saveJsonToDir, String jsonLoc) throws IOException {
+    /**
+     * Query Rally for today's and yesterday's modified tasks.
+     *
+     * @param email         Email of the current user
+     * @param saveJsonToDir Directory to save JSON response with time tag
+     * @param jsonLoc       Directory to load JSON test files form (latest file)
+     * @return JsonArray containing JSON tasks
+     * @throws IOException File IO
+     */
+    private static JsonArray getTasks(String email, String saveJsonToDir, String jsonLoc) throws IOException {
         if (jsonLoc != null) {
             File file = getLatestFileWithPrefix("Tasks", jsonLoc);
             String raw = FileUtils.readFileToString(file);
@@ -164,11 +213,17 @@ public class RallyWrapper {
         return null;
     }
 
-    public static File getLatestFileWithPrefix(String prefix, String dir) {
+    /**
+     * Get latest file from a directory with the prefix
+     *
+     * @param prefix Prefix of the file
+     * @param dir    Directory of the target file
+     * @return File
+     */
+    private static File getLatestFileWithPrefix(String prefix, String dir) {
         File directory = new File(dir);
         File[] listOfFiles = directory.listFiles();
-        for (int i = 0; i < listOfFiles.length; i++) {
-            File file = listOfFiles[i];
+        for (File file : listOfFiles) {
             if (file.isFile()) {
                 if (file.getName().startsWith(prefix)) {
                     return file;

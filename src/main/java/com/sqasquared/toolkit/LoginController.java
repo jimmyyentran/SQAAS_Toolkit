@@ -16,8 +16,8 @@ import java.util.ResourceBundle;
  * Created by JTran on 11/16/2016.
  */
 public class LoginController implements Initializable, ControlledScreen {
-    ScreensController screensController;
-    Loader loader;
+    private ScreensController screensController;
+    private final Loader loader;
     public Button loginButton;
     public TextField apiField;
     public Label errorMessage;

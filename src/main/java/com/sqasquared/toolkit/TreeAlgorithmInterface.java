@@ -8,6 +8,6 @@ import java.util.HashMap;
 /**
  * Created by jimmytran on 11/1/16.
  */
-public interface TreeAlgorithmInterface {
+interface TreeAlgorithmInterface {
     RallyObject constructTree(HashMap<String, TaskRallyObject> map);
 }

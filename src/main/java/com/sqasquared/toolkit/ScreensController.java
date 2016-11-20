@@ -18,18 +18,18 @@ import javafx.util.Duration;
 
 import java.util.HashMap;
 
-public class ScreensController extends StackPane {
+class ScreensController extends StackPane {
     //Holds the screens to be displayed
 
-    private HashMap<String, Node> screens = new HashMap<String, Node>();
-    private HashMap<String, ControlledScreen> controllers = new HashMap<String, ControlledScreen>();
+    private final HashMap<String, Node> screens = new HashMap<String, Node>();
+    private final HashMap<String, ControlledScreen> controllers = new HashMap<String, ControlledScreen>();
 
     public ScreensController() {
         super();
     }
 
     //Add the screen to the collection
-    public void addScreen(String name, Node screen) {
+    private void addScreen(String name, Node screen) {
         screens.put(name, screen);
     }
 
@@ -40,7 +40,7 @@ public class ScreensController extends StackPane {
 
     //Loads the fxml file, add the screen to the screens collection and
     //finally injects the screenPane to the controller.
-    public boolean loadScreen(String name, String resource) {
+    public void loadScreen(String name, String resource) {
         try {
             FXMLLoader myLoader = new FXMLLoader(getClass().getResource(resource));
             Parent loadScreen = myLoader.load();
@@ -48,10 +48,10 @@ public class ScreensController extends StackPane {
             myScreenControler.setScreenParent(this);
             controllers.put(name, myScreenControler);
             addScreen(name, loadScreen);
-            return true;
+            return;
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            return false;
+            return;
         }
     }
 
@@ -59,7 +59,7 @@ public class ScreensController extends StackPane {
     //First it makes sure the screen has been already loaded.  Then if there is more than
     //one screen the new screen is been added second, and then the current screen is removed.
     // If there isn't any screen being displayed, the new screen is just added to the root.
-    public boolean setScreen(final String name) {
+    public void setScreen(final String name) {
         if (screens.get(name) != null) {   //screen loaded
             final DoubleProperty opacity = opacityProperty();
 
@@ -89,10 +89,10 @@ public class ScreensController extends StackPane {
                         new KeyFrame(new Duration(800), new KeyValue(opacity, 1.0)));
                 fadeIn.play();
             }
-            return true;
+            return;
         } else {
             System.out.println("screen hasn't been loaded!!! \n");
-            return false;
+            return;
         }
 
 

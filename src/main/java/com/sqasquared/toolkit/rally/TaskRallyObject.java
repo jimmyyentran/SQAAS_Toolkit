@@ -14,15 +14,19 @@ import java.util.regex.Pattern;
  */
 
 public class TaskRallyObject extends RallyObject {
-    public final String formattedUserTasksLink = "https://rally1.rallydev.com/#/%s/detail/userstory/%s/tasks";
+    private final String formattedUserTasksLink = "https://rally1.rallydev.com/#/%s/detail/userstory/%s/tasks";
 
-    private String objectID, state, storyName, formattedID, projectName;
-    private String storyID;
-    private String projectID;
-    private String storyLink;
-    private String estimate;
-    private Date lastUpdateDate;
-    private Date creationDate;
+    private final String objectID;
+    private final String state;
+    private final String storyName;
+    private final String formattedID;
+    private final String projectName;
+    private final String storyID;
+    private final String projectID;
+    private final String storyLink;
+    private final String estimate;
+    private final Date lastUpdateDate;
+    private final Date creationDate;
     private List<String> storyTags;
     private String baseStoryName;
     private String storyFormattedID;
@@ -48,7 +52,7 @@ public class TaskRallyObject extends RallyObject {
         setSplitTags(storyName);
     }
 
-    public String parseID(String ref) {
+    private String parseID(String ref) {
         Matcher m = Pattern.compile("[0-9]+$").matcher(ref);
         if (m.find()) {
             return m.group();
@@ -56,11 +60,11 @@ public class TaskRallyObject extends RallyObject {
         return null;
     }
 
-    public String generateStoryTasksLink(String pID, String sID) {
+    private String generateStoryTasksLink(String pID, String sID) {
         return String.format(formattedUserTasksLink, pID, sID);
     }
 
-    public Date stringToDate(String date) {
+    private Date stringToDate(String date) {
         SimpleDateFormat sdf = new SimpleDateFormat(DATEFORMAT);
         try {
             return sdf.parse(date);
@@ -116,7 +120,6 @@ public class TaskRallyObject extends RallyObject {
         String toBePrinted = indent + "Type: " + type + ", ID: " + id + ", Name: " + name +
                 ", Status: " + state + ", LastUpdated: " + lastUpdateDate;
         System.out.println(toBePrinted);
-//        System.out.println(this.toString());
     }
 
     public String toString() {
@@ -148,7 +151,7 @@ public class TaskRallyObject extends RallyObject {
         return result.toString();
     }
 
-    public void setSplitTags(String storyName) {
+    private void setSplitTags(String storyName) {
         List<String> parsedTags = new ArrayList<String>();
         Matcher m = Pattern.compile("\\[(.*?)\\]").matcher(storyName);
         while (m.find()) {

@@ -6,17 +6,17 @@ import java.util.HashMap;
  * Created by jimmytran on 11/1/16.
  */
 public class RallyObject {
-    public static String DATEFORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-    public static String COMPLETED = "Completed";
-    public static String DEFINED = "Defined";
-    public static String INPROGRESS = "In-Progress";
+    public static final String DATEFORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    public static final String COMPLETED = "Completed";
+    public static final String DEFINED = "Defined";
+    public static final String INPROGRESS = "In-Progress";
 
 
-    private HashMap<String, RallyObject> children;
+    private final HashMap<String, RallyObject> children;
     private RallyObject parent;
-    protected String type;
-    protected String id;
-    protected String name;
+    final String type;
+    final String id;
+    final String name;
 
     public RallyObject(String type, String id, String name) {
         this.type = type;
@@ -30,7 +30,7 @@ public class RallyObject {
         return type;
     }
 
-    public String getId() {
+    private String getId() {
         return id;
     }
 
@@ -53,7 +53,7 @@ public class RallyObject {
         return children.isEmpty();
     }
 
-    public void setParent(RallyObject par) {
+    private void setParent(RallyObject par) {
         this.parent = par;
     }
 
@@ -69,7 +69,7 @@ public class RallyObject {
         print(indentation, 0);
     }
 
-    public void print(int indentation, int relictIndentation) {
+    void print(int indentation, int relictIndentation) {
         String indent;
         try {
             indent = String.format("%" + relictIndentation + "s", "");

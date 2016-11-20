@@ -21,20 +21,20 @@ public class UserSession {
     public static final String SSU = "story_status_update";
     public static final String SSU_TAG = "[STORY STATUS UPDATE]";
     public static final String EOD_TAG = "[END OF DAY UPDATE]";
-    public static final String SSU_KEY = "SSU";
-    public static final String EOD_KEY = "EOD";
-    public static final String TO = "to";
-    public static final String CC = "cc";
-    public static final String SEPARATOR = "_";
-    public static final String EMAIL_SEPARATOR = ",";
+    private static final String SSU_KEY = "SSU";
+    private static final String EOD_KEY = "EOD";
+    private static final String TO = "to";
+    private static final String CC = "cc";
+    private static final String SEPARATOR = "_";
+    private static final String EMAIL_SEPARATOR = ",";
     public static Date TODAY_WORK_HOUR;
     public static Date YESTERDAY_WORK_HOUR;
-    static Preferences prop;
-    TreeAlgorithmInterface alg;
-    HashMap<String, TaskRallyObject> taskContainer = new HashMap();
-    HashMap<String, String> templateContainer = new HashMap();
-    RallyObject topNode = null;
-    Loader loader;
+    private static Preferences prop;
+    private TreeAlgorithmInterface alg;
+    private HashMap<String, TaskRallyObject> taskContainer = new HashMap();
+    private final HashMap<String, String> templateContainer = new HashMap();
+    private RallyObject topNode = null;
+    private final Loader loader;
 
     public UserSession() {
         Calendar today = Calendar.getInstance();
@@ -91,7 +91,7 @@ public class UserSession {
         run();
     }
 
-    public void run() {
+    private void run() {
         topNode = this.alg.constructTree(taskContainer);
     }
 
@@ -132,7 +132,7 @@ public class UserSession {
         return emails;
     }
 
-    public String getBusinessPartner() {
+    private String getBusinessPartner() {
         String bp = getProperty("business_partner");
         if (bp != null && bp.length() != 0) {
             return bp;
@@ -140,7 +140,7 @@ public class UserSession {
         return "DEFAULT";
     }
 
-    public String formatKey(String... str) {
+    private String formatKey(String... str) {
         String formatted = "";
         for (String s : str) {
             if (formatted.equals("")) {
@@ -219,9 +219,8 @@ public class UserSession {
         return templateContainer.get(template);
     }
 
-    public UserSession setAlg(TreeAlgorithmInterface alg) {
+    private void setAlg(TreeAlgorithmInterface alg) {
         this.alg = alg;
-        return this;
     }
 
     public RallyObject getTopNode() {

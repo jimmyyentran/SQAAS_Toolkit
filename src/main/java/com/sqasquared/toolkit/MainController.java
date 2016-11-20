@@ -19,8 +19,8 @@ public class MainController implements Initializable, ControlledScreen {
     public Button SSUButton;
     public HTMLEditor editor;
     public Label fullName;
-    ScreensController screensController;
-    private UserSession userSession = App.userSession;
+    private ScreensController screensController;
+    private final UserSession userSession = App.userSession;
 
     public void setScreenParent(ScreensController screenParent) {
         screensController = screenParent;

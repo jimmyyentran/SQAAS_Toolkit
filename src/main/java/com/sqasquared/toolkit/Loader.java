@@ -6,18 +6,23 @@ import com.google.gson.JsonObject;
 import com.sqasquared.toolkit.rally.RallyWrapper;
 import com.sqasquared.toolkit.rally.TaskRallyObject;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by JTran on 10/31/2016.
  */
-public class Loader {
+class Loader {
+    private static Logger LOG = Logger.getLogger(Loader.class.getName());
 
-    public void loadUserInfo(UserSession userSession) throws IOException {
+    private void loadUserInfo(UserSession userSession) throws IOException {
+        LOG.log(Level.FINE, "Loading user info");
         if (userSession.isUserPreferencesValid()) {
             return;
         }
@@ -32,6 +37,7 @@ public class Loader {
     }
 
     public void loadTasks(UserSession userSession) throws IOException {
+        LOG.log(Level.FINE, "Loading tasks");
         JsonArray response = RallyWrapper.getTasks(userSession.getEmail());
         for (JsonElement result : response) {
             JsonObject task = result.getAsJsonObject();
@@ -68,6 +74,7 @@ public class Loader {
      * @throws IOException
      */
     public void loadUserStory(UserSession userSession) throws IOException {
+        LOG.log(Level.FINE, "Loading user stories");
         Map<String, String> storyIds = new HashMap<String, String>();
 
         // Get story ID's and insert as keys into hash-map
@@ -88,7 +95,8 @@ public class Loader {
         }
     }
 
-    public void loadTemplates(UserSession userSession) throws IOException {
+    private void loadTemplates(UserSession userSession) throws IOException {
+        LOG.log(Level.FINE, "Loading templates");
         InputStream in = getClass().getResourceAsStream("/template/end_of_day.html");
         String eod = IOUtils.toString(in);
         userSession.addTemplate(UserSession.EOD, eod);
