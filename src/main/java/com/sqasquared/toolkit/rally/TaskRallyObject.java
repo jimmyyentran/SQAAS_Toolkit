@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
  * Created by jimmytran on 10/30/16.
  */
 
-public class TaskRallyObject extends RallyObject{
+public class TaskRallyObject extends RallyObject {
     public final String formattedUserTasksLink = "https://rally1.rallydev.com/#/%s/detail/userstory/%s/tasks";
 
     private String objectID, state, storyName, formattedID, projectName;
@@ -48,20 +48,20 @@ public class TaskRallyObject extends RallyObject{
         setSplitTags(storyName);
     }
 
-    public String parseID(String ref){
+    public String parseID(String ref) {
         Matcher m = Pattern.compile("[0-9]+$").matcher(ref);
-        if(m.find()){
+        if (m.find()) {
             return m.group();
         }
         return null;
     }
 
-    public String generateStoryTasksLink(String pID, String sID){
+    public String generateStoryTasksLink(String pID, String sID) {
         return String.format(formattedUserTasksLink, pID, sID);
     }
 
-    public Date stringToDate(String date){
-        SimpleDateFormat sdf = new SimpleDateFormat(super.DATEFORMAT);
+    public Date stringToDate(String date) {
+        SimpleDateFormat sdf = new SimpleDateFormat(DATEFORMAT);
         try {
             return sdf.parse(date);
         } catch (ParseException e) {
@@ -70,21 +70,23 @@ public class TaskRallyObject extends RallyObject{
         return null;
     }
 
-    public Date getLastUpdateDate(){
+    public Date getLastUpdateDate() {
         return lastUpdateDate;
     }
 
-    public String getStoryID() {return storyID;}
+    public String getStoryID() {
+        return storyID;
+    }
 
     public String getStoryName() {
         return storyName;
     }
 
-    public String getState(){
+    public String getState() {
         return state;
     }
 
-    public String getStoryLink(){
+    public String getStoryLink() {
         return storyLink;
     }
 
@@ -104,11 +106,11 @@ public class TaskRallyObject extends RallyObject{
         return estimate;
     }
 
-    public void print(int indentation, int relictIndentation){
+    public void print(int indentation, int relictIndentation) {
         String indent;
         try {
             indent = String.format("%" + relictIndentation + "s", "");
-        }catch (Exception ex){
+        } catch (Exception ex) {
             indent = "";
         }
         String toBePrinted = indent + "Type: " + type + ", ID: " + id + ", Name: " + name +
@@ -121,23 +123,23 @@ public class TaskRallyObject extends RallyObject{
         StringBuilder result = new StringBuilder();
         String newLine = System.getProperty("line.separator");
 
-        result.append( this.getClass().getName() );
-        result.append( " Object {" );
+        result.append(this.getClass().getName());
+        result.append(" Object {");
         result.append(newLine);
 
         //determine fields declared in this class only (no fields of superclass)
         Field[] fields = this.getClass().getDeclaredFields();
 
         //print field names paired with their values
-        for ( Field field : fields  ) {
+        for (Field field : fields) {
             result.append("  ");
             try {
-                result.append( field.getName() );
+                result.append(field.getName());
                 result.append(": ");
                 //requires access to private field:
-                result.append( field.get(this) );
-            } catch ( IllegalAccessException ex ) {
-                System.out.println(ex);
+                result.append(field.get(this));
+            } catch (IllegalAccessException ex) {
+                ex.printStackTrace();
             }
             result.append(newLine);
         }
@@ -146,33 +148,33 @@ public class TaskRallyObject extends RallyObject{
         return result.toString();
     }
 
-    public void setSplitTags(String storyName){
+    public void setSplitTags(String storyName) {
         List<String> parsedTags = new ArrayList<String>();
         Matcher m = Pattern.compile("\\[(.*?)\\]").matcher(storyName);
-        while(m.find()){
+        while (m.find()) {
             parsedTags.add(m.group(1));
         }
 
         // Get "]" to end of string
         int i = storyName.lastIndexOf("]");
-        String a = storyName.substring(i+1,storyName.length());
+        String a = storyName.substring(i + 1, storyName.length());
         this.baseStoryName = a.trim();
 
         this.storyTags = parsedTags;
     }
 
-    public String getBaseStoryName(){
+    public String getBaseStoryName() {
         return this.baseStoryName;
     }
 
-    public String getSubProjectTag(){
+    public String getSubProjectTag() {
         int size = this.storyTags.size();
         String bracketOpen = "[";
         String bracketClose = "]";
-        if(size == 1){
+        if (size == 1) {
             //first tag
             return bracketOpen + storyTags.get(0) + bracketClose;
-        }else if (size >= 2){
+        } else if (size >= 2) {
             //second tag
             return bracketOpen + storyTags.get(1) + bracketClose;
         }

@@ -1,82 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.web.*?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.ToolBar?>
-<?import javafx.scene.control.TreeTableColumn?>
-<?import javafx.scene.control.TreeTableView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.web.HTMLEditor?>
-
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="617.0" prefWidth="1068.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sqasquared.toolkit.MainController">
-   <center>
-      <SplitPane dividerPositions="0.1472795497185741" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-        <items>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="398.0" prefWidth="216.0" />
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-               <children>
-                  <HTMLEditor fx:id="editor" htmlText="&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body contenteditable=&quot;true&quot;&gt;&lt;/body&gt;&lt;/html&gt;" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="522.0" prefWidth="905.0" />
-               </children>
-            </AnchorPane>
-        </items>
-      </SplitPane>
-   </center>
-   <top>
-      <GridPane BorderPane.alignment="CENTER">
-        <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        </rowConstraints>
-         <children>
-            <ToolBar prefHeight="40.0" prefWidth="200.0" GridPane.rowIndex="1">
-              <items>
-                <Button fx:id="SSUButton" mnemonicParsing="false" onAction="#ssuClick" text="SSU" />
-                  <Button fx:id="EODButton" mnemonicParsing="false" onAction="#eodClick" text="EOD" />
-                  <Button fx:id="refreshButton" onAction="#refreshClick" mnemonicParsing="false" text="Refresh" />
-              </items>
-            </ToolBar>
-            <MenuBar>
-              <menus>
-                <Menu mnemonicParsing="false" text="File">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="Close" />
-                  </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Edit">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="Delete" />
-                  </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Help">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="About" />
-                  </items>
-                </Menu>
-              </menus>
-            </MenuBar>
-         </children>
-      </GridPane>
-   </top>
-   <bottom>
-      <FlowPane prefHeight="35.0" prefWidth="799.0" BorderPane.alignment="CENTER">
-         <children>
-            <Label fx:id="fullName" alignment="CENTER" prefHeight="35.0" prefWidth="158.0" text="Label" />
-            <ProgressBar prefWidth="200.0" progress="0.0" />
-         </children>
-      </FlowPane>
-   </bottom>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="617.0"
+            prefWidth="1068.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.sqasquared.toolkit.MainController">
+    <center>
+        <SplitPane dividerPositions="0.1472795497185741" prefHeight="160.0" prefWidth="200.0"
+                   BorderPane.alignment="CENTER">
+            <items>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="398.0" prefWidth="216.0"/>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                    <children>
+                        <HTMLEditor fx:id="editor"
+                                    htmlText="&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body contenteditable=&quot;true&quot;&gt;&lt;/body&gt;&lt;/html&gt;"
+                                    maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+                                    prefHeight="522.0" prefWidth="905.0"/>
+                    </children>
+                </AnchorPane>
+            </items>
+        </SplitPane>
+    </center>
+    <top>
+        <GridPane BorderPane.alignment="CENTER">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            </rowConstraints>
+            <children>
+                <ToolBar prefHeight="40.0" prefWidth="200.0" GridPane.rowIndex="1">
+                    <items>
+                        <Button fx:id="SSUButton" mnemonicParsing="false" onAction="#ssuClick" text="SSU"/>
+                        <Button fx:id="EODButton" mnemonicParsing="false" onAction="#eodClick" text="EOD"/>
+                        <Button fx:id="refreshButton" onAction="#refreshClick" mnemonicParsing="false" text="Refresh"/>
+                    </items>
+                </ToolBar>
+                <MenuBar>
+                    <menus>
+                        <Menu mnemonicParsing="false" text="File">
+                            <items>
+                                <MenuItem mnemonicParsing="false" text="Close"/>
+                            </items>
+                        </Menu>
+                        <Menu mnemonicParsing="false" text="Edit">
+                            <items>
+                                <MenuItem mnemonicParsing="false" text="Delete"/>
+                            </items>
+                        </Menu>
+                        <Menu mnemonicParsing="false" text="Help">
+                            <items>
+                                <MenuItem mnemonicParsing="false" text="About"/>
+                            </items>
+                        </Menu>
+                    </menus>
+                </MenuBar>
+            </children>
+        </GridPane>
+    </top>
+    <bottom>
+        <FlowPane prefHeight="35.0" prefWidth="799.0" BorderPane.alignment="CENTER">
+            <children>
+                <Label fx:id="fullName" alignment="CENTER" prefHeight="35.0" prefWidth="158.0" text="Label"/>
+                <ProgressBar prefWidth="200.0" progress="0.0"/>
+            </children>
+        </FlowPane>
+    </bottom>
 </BorderPane>

@@ -10,8 +10,6 @@ import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Properties;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 /**
@@ -19,19 +17,18 @@ import java.util.prefs.Preferences;
  */
 public class UserSession {
 
+    public static final String EOD = "end_of_day";
+    public static final String SSU = "story_status_update";
+    public static final String SSU_TAG = "[STORY STATUS UPDATE]";
+    public static final String EOD_TAG = "[END OF DAY UPDATE]";
+    public static final String SSU_KEY = "SSU";
+    public static final String EOD_KEY = "EOD";
+    public static final String TO = "to";
+    public static final String CC = "cc";
+    public static final String SEPARATOR = "_";
+    public static final String EMAIL_SEPARATOR = ",";
     public static Date TODAY_WORK_HOUR;
     public static Date YESTERDAY_WORK_HOUR;
-    public static String EOD = "end_of_day";
-    public static String SSU = "story_status_update";
-    public static String SSU_TAG = "[STORY STATUS UPDATE]";
-    public static String EOD_TAG = "[END OF DAY UPDATE]";
-    public static String SSU_KEY = "SSU";
-    public static String EOD_KEY = "EOD";
-    public static String TO = "to";
-    public static String CC = "cc";
-    public static String SEPARATOR = "_";
-    public static String EMAIL_SEPARATOR = ",";
-
     static Preferences prop;
     TreeAlgorithmInterface alg;
     HashMap<String, TaskRallyObject> taskContainer = new HashMap();
@@ -41,7 +38,9 @@ public class UserSession {
 
     public UserSession() {
         Calendar today = Calendar.getInstance();
-        today.clear(Calendar.MINUTE); today.clear(Calendar.SECOND); today.clear(Calendar.MILLISECOND);
+        today.clear(Calendar.MINUTE);
+        today.clear(Calendar.SECOND);
+        today.clear(Calendar.MILLISECOND);
         today.set(Calendar.HOUR_OF_DAY, 6);
         TODAY_WORK_HOUR = today.getTime();
         today.add(Calendar.DATE, -1);
@@ -52,10 +51,18 @@ public class UserSession {
         loader = new Loader();
     }
 
-    private void loadPreferences(){
+    public static String getProperty(String property) {
+        String val = prop.get(property, "");
+        if (val.equals("")) {
+            System.err.println("Unset property: " + property);
+        }
+        return val;
+    }
+
+    private void loadPreferences() {
         prop = Preferences.userNodeForPackage(UserSession.class);
 
-        if(prop.getBoolean("first", true)){
+        if (prop.getBoolean("first", true)) {
             prop.putBoolean("first", false);
             prop.put("user", "");
             prop.put("api_key", "");
@@ -65,7 +72,7 @@ public class UserSession {
             prop.put("ASM_EOD_to", "jramos@sqasquared.com,abyrum@sqasquared.com,jdeleon@sqasquared.com");
             prop.put("ASM_SSU_to", "seth.labrum@advantagesolutions.net,patricia.liu@advantagesolutions.net," +
                     "joel.ramos@advantagesolutions.net,lynnyrd.raymundo@advantagesolutions.net");
-        }else {
+        } else {
 //            try {
 //                String[] keys = prop.keys();
 //                for (int i = 0; i < keys.length; i++) {
@@ -84,47 +91,33 @@ public class UserSession {
         run();
     }
 
-    public void run(){
+    public void run() {
         topNode = this.alg.constructTree(taskContainer);
     }
 
-    public void setProperty(String property, String value){
+    public void setProperty(String property, String value) {
         prop.put(property, value);
     }
 
-    public boolean isUserPreferencesValid(){
-        if(prop.get("firstName","").equals("") || prop.get("lastName", "").equals("")
-                || prop.get("email", "").equals("")){
-            return false;
-        }
-        return true;
+    public boolean isUserPreferencesValid() {
+        return !(prop.get("firstName", "").equals("") || prop.get("lastName", "").equals("")
+                || prop.get("email", "").equals(""));
     }
 
-    public boolean isAPIKeySet(){
+    public boolean isAPIKeySet() {
         System.out.println(prop.get("api_key", ""));
-        if(prop.get("api_key", "").equals("")){
-            return false;
-        }
-        return true;
+        return !prop.get("api_key", "").equals("");
     }
 
-    public void setAPIKey(String value){
+    public void setAPIKey(String value) {
         prop.put("api_key", value);
     }
 
-    public static String getProperty(String property){
-        String val = prop.get(property, "");
-        if(val == ""){
-            System.err.println("Unset property: " + property);
-        }
-        return val;
-    }
-
-    public String[] getEmailTo(String emailType){
+    public String[] getEmailTo(String emailType) {
         String key = null;
-        if(emailType.equals(EOD)){
+        if (emailType.equals(EOD)) {
             key = EOD_KEY;
-        }else if(emailType.equals(SSU)){
+        } else if (emailType.equals(SSU)) {
             key = SSU_KEY;
         }
         String keyTo = formatKey(getBusinessPartner(), key, TO);
@@ -133,24 +126,24 @@ public class UserSession {
         return emails;
     }
 
-    public String[] getEmailCC(){
+    public String[] getEmailCC() {
         String emailTo = getProperty(CC);
         String[] emails = emailTo.split(EMAIL_SEPARATOR);
         return emails;
     }
 
-    public String getBusinessPartner(){
+    public String getBusinessPartner() {
         String bp = getProperty("business_partner");
-        if(bp != null && bp.length() != 0){
+        if (bp != null && bp.length() != 0) {
             return bp;
         }
         return "DEFAULT";
     }
 
-    public String formatKey(String... str){
+    public String formatKey(String... str) {
         String formatted = "";
-        for(String s : str){
-            if(formatted.equals("")){
+        for (String s : str) {
+            if (formatted.equals("")) {
                 formatted += s;
             } else {
                 formatted += (SEPARATOR + s);
@@ -163,23 +156,23 @@ public class UserSession {
         StringBuilder result = new StringBuilder();
         String newLine = System.getProperty("line.separator");
 
-        result.append( this.getClass().getName() );
-        result.append( " Object {" );
+        result.append(this.getClass().getName());
+        result.append(" Object {");
         result.append(newLine);
 
         //determine fields declared in this class only (no fields of superclass)
         Field[] fields = this.getClass().getDeclaredFields();
 
         //print field names paired with their values
-        for ( Field field : fields  ) {
+        for (Field field : fields) {
             result.append("  ");
             try {
-                result.append( field.getName() );
+                result.append(field.getName());
                 result.append(": ");
                 //requires access to private field:
-                result.append( field.get(this) );
-            } catch ( IllegalAccessException ex ) {
-                System.out.println(ex);
+                result.append(field.get(this));
+            } catch (IllegalAccessException ex) {
+                ex.printStackTrace();
             }
             result.append(newLine);
         }
@@ -188,14 +181,14 @@ public class UserSession {
         return result.toString();
     }
 
-    public String generateHtml(String template) throws EmailGeneratorException{
+    public String generateHtml(String template) throws EmailGeneratorException {
         run();
         EmailGenerator gen = new EmailGenerator();
         return gen.generate(this, template);
     }
 
-    public String getFullName(){
-        return getProperty("firstName")+ " " + getProperty("lastName");
+    public String getFullName() {
+        return getProperty("firstName") + " " + getProperty("lastName");
     }
 
     public void setFirstName(String firstName) {
@@ -222,7 +215,7 @@ public class UserSession {
         templateContainer.put(baseName, template);
     }
 
-    public String getTemplate(String template){
+    public String getTemplate(String template) {
         return templateContainer.get(template);
     }
 
@@ -231,9 +224,11 @@ public class UserSession {
         return this;
     }
 
-    public RallyObject getTopNode(){
+    public RallyObject getTopNode() {
         return topNode;
     }
 
-    public HashMap<String, TaskRallyObject> getTaskContainer(){return taskContainer;}
+    public HashMap<String, TaskRallyObject> getTaskContainer() {
+        return taskContainer;
+    }
 }

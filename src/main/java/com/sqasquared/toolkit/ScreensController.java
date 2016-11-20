@@ -4,7 +4,6 @@ package com.sqasquared.toolkit;
  * Created by JTran on 11/17/2016.
  */
 
-import java.util.HashMap;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -17,7 +16,9 @@ import javafx.scene.Parent;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 
-public class ScreensController  extends StackPane {
+import java.util.HashMap;
+
+public class ScreensController extends StackPane {
     //Holds the screens to be displayed
 
     private HashMap<String, Node> screens = new HashMap<String, Node>();
@@ -42,8 +43,8 @@ public class ScreensController  extends StackPane {
     public boolean loadScreen(String name, String resource) {
         try {
             FXMLLoader myLoader = new FXMLLoader(getClass().getResource(resource));
-            Parent loadScreen = (Parent) myLoader.load();
-            ControlledScreen myScreenControler = ((ControlledScreen) myLoader.getController());
+            Parent loadScreen = myLoader.load();
+            ControlledScreen myScreenControler = myLoader.getController();
             myScreenControler.setScreenParent(this);
             controllers.put(name, myScreenControler);
             addScreen(name, loadScreen);
@@ -66,7 +67,7 @@ public class ScreensController  extends StackPane {
                 Timeline fade = new Timeline(
                         new KeyFrame(Duration.ZERO, new KeyValue(opacity, 1.0)),
                         new KeyFrame(new Duration(1000), new EventHandler<ActionEvent>() {
-//                            @Override
+                            //                            @Override
                             public void handle(ActionEvent t) {
                                 getChildren().remove(0);                    //remove the displayed screen
                                 getChildren().add(0, screens.get(name));     //add the screen

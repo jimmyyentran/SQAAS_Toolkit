@@ -3,27 +3,15 @@ package com.sqasquared.toolkit.email;
 import com.sqasquared.toolkit.UserSession;
 import com.sqasquared.toolkit.rally.RallyObject;
 import com.sqasquared.toolkit.rally.TaskRallyObject;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.mail.DefaultAuthenticator;
-import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
-import org.apache.commons.mail.ImageHtmlEmail;
-import org.apache.commons.mail.resolver.DataSourceUrlResolver;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.TextNode;
-import org.jsoup.parser.Tag;
-import org.jsoup.select.Elements;
 
-import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URL;
-import java.util.Date;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -67,7 +55,6 @@ public class EmailGenerator {
                 }
                 Element listItemMapped = mapListItem(task.getFormattedID(), task.getName(), task.getEstimate(), listItem);
                 list.appendChild(listItemMapped);
-//                list.prependChild(listItemMapped);
             } else {
                 throw new RuntimeException(
                         String.format("Wrong children node type. Expected %s, got %s", "task", node.getType()));
@@ -81,7 +68,7 @@ public class EmailGenerator {
             completed.select("sqaas[type='second']").remove();
         }
 
-//        // sub-project
+        // sub-project
         Element subProject = completed.select("sqaas[type='subProject'").first();
         subProject.replaceWith(new TextNode(storySubTag, ""));
 
@@ -153,14 +140,14 @@ public class EmailGenerator {
         return latestStory;
     }
 
-    public String generateSubject(RallyObject ro){
+    public String generateSubject(RallyObject ro) {
         String subject = UserSession.SSU_TAG;
-        TaskRallyObject task = (TaskRallyObject)ro.getChildren().values().iterator().next();
-        if(task.getType().equals("task")){
+        TaskRallyObject task = (TaskRallyObject) ro.getChildren().values().iterator().next();
+        if (task.getType().equals("task")) {
             String storyName = task.getStoryName();
             int i = storyName.lastIndexOf("]");
-            String tags = storyName.substring(0, i+1);
-            String base = storyName.substring(i+1,storyName.length());
+            String tags = storyName.substring(0, i + 1);
+            String base = storyName.substring(i + 1, storyName.length());
             subject += (" " + tags + " " + task.getStoryFormattedID() + " " + base);
         } else {
             throw new RuntimeException(
@@ -169,22 +156,19 @@ public class EmailGenerator {
         return subject;
     }
 
-    public String generate(UserSession userSession, String template) throws EmailGeneratorException{
+    public String generate(UserSession userSession, String template) throws EmailGeneratorException {
         String htmlEmailTemplate = userSession.getTemplate(template);
         Document doc = Jsoup.parse(htmlEmailTemplate);
-//        String subject = "";
         if (template.equals(UserSession.SSU)) {
             Element inProgress = doc.select("sqaas[type='notCompleted']").first();
             RallyObject inProgressNode = userSession.getTopNode().getChildren().get("today").getChildren().get(RallyObject.INPROGRESS);
             if (!inProgressNode.isEmpty()) {
                 RallyObject lastUpdated = mapLastUpdatedStory(inProgressNode, inProgress);
-//                subject = generateSubject(lastUpdated);
             } else {
                 RallyObject pastInProgressNode = userSession.getTopNode().getChildren().get("past")
                         .getChildren().get(RallyObject.INPROGRESS);
                 if (!pastInProgressNode.isEmpty()) {
                     RallyObject lastUpdated = mapLastUpdatedStory(pastInProgressNode, inProgress);
-//                    subject = generateSubject(lastUpdated);
                 } else {
                     throw new EmailGeneratorException("No in-progress tasks today. Get to work!!");
                 }
@@ -214,14 +198,12 @@ public class EmailGenerator {
 
         // Map full name
         Element fullName = doc.select("sqaas[type='fullName']").first();
-        if(fullName != null) {
+        if (fullName != null) {
             fullName.replaceWith(new TextNode(userSession.getFullName(), ""));
         }
 
         return doc.toString();
     }
-
-
 
     public void createEmail(UserSession userSession, String template) throws Exception {
         String subject = "";

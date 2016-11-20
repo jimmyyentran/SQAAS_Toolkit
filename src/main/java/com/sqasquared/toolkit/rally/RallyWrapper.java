@@ -1,7 +1,6 @@
 package com.sqasquared.toolkit.rally;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.rallydev.rest.RallyRestApi;
@@ -13,7 +12,6 @@ import com.rallydev.rest.util.QueryFilter;
 import com.sqasquared.toolkit.UserSession;
 import org.apache.commons.io.FileUtils;
 
-import javax.jws.soap.SOAPBinding;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -41,11 +39,11 @@ public class RallyWrapper {
         rallyAPIConnection = new RallyRestApi(new URI(UserSession.getProperty("server")), UserSession.getProperty("api_key"));
     }
 
-    public RallyRestApi getConnection(){
+    public RallyRestApi getConnection() {
         return rallyAPIConnection;
     }
 
-    public static void closeConnection(){
+    public static void closeConnection() {
         try {
             rallyAPIConnection.close();
         } catch (IOException e) {
@@ -59,15 +57,15 @@ public class RallyWrapper {
     }
 
     public static JsonObject getUserInfo(String saveJsonToDir, String jsonLoc) throws IOException {
-        if(jsonLoc != null){
+        if (jsonLoc != null) {
             File file = getLatestFileWithPrefix("UserInfo", jsonLoc);
             String raw = FileUtils.readFileToString(file);
-            JsonObject result = (JsonObject)(new JsonParser()).parse(raw);
+            JsonObject result = (JsonObject) (new JsonParser()).parse(raw);
             return result;
         }
         GetResponse response = rallyAPIConnection.get(new GetRequest("user"));
-        if(response.wasSuccessful()) {
-            if(saveJsonToDir != null){
+        if (response.wasSuccessful()) {
+            if (saveJsonToDir != null) {
                 DateFormat df = new SimpleDateFormat("MM_dd_yyyy'T'HH_mm_ss");
                 Date today = Calendar.getInstance().getTime();
                 String reportDate = df.format(today);
@@ -94,24 +92,24 @@ public class RallyWrapper {
         List<QueryFilter> filters = new ArrayList<QueryFilter>();
 
         // Create query for each story id
-        for(String storyId : storyIds.keySet()){
+        for (String storyId : storyIds.keySet()) {
             filters.add(new QueryFilter("ObjectId", "=", storyId));
         }
 
         // Append QueryFilters to QueryRequest
         QueryRequest userStory = new QueryRequest("HierarchicalRequirement");
         QueryFilter queryFilter = null;
-        for(QueryFilter qf : filters){
-            if(queryFilter == null){
+        for (QueryFilter qf : filters) {
+            if (queryFilter == null) {
                 queryFilter = qf;
-            }else{
+            } else {
                 queryFilter = queryFilter.or(qf);
             }
         }
         userStory.setQueryFilter(queryFilter);
 
         QueryResponse response = rallyAPIConnection.query(userStory);
-        if(response.wasSuccessful()) {
+        if (response.wasSuccessful()) {
 //            if(saveJsonToDir != null){
 //                DateFormat df = new SimpleDateFormat("MM_dd_yyyy'T'HH_mm_ss");
 //                Date today = Calendar.getInstance().getTime();
@@ -133,12 +131,12 @@ public class RallyWrapper {
         return getTasks(email, null, null);
     }
 
-//     Get tasks updated within a time frame
+    //     Get tasks updated within a time frame
     public static JsonArray getTasks(String email, String saveJsonToDir, String jsonLoc) throws IOException {
-        if(jsonLoc != null){
+        if (jsonLoc != null) {
             File file = getLatestFileWithPrefix("Tasks", jsonLoc);
             String raw = FileUtils.readFileToString(file);
-            JsonArray result = (JsonArray)(new JsonParser()).parse(raw);
+            JsonArray result = (JsonArray) (new JsonParser()).parse(raw);
             return result;
         }
         QueryRequest tasks = new QueryRequest("tasks");
@@ -148,8 +146,8 @@ public class RallyWrapper {
                 .and(new QueryFilter("LastUpdateDate", ">", past)));
 
         QueryResponse response = rallyAPIConnection.query(tasks);
-        if(response.wasSuccessful()) {
-            if(saveJsonToDir != null){
+        if (response.wasSuccessful()) {
+            if (saveJsonToDir != null) {
                 DateFormat df = new SimpleDateFormat("MM_dd_yyyy'T'HH_mm_ss");
                 Date today = Calendar.getInstance().getTime();
                 String reportDate = df.format(today);
@@ -166,13 +164,13 @@ public class RallyWrapper {
         return null;
     }
 
-    public static File getLatestFileWithPrefix(String prefix, String dir){
+    public static File getLatestFileWithPrefix(String prefix, String dir) {
         File directory = new File(dir);
         File[] listOfFiles = directory.listFiles();
-        for(int i = 0; i < listOfFiles.length; i++){
+        for (int i = 0; i < listOfFiles.length; i++) {
             File file = listOfFiles[i];
-            if(file.isFile()){
-                if(file.getName().startsWith(prefix)){
+            if (file.isFile()) {
+                if (file.getName().startsWith(prefix)) {
                     return file;
                 }
             }
