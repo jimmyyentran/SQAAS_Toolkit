@@ -1,10 +1,12 @@
 package com.sqasquared.toolkit;
 
+import com.sqasquared.toolkit.email.EmailGeneratorException;
 import com.sqasquared.toolkit.rally.RallyWrapper;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.apache.commons.cli.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -29,7 +31,7 @@ public class App extends Application {
         LOG.log(Level.FINE, "JavaFX starting stage");
         userSession = new UserSession();
 
-        ScreensController mainContainer = new ScreensController();
+        ScreensController mainContainer = new ScreensController(getHostServices());
 
         mainContainer.loadScreen(App.loginScreen, App.loginScreenFile);
         mainContainer.loadScreen(App.mainScreen, App.mainScreenFile);
@@ -52,11 +54,53 @@ public class App extends Application {
         primaryStage.show();
     }
 
-    public static void main(String[] args) throws URISyntaxException, IOException {
+    public static void main(String[] args) throws URISyntaxException, IOException, ParseException {
         LOG.setLevel(Level.ALL);
         ConsoleHandler handler = new ConsoleHandler();
         handler.setLevel(Level.ALL);
         LOG.addHandler(handler);
+
+        // Command line arguments
+        CommandLine commandLine;
+        Option option_noGui = Option.builder("ng").longOpt("nogui").numberOfArgs(1).hasArg().build();
+        Options options = new Options();
+        CommandLineParser parser = new DefaultParser();
+
+        options.addOption(option_noGui);
+
+        try{
+            commandLine = parser.parse(options, args);
+
+            if(commandLine.hasOption("nogui")){
+                String str = commandLine.getOptionValue("nogui");
+                userSession = new UserSession();
+                Loader loader = new Loader();
+                RallyWrapper.initialize();
+                loader.loadUserSession(userSession);
+                try {
+                    String html = userSession.generateHtml(UserSession.SSU);
+                    System.out.println("html = " + html);
+                } catch (EmailGeneratorException e) {
+                    e.printStackTrace();
+                }
+                return;
+            }
+
+            {
+                String[] remainder = commandLine.getArgs();
+                System.out.print("Remaining arguments: ");
+                for (String argument : remainder)
+                {
+                    System.out.print(argument);
+                    System.out.print(" ");
+                }
+
+                System.out.println();
+            }
+        } catch (ParseException e) {
+            throw e;
+        }
+
         launch(args);
     }
 

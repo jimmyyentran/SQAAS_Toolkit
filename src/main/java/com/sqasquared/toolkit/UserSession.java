@@ -35,6 +35,7 @@ public class UserSession {
     private final HashMap<String, String> templateContainer = new HashMap();
     private RallyObject topNode = null;
     private final Loader loader;
+    private final EmailGenerator gen = new EmailGenerator();
 
     public UserSession() {
         Calendar today = Calendar.getInstance();
@@ -183,8 +184,11 @@ public class UserSession {
 
     public String generateHtml(String template) throws EmailGeneratorException {
         run();
-        EmailGenerator gen = new EmailGenerator();
         return gen.generate(this, template);
+    }
+
+    public String getEmailSubject(String template) {
+        return gen.getLastEmailSubject();
     }
 
     public String getFullName() {

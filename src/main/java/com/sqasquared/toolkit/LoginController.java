@@ -1,13 +1,17 @@
 package com.sqasquared.toolkit;
 
 import com.sqasquared.toolkit.rally.RallyWrapper;
+import javafx.application.HostServices;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -16,8 +20,11 @@ import java.util.ResourceBundle;
  * Created by JTran on 11/16/2016.
  */
 public class LoginController implements Initializable, ControlledScreen {
+    @FXML
+    public Hyperlink hyperlink;
     private ScreensController screensController;
     private final Loader loader;
+    private HostServices hostServices;
     public Button loginButton;
     public TextField apiField;
     public Label errorMessage;
@@ -41,9 +48,18 @@ public class LoginController implements Initializable, ControlledScreen {
         }
     }
 
+    @FXML
+    private void openURL(){
+        hostServices.showDocument("https://rally1.rallydev.com/login/accounts/index.html#/keys");
+    }
+
 
     public void setScreenParent(ScreensController screenParent) {
         screensController = screenParent;
+    }
+
+    public void setHostController(HostServices hostServices) {
+        this.hostServices = hostServices;
     }
 
     public void active() {

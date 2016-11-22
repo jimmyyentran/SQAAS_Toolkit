@@ -18,6 +18,7 @@ import java.util.UUID;
  * Created by jimmytran on 10/30/16.
  */
 public class EmailGenerator {
+    RallyObject lastUpdatedEmail;
     public EmailGenerator() {
 
     }
@@ -37,20 +38,22 @@ public class EmailGenerator {
 
     private Element mapStory(RallyObject node, Element completedRoot, int order) {
         Element completed = completedRoot.clone();
-        String storyName = null;
-        String storyLink = null;
-        String storySubTag = null;
-        String storyId = null;
+        String storyName = "";
+        String storyLink = "";
+        String storySubTag = "";
+        String storyId = "";
+        String storySubTagBracket = "";
         Element list = completed.select("ul").first();
         Element listItem = completed.select("sqaas[type='listItem']").first();
         for (RallyObject st : node.getChildren().values()) {
             // loop over tasks
             if (st.getType().equals("task")) {
                 TaskRallyObject task = (TaskRallyObject) st;
-                if (storyName == null || storyLink == null) {
+                if (storyName.equals("") || storyLink.equals("")) {
                     storyName = task.getStoryName();
                     storyLink = task.getStoryLink();
-                    storySubTag = task.getSubProjectTag();
+                    storySubTag = task.getSubProjectTag(false);
+                    storySubTagBracket = task.getSubProjectTag(true);
                     storyId = task.getStoryFormattedID();
                 }
                 Element listItemMapped = mapListItem(task.getFormattedID(), task.getName(), task.getEstimate(), listItem);
@@ -70,19 +73,33 @@ public class EmailGenerator {
 
         // sub-project
         Element subProject = completed.select("sqaas[type='subProject'").first();
-        subProject.replaceWith(new TextNode(storySubTag, ""));
+        if(subProject != null) {
+            subProject.replaceWith(new TextNode(storySubTag, ""));
+        }
+
+        // sub-project bracket
+        Element subProjectBracket = completed.select("sqaas[type='subProjectBracket'").first();
+        if(subProjectBracket != null) {
+            subProjectBracket.replaceWith(new TextNode(storySubTagBracket, ""));
+        }
 
         // href links
         Element a = completed.select("a").first();
-        a.attr("href", storyLink);
+        if(a != null){
+            a.attr("href", storyLink);
+        }
 
         // story name
         Element sn = completed.select("sqaas[type='storyName']").first();
-        sn.replaceWith(new TextNode(storyName, ""));
+        if(sn != null){
+            sn.replaceWith(new TextNode(storyName, ""));
+        }
 
         // story id
         Element si = completed.select("sqaas[type='storyId']").first();
-        si.replaceWith(new TextNode(storyId, ""));
+        if(si != null) {
+            si.replaceWith(new TextNode(storyId, ""));
+        }
 
         // delete the list item template
         listItem.remove();
@@ -140,7 +157,7 @@ public class EmailGenerator {
         return latestStory;
     }
 
-    public String generateSubject(RallyObject ro) {
+    private String generateSubject(RallyObject ro) {
         String subject = UserSession.SSU_TAG;
         TaskRallyObject task = (TaskRallyObject) ro.getChildren().values().iterator().next();
         if (task.getType().equals("task")) {
@@ -156,6 +173,10 @@ public class EmailGenerator {
         return subject;
     }
 
+    public String getLastEmailSubject(){
+        return generateSubject(lastUpdatedEmail);
+    }
+
     public String generate(UserSession userSession, String template) throws EmailGeneratorException {
         String htmlEmailTemplate = userSession.getTemplate(template);
         Document doc = Jsoup.parse(htmlEmailTemplate);
@@ -166,13 +187,13 @@ public class EmailGenerator {
             // use today's in-progress task
             RallyObject inProgressNode = userSession.getTopNode().getChildren().get("today").getChildren().get(RallyObject.INPROGRESS);
             if (!inProgressNode.isEmpty()) {
-                mapLastUpdatedStory(inProgressNode, inProgress);
+                lastUpdatedEmail = mapLastUpdatedStory(inProgressNode, inProgress);
             } else {
                 // Use yesterday's in-progress task
                 RallyObject pastInProgressNode = userSession.getTopNode().getChildren().get("past")
                         .getChildren().get(RallyObject.INPROGRESS);
                 if (!pastInProgressNode.isEmpty()) {
-                    mapLastUpdatedStory(pastInProgressNode, inProgress);
+                    lastUpdatedEmail = mapLastUpdatedStory(pastInProgressNode, inProgress);
                 } else {
                     throw new EmailGeneratorException("No in-progress tasks today. Get to work!!");
                 }
