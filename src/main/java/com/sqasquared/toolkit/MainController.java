@@ -57,20 +57,23 @@ public class MainController implements Initializable, ControlledScreen {
         WebView webview = (WebView) editor.lookup(".web-view");
 
         // Removing internal loader
-        webview.getEngine().getLoadWorker().stateProperty().addListener(new ChangeListener<State>() {
-            @Override
-            public void changed(ObservableValue<? extends State> observable, State oldValue, State newValue) {
-                Platform.runLater(() -> webview.getEngine().getLoadWorker().cancel());
-            }
-        });
-
-        // Adding external host services
-        webview.getEngine().locationProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                hostServices.showDocument(newValue);
-            }
-        });
+//        webview.getEngine().getLoadWorker().stateProperty().addListener(new ChangeListener<State>() {
+//            @Override
+//            public void changed(ObservableValue<? extends State> observable, State oldValue, State newValue) {
+//                Platform.runLater(() -> webview.getEngine().getLoadWorker().cancel());
+//            }
+//        });
+//
+//        // Adding external host services
+//        webview.getEngine().locationProperty().addListener(new ChangeListener<String>() {
+//            @Override
+//            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+//                System.out.println("observable = " + observable);
+//                System.out.println("oldValue = " + oldValue);
+//                System.out.println("newValue = " + newValue);
+//                hostServices.showDocument(newValue);
+//            }
+//        });
     }
 
     public void ssuClick(ActionEvent actionEvent) {
