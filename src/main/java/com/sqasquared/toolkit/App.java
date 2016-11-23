@@ -25,10 +25,12 @@ public class App extends Application {
     public static final String mainScreen = "main";
     private static final String mainScreenFile = "main.fxml";
     public static UserSession userSession;
+    public static Stage stage;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         LOG.log(Level.FINE, "JavaFX starting stage");
+        stage = primaryStage;
         userSession = new UserSession();
 
         ScreensController mainContainer = new ScreensController(getHostServices());
@@ -79,7 +81,13 @@ public class App extends Application {
                 loader.loadUserSession(userSession);
                 try {
                     String html = userSession.generateHtml(UserSession.SSU);
+                    String to = userSession.getEmailTo(UserSession.SSU);
+                    String cc = userSession.getEmailCC();
+                    String subject = userSession.getEmailSubject(UserSession.SSU);
                     System.out.println("html = " + html);
+                    System.out.println("to = " + to);
+                    System.out.println("cc = " + cc);
+                    System.out.println("subject = " + subject);
                 } catch (EmailGeneratorException e) {
                     e.printStackTrace();
                 }

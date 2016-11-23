@@ -3,15 +3,19 @@ package com.sqasquared.toolkit.email;
 import com.sqasquared.toolkit.UserSession;
 import com.sqasquared.toolkit.rally.RallyObject;
 import com.sqasquared.toolkit.rally.TaskRallyObject;
+import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.TextNode;
 
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.UUID;
 
 /**
@@ -50,7 +54,7 @@ public class EmailGenerator {
             if (st.getType().equals("task")) {
                 TaskRallyObject task = (TaskRallyObject) st;
                 if (storyName.equals("") || storyLink.equals("")) {
-                    storyName = task.getStoryName();
+                    storyName = task.getStoryName().trim();
                     storyLink = task.getStoryLink();
                     storySubTag = task.getSubProjectTag(false);
                     storySubTagBracket = task.getSubProjectTag(true);
@@ -229,6 +233,34 @@ public class EmailGenerator {
         }
 
         return doc.toString();
+    }
+
+    public void createEmail(String to, String cc, String subject, String html, String from, String loc) throws EmailException, IOException, MessagingException {
+        // Compose email
+        HtmlEmail email = new HtmlEmail();
+        email.setHostName("smtp.googlemail.com");
+        email.addTo(to.split(UserSession.EMAIL_SEPARATOR));
+        email.setFrom(from);
+        email.addCc(cc.split(UserSession.EMAIL_SEPARATOR));
+        email.setSubject(subject);
+        email.setHtmlMsg(html);
+        email.buildMimeMessage();
+        MimeMessage mimeMessage = email.getMimeMessage();
+
+        // Create random output
+//        String uuid = UUID.randomUUID().toString();
+//        File tempFile = null;
+//        if (System.getProperty("os.name").startsWith("Mac")) {
+//            tempFile = new File("resources/email/" + template + uuid + ".eml");
+//            tempFile.getParentFile().mkdir();
+//        } else {
+//            tempFile = new File(System.getProperty("user.home") + "\\Desktop\\newemail" + uuid + ".eml");
+//        }
+//        tempFile.createNewFile();
+        FileOutputStream fos = new FileOutputStream(new File(loc));
+        mimeMessage.writeTo(fos);
+        fos.flush();
+        fos.close();
     }
 
     public void createEmail(UserSession userSession, String template) throws Exception {

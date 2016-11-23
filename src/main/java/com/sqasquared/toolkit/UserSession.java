@@ -4,7 +4,9 @@ import com.sqasquared.toolkit.email.EmailGenerator;
 import com.sqasquared.toolkit.email.EmailGeneratorException;
 import com.sqasquared.toolkit.rally.RallyObject;
 import com.sqasquared.toolkit.rally.TaskRallyObject;
+import org.apache.commons.mail.EmailException;
 
+import javax.mail.MessagingException;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Calendar;
@@ -26,7 +28,7 @@ public class UserSession {
     private static final String TO = "to";
     private static final String CC = "cc";
     private static final String SEPARATOR = "_";
-    private static final String EMAIL_SEPARATOR = ",";
+    public static final String EMAIL_SEPARATOR = ",";
     public static Date TODAY_WORK_HOUR;
     public static Date YESTERDAY_WORK_HOUR;
     private static Preferences prop;
@@ -114,7 +116,7 @@ public class UserSession {
         prop.put("api_key", value);
     }
 
-    public String[] getEmailTo(String emailType) {
+    public String getEmailTo(String emailType) {
         String key = null;
         if (emailType.equals(EOD)) {
             key = EOD_KEY;
@@ -122,15 +124,17 @@ public class UserSession {
             key = SSU_KEY;
         }
         String keyTo = formatKey(getBusinessPartner(), key, TO);
-        String emailTo = getProperty(keyTo);
-        String[] emails = emailTo.split(EMAIL_SEPARATOR);
-        return emails;
+//        String emailTo = getProperty(keyTo);
+//        String[] emails = emailTo.split(EMAIL_SEPARATOR);
+//        return emails;
+        return getProperty(keyTo);
     }
 
-    public String[] getEmailCC() {
+    public String getEmailCC() {
         String emailTo = getProperty(CC);
-        String[] emails = emailTo.split(EMAIL_SEPARATOR);
-        return emails;
+//        String[] emails = emailTo.split(EMAIL_SEPARATOR);
+//        return emails;
+        return emailTo;
     }
 
     private String getBusinessPartner() {
@@ -151,6 +155,10 @@ public class UserSession {
             }
         }
         return formatted;
+    }
+
+    public void generateEmail(String to, String cc, String subject, String html, String loc) throws EmailException, MessagingException, IOException {
+        gen.createEmail(to, cc, subject, html, getEmail(), loc);
     }
 
     public String toString() {
