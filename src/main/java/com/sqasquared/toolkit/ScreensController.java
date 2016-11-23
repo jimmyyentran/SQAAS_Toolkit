@@ -7,6 +7,7 @@ package com.sqasquared.toolkit;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.application.HostServices;
 import javafx.beans.property.DoubleProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -23,9 +24,11 @@ class ScreensController extends StackPane {
 
     private final HashMap<String, Node> screens = new HashMap<String, Node>();
     private final HashMap<String, ControlledScreen> controllers = new HashMap<String, ControlledScreen>();
+    private HostServices hostServices;
 
-    public ScreensController() {
+    public ScreensController(HostServices hostServices) {
         super();
+        this.hostServices = hostServices;
     }
 
     //Add the screen to the collection
@@ -46,6 +49,7 @@ class ScreensController extends StackPane {
             Parent loadScreen = myLoader.load();
             ControlledScreen myScreenControler = myLoader.getController();
             myScreenControler.setScreenParent(this);
+            myScreenControler.setHostController(hostServices);
             controllers.put(name, myScreenControler);
             addScreen(name, loadScreen);
             return;

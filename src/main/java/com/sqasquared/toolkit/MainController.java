@@ -1,12 +1,22 @@
 package com.sqasquared.toolkit;
 
 import com.sqasquared.toolkit.email.EmailGeneratorException;
+import javafx.application.HostServices;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableBooleanValue;
+import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Worker;
+import javafx.concurrent.Worker.State;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.input.TouchPoint;
 import javafx.scene.web.HTMLEditor;
+import javafx.scene.web.WebView;
 
 import java.io.IOException;
 import java.net.URL;
@@ -19,11 +29,19 @@ public class MainController implements Initializable, ControlledScreen {
     public Button SSUButton;
     public HTMLEditor editor;
     public Label fullName;
+    public TextField textFieldCc;
+    public TextField textFieldTo;
+    public TextField textFieldSubject;
     private ScreensController screensController;
+    private HostServices hostServices;
     private final UserSession userSession = App.userSession;
 
     public void setScreenParent(ScreensController screenParent) {
         screensController = screenParent;
+    }
+
+    public void setHostController(HostServices hostServices) {
+        this.hostServices = hostServices;
     }
 
     public void active() {
@@ -31,12 +49,42 @@ public class MainController implements Initializable, ControlledScreen {
     }
 
     public void initialize(URL location, ResourceBundle resources) {
+        WebView webview = (WebView) editor.lookup(".web-view");
 
+        // Removing internal loader
+        webview.getEngine().getLoadWorker().stateProperty().addListener(new ChangeListener<State>() {
+            @Override
+            public void changed(ObservableValue<? extends State> observable, State oldValue, State newValue) {
+                Platform.runLater(() -> webview.getEngine().getLoadWorker().cancel());
+            }
+        });
+
+        // Adding external host services
+        webview.getEngine().locationProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                hostServices.showDocument(newValue);
+            }
+        });
     }
 
     public void ssuClick(ActionEvent actionEvent) {
         try {
             String html = App.userSession.generateHtml(UserSession.SSU);
+            String[] to =  App.userSession.getEmailTo(UserSession.SSU);
+            String toStr = "";
+            for (int i = 0; i < to.length; i++) {
+                toStr.concat(to[i] + ", ");
+            }
+            String[] cc = App.userSession.getEmailCC();
+            String ccStr = "";
+            for (int i = 0; i < cc.length; i++) {
+                ccStr.concat(cc[i] + ", ");
+            }
+            String subject = App.userSession.getEmailSubject(UserSession.SSU);
+            textFieldTo.setText(toStr);
+            textFieldCc.setText(ccStr);
+            textFieldSubject.setText(subject);
             editor.setHtmlText(html);
         } catch (Exception e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);

@@ -170,10 +170,14 @@ public class TaskRallyObject extends RallyObject {
         return this.baseStoryName;
     }
 
-    public String getSubProjectTag() {
+    public String getSubProjectTag(boolean addBrackets) {
         int size = this.storyTags.size();
-        String bracketOpen = "[";
-        String bracketClose = "]";
+        String bracketOpen = "";
+        String bracketClose = "";
+        if(addBrackets) {
+            bracketOpen = "[";
+            bracketClose = "]";
+        }
         if (size == 1) {
             //first tag
             return bracketOpen + storyTags.get(0) + bracketClose;
