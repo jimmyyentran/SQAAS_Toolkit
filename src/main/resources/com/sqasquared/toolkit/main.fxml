@@ -30,7 +30,7 @@
                         <TextField fx:id="textFieldTo" GridPane.columnIndex="1" />
                         <TextField fx:id="textFieldCc" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <TextField fx:id="textFieldSubject" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                        <Button mnemonicParsing="false" text="Generate Email" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                        <Button fx:id="genEmailButton" onAction="#generateEmail" mnemonicParsing="false" text="Generate Email" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
                      </children>
                   </GridPane>
                </children>
