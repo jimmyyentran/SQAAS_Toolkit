@@ -1,7 +1,7 @@
 package com.sqasquared.toolkit;
 
-import com.sqasquared.toolkit.email.EmailGeneratorException;
 import com.sqasquared.toolkit.connection.RallyWrapper;
+import com.sqasquared.toolkit.email.EmailGeneratorException;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
