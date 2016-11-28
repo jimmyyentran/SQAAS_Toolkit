@@ -1,4 +1,4 @@
-package com.sqasquared.toolkit.rally;
+package com.sqasquared.toolkit.connection;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;

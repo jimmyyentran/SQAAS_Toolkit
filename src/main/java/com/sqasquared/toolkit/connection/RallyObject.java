@@ -1,4 +1,4 @@
-package com.sqasquared.toolkit.rally;
+package com.sqasquared.toolkit.connection;
 
 import java.util.HashMap;
 

@@ -1,7 +1,7 @@
 package com.sqasquared.toolkit;
 
-import com.sqasquared.toolkit.rally.RallyObject;
-import com.sqasquared.toolkit.rally.TaskRallyObject;
+import com.sqasquared.toolkit.connection.RallyObject;
+import com.sqasquared.toolkit.connection.TaskRallyObject;
 
 import java.util.Date;
 import java.util.HashMap;

@@ -8,7 +8,7 @@ You will need [Rally API key](https://rally1.rallydev.com/login).
 
 ### Running
 
-If you are using windows just click double click the .exe file
+If you are using windows just double click the .exe file
 
 ### For Developers
 

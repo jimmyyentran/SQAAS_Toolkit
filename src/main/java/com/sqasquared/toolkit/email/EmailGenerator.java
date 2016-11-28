@@ -1,8 +1,8 @@
 package com.sqasquared.toolkit.email;
 
 import com.sqasquared.toolkit.UserSession;
-import com.sqasquared.toolkit.rally.RallyObject;
-import com.sqasquared.toolkit.rally.TaskRallyObject;
+import com.sqasquared.toolkit.connection.RallyObject;
+import com.sqasquared.toolkit.connection.TaskRallyObject;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 import org.jsoup.Jsoup;
@@ -13,7 +13,6 @@ import org.jsoup.nodes.TextNode;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.UUID;

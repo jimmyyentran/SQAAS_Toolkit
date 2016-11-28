@@ -3,10 +3,9 @@ package com.sqasquared.toolkit;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.sqasquared.toolkit.rally.RallyWrapper;
-import com.sqasquared.toolkit.rally.TaskRallyObject;
+import com.sqasquared.toolkit.connection.RallyWrapper;
+import com.sqasquared.toolkit.connection.TaskRallyObject;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,4 +1,4 @@
-package com.sqasquared.toolkit.rally;
+package com.sqasquared.toolkit.connection;
 
 import java.lang.reflect.Field;
 import java.text.ParseException;

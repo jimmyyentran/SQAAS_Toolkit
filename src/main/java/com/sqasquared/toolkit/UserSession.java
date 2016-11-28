@@ -2,8 +2,8 @@ package com.sqasquared.toolkit;
 
 import com.sqasquared.toolkit.email.EmailGenerator;
 import com.sqasquared.toolkit.email.EmailGeneratorException;
-import com.sqasquared.toolkit.rally.RallyObject;
-import com.sqasquared.toolkit.rally.TaskRallyObject;
+import com.sqasquared.toolkit.connection.RallyObject;
+import com.sqasquared.toolkit.connection.TaskRallyObject;
 import org.apache.commons.mail.EmailException;
 
 import javax.mail.MessagingException;
