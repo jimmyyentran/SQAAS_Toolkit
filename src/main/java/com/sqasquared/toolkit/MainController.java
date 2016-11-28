@@ -80,20 +80,8 @@ public class MainController implements Initializable, ControlledScreen {
         try {
             String html = App.userSession.generateHtml(UserSession.SSU);
             String to =  App.userSession.getEmailTo(UserSession.SSU);
-//            String[] to =  App.userSession.getEmailTo(UserSession.SSU);
-//            String toStr = "";
-//            for (int i = 0; i < to.length; i++) {
-//                toStr.concat(to[i] + ", ");
-//            }
             String cc = App.userSession.getEmailCC();
-//            String[] cc = App.userSession.getEmailCC();
-//            String ccStr = "";
-//            for (int i = 0; i < cc.length; i++) {
-//                ccStr.concat(cc[i] + ", ");
-//            }
             String subject = App.userSession.getEmailSubject(UserSession.SSU);
-//            textFieldTo.setText(toStr);
-//            textFieldCc.setText(ccStr);
             textFieldTo.setText(to);
             textFieldCc.setText(cc);
             textFieldSubject.setText(subject);
