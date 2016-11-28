@@ -138,11 +138,12 @@ public class UserSession {
     }
 
     private String getBusinessPartner() {
+        // If no business partners, default to ASM
         String bp = getProperty("business_partner");
         if (bp != null && bp.length() != 0) {
             return bp;
         }
-        return "DEFAULT";
+        return "ASM";
     }
 
     private String formatKey(String... str) {
