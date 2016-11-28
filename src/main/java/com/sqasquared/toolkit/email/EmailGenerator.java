@@ -165,10 +165,10 @@ public class EmailGenerator {
         TaskRallyObject task = (TaskRallyObject) ro.getChildren().values().iterator().next();
         if (task.getType().equals("task")) {
             String storyName = task.getStoryName();
-            int i = storyName.lastIndexOf("]");
+            int i = storyName.lastIndexOf("] ");
             String tags = storyName.substring(0, i + 1);
             String base = storyName.substring(i + 1, storyName.length());
-            subject += (" " + tags + " " + task.getStoryFormattedID() + " " + base);
+            subject += (" " + tags + " " + task.getStoryFormattedID() + base);
         } else {
             throw new RuntimeException(
                     String.format("Wrong children node type. Expected %s, got %s", "task", task.getType()));

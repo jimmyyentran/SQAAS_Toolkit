@@ -173,5 +173,6 @@ public class MainController implements Initializable, ControlledScreen {
         textFieldTo.clear();
         textFieldSubject.clear();
         textFieldCc.clear();
+        editor.setHtmlText("");
     }
 }
