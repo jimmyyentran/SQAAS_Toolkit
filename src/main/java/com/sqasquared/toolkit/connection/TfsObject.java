@@ -3,6 +3,7 @@ package com.sqasquared.toolkit.connection;
 import com.google.gson.annotations.SerializedName;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 
 /**
  * Created by JTran on 11/28/2016.

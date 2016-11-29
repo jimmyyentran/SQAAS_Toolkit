@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -94,7 +95,42 @@ public class TfsConnection {
      * @param response
      * @return
      */
-    public List<TfsObject> mapToObjects(String response){
+    public HashMap<String, DataObject> mapToObjects(String response){
+        // Convert string response to JsonObject
+        JsonParser jp = new JsonParser();
+        JsonObject jo = jp.parse(response).getAsJsonObject();
+
+        // Get column headers
+        JsonArray jsonColumn = jo.get("payload").getAsJsonObject().get("columns").getAsJsonArray();
+        List<String> columnHeader = createColumnHeaders(jsonColumn);
+
+        // Convert JsonObject to JsonArray of TfsObjects
+        JsonObject mappedObject = new JsonObject();
+        JsonArray jsonRows = jo.get("payload").getAsJsonObject().get("rows").getAsJsonArray();
+        for(JsonElement row : jsonRows){
+            JsonObject mappedRow = new JsonObject();
+            JsonArray rowArray = (JsonArray)row;
+            for (int i = 0; i < columnHeader.size(); i++) {
+                mappedRow.addProperty(columnHeader.get(i),
+                        rowArray.get(i).toString());
+            }
+            mappedObject.add(mappedRow.get("Id").getAsString(), mappedRow);
+        }
+
+
+        // Convert JsonArray to list of TfsObjects
+        Gson gson = new GsonBuilder().create();
+        Type tfsObjectType = new TypeToken<HashMap<String, TfsObject>>(){}.getType();
+        HashMap<String, DataObject> tfsObjectMap = gson.fromJson(mappedObject, tfsObjectType);
+        return tfsObjectMap;
+    }
+
+    /**
+     * Map TFS response to list of tfsObjects
+     * @param response
+     * @return
+     */
+    public List<TfsObject> mapToObjectList(String response){
         // Convert string response to JsonObject
         JsonParser jp = new JsonParser();
         JsonObject jo = jp.parse(response).getAsJsonObject();
