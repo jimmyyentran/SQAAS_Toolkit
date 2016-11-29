@@ -11,10 +11,6 @@ public class TfsObject extends DataObject{
     @SerializedName("TeamProject") String teamProject;
     @SerializedName("State") String state;
 
-    public TfsObject(String type, String id, String name) {
-        super(type, id, name);
-    }
-
     public TfsObject(){
         super();
         teamProject = "";

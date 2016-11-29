@@ -3,6 +3,7 @@ package com.sqasquared.toolkit;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.sqasquared.toolkit.connection.DataObject;
 import com.sqasquared.toolkit.connection.RallyWrapper;
 import com.sqasquared.toolkit.connection.TaskRallyObject;
 import org.apache.commons.io.IOUtils;
@@ -76,9 +77,14 @@ class Loader {
         LOG.log(Level.FINE, "Loading user stories");
         Map<String, String> storyIds = new HashMap<String, String>();
 
+        // If children is not of TaskRallyObject, throw
+        if(!(userSession.getTaskContainer().values().iterator().next() instanceof TaskRallyObject)){
+            throw new IOException("Expected values to be of TaskRallyObject!");
+        }
+
         // Get story ID's and insert as keys into hash-map
-        for (TaskRallyObject obj : userSession.getTaskContainer().values()) {
-            storyIds.put(obj.getStoryID(), null);
+        for (DataObject obj : userSession.getTaskContainer().values()) {
+            storyIds.put(((TaskRallyObject)obj).getStoryID(), null);
         }
 
         // Append formattedID's into map
@@ -89,8 +95,8 @@ class Loader {
         }
 
         // Loop over tasks and set storyFormattedID
-        for (TaskRallyObject obj : userSession.getTaskContainer().values()) {
-            obj.setStoryFormattedID(storyIds.get(obj.getStoryID()));
+        for (DataObject obj : userSession.getTaskContainer().values()) {
+            ((TaskRallyObject)obj).setStoryFormattedID(storyIds.get(((TaskRallyObject)obj).getStoryID()));
         }
     }
 

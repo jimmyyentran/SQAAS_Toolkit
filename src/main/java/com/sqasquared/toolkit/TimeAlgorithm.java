@@ -13,7 +13,7 @@ public class TimeAlgorithm implements TreeAlgorithmInterface {
     public TimeAlgorithm() {
     }
 
-    public DataObject constructTree(HashMap<String, TaskRallyObject> container) {
+    public DataObject constructTree(HashMap<String, DataObject> container) {
         DataObject top = new DataObject("root", "0", "root");
 
         for (DataObject obj : container.values()) {
@@ -90,5 +90,4 @@ public class TimeAlgorithm implements TreeAlgorithmInterface {
             }
         }
     }
-
 }

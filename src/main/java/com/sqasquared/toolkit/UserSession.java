@@ -33,7 +33,7 @@ public class UserSession {
     public static Date YESTERDAY_WORK_HOUR;
     private static Preferences prop;
     private TreeAlgorithmInterface alg;
-    private HashMap<String, TaskRallyObject> taskContainer = new HashMap();
+    private HashMap<String, DataObject> taskContainer = new HashMap();
     private final HashMap<String, String> templateContainer = new HashMap();
     private DataObject topNode = null;
     private final Loader loader;
@@ -88,7 +88,7 @@ public class UserSession {
     }
 
     public void refreshTasks() throws IOException {
-        taskContainer = new HashMap<String, TaskRallyObject>();
+        taskContainer = new HashMap<String,DataObject>();
         loader.loadTasks(this);
         loader.loadUserStory(this);
         run();
@@ -240,7 +240,7 @@ public class UserSession {
         return topNode;
     }
 
-    public HashMap<String, TaskRallyObject> getTaskContainer() {
+    public HashMap<String, DataObject> getTaskContainer() {
         return taskContainer;
     }
 }
