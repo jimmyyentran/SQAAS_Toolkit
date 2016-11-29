@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
  * Created by jimmytran on 10/30/16.
  */
 
-public class TaskRallyObject extends RallyObject {
+public class TaskRallyObject extends DataObject {
     private final String formattedUserTasksLink = "https://rally1.rallydev.com/#/%s/detail/userstory/%s/tasks";
 
     private final String objectID;

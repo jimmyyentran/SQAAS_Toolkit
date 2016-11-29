@@ -1,6 +1,6 @@
 package com.sqasquared.toolkit;
 
-import com.sqasquared.toolkit.connection.RallyObject;
+import com.sqasquared.toolkit.connection.DataObject;
 import com.sqasquared.toolkit.connection.TaskRallyObject;
 import com.sqasquared.toolkit.email.EmailGenerator;
 import com.sqasquared.toolkit.email.EmailGeneratorException;
@@ -35,7 +35,7 @@ public class UserSession {
     private TreeAlgorithmInterface alg;
     private HashMap<String, TaskRallyObject> taskContainer = new HashMap();
     private final HashMap<String, String> templateContainer = new HashMap();
-    private RallyObject topNode = null;
+    private DataObject topNode = null;
     private final Loader loader;
     private final EmailGenerator gen = new EmailGenerator();
 
@@ -236,7 +236,7 @@ public class UserSession {
         this.alg = alg;
     }
 
-    public RallyObject getTopNode() {
+    public DataObject getTopNode() {
         return topNode;
     }
 

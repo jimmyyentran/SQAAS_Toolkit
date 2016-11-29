@@ -1,16 +1,25 @@
 package com.sqasquared.toolkit.connection;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.lang.reflect.Field;
 
 /**
  * Created by JTran on 11/28/2016.
  */
-public class TfsObject {
-    private String Id;
-    private String WorkItemType;
-    private String TeamProject;
-    private String Title;
-    private String State;
+public class TfsObject extends DataObject{
+    @SerializedName("TeamProject") String teamProject;
+    @SerializedName("State") String state;
+
+    public TfsObject(String type, String id, String name) {
+        super(type, id, name);
+    }
+
+    public TfsObject(){
+        super();
+        teamProject = "";
+        state = "";
+    }
 
     public String toString() {
         StringBuilder result = new StringBuilder();

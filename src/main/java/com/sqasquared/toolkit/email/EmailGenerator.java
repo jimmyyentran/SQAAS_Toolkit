@@ -1,7 +1,7 @@
 package com.sqasquared.toolkit.email;
 
 import com.sqasquared.toolkit.UserSession;
-import com.sqasquared.toolkit.connection.RallyObject;
+import com.sqasquared.toolkit.connection.DataObject;
 import com.sqasquared.toolkit.connection.TaskRallyObject;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
@@ -21,7 +21,7 @@ import java.util.UUID;
  * Created by jimmytran on 10/30/16.
  */
 public class EmailGenerator {
-    RallyObject lastUpdatedEmail;
+    DataObject lastUpdatedEmail;
     public EmailGenerator() {
 
     }
@@ -39,7 +39,7 @@ public class EmailGenerator {
         return listItem;
     }
 
-    private Element mapStory(RallyObject node, Element completedRoot, int order) {
+    private Element mapStory(DataObject node, Element completedRoot, int order) {
         Element completed = completedRoot.clone();
         String storyName = "";
         String storyLink = "";
@@ -48,7 +48,7 @@ public class EmailGenerator {
         String storySubTagBracket = "";
         Element list = completed.select("ul").first();
         Element listItem = completed.select("sqaas[type='listItem']").first();
-        for (RallyObject st : node.getChildren().values()) {
+        for (DataObject st : node.getChildren().values()) {
             // loop over tasks
             if (st.getType().equals("task")) {
                 TaskRallyObject task = (TaskRallyObject) st;
@@ -110,9 +110,9 @@ public class EmailGenerator {
         return completed;
     }
 
-    private void mapStory(RallyObject node, Element completed) {
+    private void mapStory(DataObject node, Element completed) {
         int order = 1;
-        for (RallyObject story : node.getChildren().values()) {
+        for (DataObject story : node.getChildren().values()) {
             if (story.getType().equals("story")) {
                 Element completedMapped = mapStory(story, completed, order);
                 completed.before(completedMapped);
@@ -127,14 +127,14 @@ public class EmailGenerator {
         completed.remove();
     }
 
-    private RallyObject mapLastUpdatedStory(RallyObject node, Element completed) {
+    private DataObject mapLastUpdatedStory(DataObject node, Element completed) {
         TaskRallyObject latestTask = null;
-        RallyObject latestStory = null;
+        DataObject latestStory = null;
         // Loop stories
-        for (RallyObject story : node.getChildren().values()) {
+        for (DataObject story : node.getChildren().values()) {
             if (story.getType().equals("story")) {
                 // Loop tasks
-                for (RallyObject st : story.getChildren().values()) {
+                for (DataObject st : story.getChildren().values()) {
                     if (st.getType().equals("task")) {
                         TaskRallyObject task = (TaskRallyObject) st;
                         if (latestTask == null || latestStory == null) {
@@ -160,7 +160,7 @@ public class EmailGenerator {
         return latestStory;
     }
 
-    private String generateSubject(RallyObject ro) {
+    private String generateSubject(DataObject ro) {
         String subject = UserSession.SSU_TAG;
         TaskRallyObject task = (TaskRallyObject) ro.getChildren().values().iterator().next();
         if (task.getType().equals("task")) {
@@ -188,13 +188,13 @@ public class EmailGenerator {
             Element inProgress = doc.select("sqaas[type='notCompleted']").first();
 
             // use today's in-progress task
-            RallyObject inProgressNode = userSession.getTopNode().getChildren().get("today").getChildren().get(RallyObject.INPROGRESS);
+            DataObject inProgressNode = userSession.getTopNode().getChildren().get("today").getChildren().get(DataObject.INPROGRESS);
             if (!inProgressNode.isEmpty()) {
                 lastUpdatedEmail = mapLastUpdatedStory(inProgressNode, inProgress);
             } else {
                 // Use yesterday's in-progress task
-                RallyObject pastInProgressNode = userSession.getTopNode().getChildren().get("past")
-                        .getChildren().get(RallyObject.INPROGRESS);
+                DataObject pastInProgressNode = userSession.getTopNode().getChildren().get("past")
+                        .getChildren().get(DataObject.INPROGRESS);
                 if (!pastInProgressNode.isEmpty()) {
                     lastUpdatedEmail = mapLastUpdatedStory(pastInProgressNode, inProgress);
                 } else {
@@ -204,7 +204,7 @@ public class EmailGenerator {
         } else {
             Element completed = doc.select("sqaas[type='completed']").first();
             // End of day
-            RallyObject completedNode = userSession.getTopNode().getChildren().get("today").getChildren().get(RallyObject.COMPLETED);
+            DataObject completedNode = userSession.getTopNode().getChildren().get("today").getChildren().get(DataObject.COMPLETED);
             if (!completedNode.isEmpty()) {
                 mapStory(completedNode, completed);
             } else {
@@ -212,11 +212,11 @@ public class EmailGenerator {
             }
 
             Element notCompleted = doc.select("sqaas[type='notCompleted']").first();
-            RallyObject notCompletedNode = userSession.getTopNode().getChildren().get("today").getChildren().get(RallyObject.DEFINED);
+            DataObject notCompletedNode = userSession.getTopNode().getChildren().get("today").getChildren().get(DataObject.DEFINED);
             if (!notCompletedNode.isEmpty()) {
                 mapStory(notCompletedNode, notCompleted);
             } else {
-                notCompletedNode = userSession.getTopNode().getChildren().get("today").getChildren().get(RallyObject.INPROGRESS);
+                notCompletedNode = userSession.getTopNode().getChildren().get("today").getChildren().get(DataObject.INPROGRESS);
                 if (!notCompletedNode.isEmpty()) {
                     mapStory(notCompletedNode, notCompleted);
                 } else {

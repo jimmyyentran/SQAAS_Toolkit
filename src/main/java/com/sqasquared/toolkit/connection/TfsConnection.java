@@ -95,13 +95,17 @@ public class TfsConnection {
      * @return
      */
     public List<TfsObject> mapToObjects(String response){
-        List<TfsObject> tfsList = new ArrayList<TfsObject>();
+        // Convert string response to JsonObject
         JsonParser jp = new JsonParser();
         JsonObject jo = jp.parse(response).getAsJsonObject();
-        JsonArray jsonRows = jo.get("payload").getAsJsonObject().get("rows").getAsJsonArray();
+
+        // Get column headers
         JsonArray jsonColumn = jo.get("payload").getAsJsonObject().get("columns").getAsJsonArray();
         List<String> columnHeader = createColumnHeaders(jsonColumn);
+
+        // Convert JsonObject to JsonArray of TfsObjects
         JsonArray mappedArray = new JsonArray();
+        JsonArray jsonRows = jo.get("payload").getAsJsonObject().get("rows").getAsJsonArray();
         for(JsonElement row : jsonRows){
             JsonObject mappedRow = new JsonObject();
             JsonArray rowArray = (JsonArray)row;
@@ -111,10 +115,15 @@ public class TfsConnection {
             }
             mappedArray.add(mappedRow);
         }
-//        System.out.println(new GsonBuilder().setPrettyPrinting().create().toJson(mappedArray));
+
+
+        // Convert JsonArray to list of TfsObjects
         Gson gson = new GsonBuilder().create();
         Type tfsObjectType = new TypeToken<List<TfsObject>>(){}.getType();
         List<TfsObject> tfsObjectList = gson.fromJson(mappedArray, tfsObjectType);
+        for(TfsObject object : tfsObjectList){
+            object.print();
+        }
         return tfsObjectList;
     }
 

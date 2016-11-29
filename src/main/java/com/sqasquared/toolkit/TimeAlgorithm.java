@@ -1,6 +1,6 @@
 package com.sqasquared.toolkit;
 
-import com.sqasquared.toolkit.connection.RallyObject;
+import com.sqasquared.toolkit.connection.DataObject;
 import com.sqasquared.toolkit.connection.TaskRallyObject;
 
 import java.util.Date;
@@ -13,10 +13,10 @@ public class TimeAlgorithm implements TreeAlgorithmInterface {
     public TimeAlgorithm() {
     }
 
-    public RallyObject constructTree(HashMap<String, TaskRallyObject> container) {
-        RallyObject top = new RallyObject("root", "0", "root");
+    public DataObject constructTree(HashMap<String, TaskRallyObject> container) {
+        DataObject top = new DataObject("root", "0", "root");
 
-        for (RallyObject obj : container.values()) {
+        for (DataObject obj : container.values()) {
             top.addChild(obj);
         }
 
@@ -29,15 +29,15 @@ public class TimeAlgorithm implements TreeAlgorithmInterface {
     * Tree heirarchy:
     * top -> time -> -> state -> story -> task
     * */
-    private void buildTree(RallyObject node) {
+    private void buildTree(DataObject node) {
         if (node.getType().equals("root")) {
             Date workTime = UserSession.TODAY_WORK_HOUR;
 
-//            RallyObject tdy = new RallyObject("time", Long.toString(workTime.getTime()), "today");
-//            RallyObject past = new RallyObject("time", Long.toString(workTime.getTime() - 1), "past");
-            RallyObject tdy = new RallyObject("time", "today", "today");
-            RallyObject past = new RallyObject("time", "past", "past");
-            for (RallyObject obj : node.getChildren().values()) {
+//            DataObject tdy = new DataObject("time", Long.toString(workTime.getTime()), "today");
+//            DataObject past = new DataObject("time", Long.toString(workTime.getTime() - 1), "past");
+            DataObject tdy = new DataObject("time", "today", "today");
+            DataObject past = new DataObject("time", "past", "past");
+            for (DataObject obj : node.getChildren().values()) {
                 if (obj.getType().equals("task")) {
                     if (((TaskRallyObject) obj).getLastUpdateDate().after(workTime)) {
                         tdy.addChild(obj);
@@ -51,18 +51,18 @@ public class TimeAlgorithm implements TreeAlgorithmInterface {
             buildTree(tdy);
             buildTree(past);
         } else if (node.getType().equals("time")) {
-            RallyObject completed = new RallyObject("state", RallyObject.COMPLETED, null);
-            RallyObject inProgress = new RallyObject("state", RallyObject.INPROGRESS, null);
-            RallyObject defined = new RallyObject("state", RallyObject.DEFINED, null);
-            for (RallyObject obj : node.getChildren().values()) {
+            DataObject completed = new DataObject("state", DataObject.COMPLETED, null);
+            DataObject inProgress = new DataObject("state", DataObject.INPROGRESS, null);
+            DataObject defined = new DataObject("state", DataObject.DEFINED, null);
+            for (DataObject obj : node.getChildren().values()) {
                 if (obj.getType().equals("task")) {
                     TaskRallyObject taskRallyObject = ((TaskRallyObject) obj);
                     String storyState = taskRallyObject.getState();
-                    if (storyState.equals(RallyObject.COMPLETED)) {
+                    if (storyState.equals(DataObject.COMPLETED)) {
                         completed.addChild(obj);
-                    } else if (storyState.equals(RallyObject.INPROGRESS)) {
+                    } else if (storyState.equals(DataObject.INPROGRESS)) {
                         inProgress.addChild(obj);
-                    } else if (storyState.equals(RallyObject.DEFINED)) {
+                    } else if (storyState.equals(DataObject.DEFINED)) {
                         defined.addChild(obj);
                     }
                 }
@@ -73,19 +73,19 @@ public class TimeAlgorithm implements TreeAlgorithmInterface {
             buildTree(inProgress);
             buildTree(defined);
         } else if (node.getType().equals("state")) {
-            HashMap<String, RallyObject> objectContainer = new HashMap<String, RallyObject>();
-            for (RallyObject obj : node.getChildren().values()) {
+            HashMap<String, DataObject> objectContainer = new HashMap<String, DataObject>();
+            for (DataObject obj : node.getChildren().values()) {
                 if (obj.getType().equals("task")) {
                     String storyID = ((TaskRallyObject) obj).getStoryID();
                     if (!objectContainer.containsKey(storyID)) {
                         String storyName = ((TaskRallyObject) obj).getStoryName();
-                        objectContainer.put(storyID, new RallyObject("story", storyID, storyName));
+                        objectContainer.put(storyID, new DataObject("story", storyID, storyName));
                     }
                     objectContainer.get(storyID).addChild(obj);
                 }
             }
             node.clearChildren();
-            for (RallyObject obj : objectContainer.values()) {
+            for (DataObject obj : objectContainer.values()) {
                 node.addChild(obj);
             }
         }

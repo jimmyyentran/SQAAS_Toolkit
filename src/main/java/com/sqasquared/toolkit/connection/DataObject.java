@@ -1,28 +1,42 @@
 package com.sqasquared.toolkit.connection;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.HashMap;
 
 /**
  * Created by jimmytran on 11/1/16.
  */
-public class RallyObject {
+public class DataObject {
     public static final String DATEFORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     public static final String COMPLETED = "Completed";
     public static final String DEFINED = "Defined";
     public static final String INPROGRESS = "In-Progress";
 
 
-    private final HashMap<String, RallyObject> children;
-    private RallyObject parent;
-    final String type;
-    final String id;
-    final String name;
+    HashMap<String, DataObject> children = new HashMap<String, DataObject>();
+    DataObject parent;
+//    String type;
+//    String id;
+//    String name;
+    @SerializedName("WorkItemType") String type;
+    @SerializedName("Id") String id;
+    @SerializedName("Title") String name;
 
-    public RallyObject(String type, String id, String name) {
+    public DataObject(String type, String id, String name) {
+        System.out.println("OBJECT CREATED");
         this.type = type;
         this.id = id;
         this.name = name;
-        this.children = new HashMap<String, RallyObject>();
+        this.children = new HashMap<String, DataObject>();
+        this.parent = null;
+    }
+
+    public DataObject(){
+        this.type = "";
+        this.id = "";
+        this.name = "";
+        this.children = new HashMap<String, DataObject>();
         this.parent = null;
     }
 
@@ -38,12 +52,12 @@ public class RallyObject {
         return name;
     }
 
-    public HashMap<String, RallyObject> getChildren() {
+    public HashMap<String, DataObject> getChildren() {
         return children;
     }
 
-    public void addChild(RallyObject... children) {
-        for (RallyObject child : children) {
+    public void addChild(DataObject... children) {
+        for (DataObject child : children) {
             this.children.put(child.getId(), child);
             child.setParent(this);
         }
@@ -53,11 +67,11 @@ public class RallyObject {
         return children.isEmpty();
     }
 
-    private void setParent(RallyObject par) {
+    private void setParent(DataObject par) {
         this.parent = par;
     }
 
-    public RallyObject getParent() {
+    public DataObject getParent() {
         return parent;
     }
 
@@ -65,11 +79,11 @@ public class RallyObject {
         this.children.clear();
     }
 
-    public void print(int indentation) {
-        print(indentation, 0);
+    public void print() {
+        print(4, 0);
     }
 
-    void print(int indentation, int relictIndentation) {
+    public void print(int indentation, int relictIndentation) {
         String indent;
         try {
             indent = String.format("%" + relictIndentation + "s", "");
@@ -78,7 +92,8 @@ public class RallyObject {
         }
         String toBePrinted = indent + "Type: " + type + ", ID: " + id + ", Name: " + name;
         System.out.println(toBePrinted);
-        for (RallyObject obj : children.values()) {
+        for (DataObject obj : children.values()) {
+            System.out.println("obj = " + obj);
             obj.print(indentation, indentation + relictIndentation);
         }
     }
