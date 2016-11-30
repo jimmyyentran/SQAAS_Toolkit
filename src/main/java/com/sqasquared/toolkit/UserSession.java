@@ -22,6 +22,7 @@ public class UserSession {
 
     public static final String EOD = "end_of_day";
     public static final String SSU = "story_status_update";
+    public static final String SSUP = "story_status_update_progress";
     public static final String TCR = "test_case_realized";
     public static final String SSU_TAG = "[STORY STATUS UPDATE]";
     public static final String EOD_TAG = "[END OF DAY UPDATE]";
@@ -109,7 +110,7 @@ public class UserSession {
         String key = null;
         if (emailType.equals(EOD)) {
             key = EOD_KEY;
-        } else if (emailType.equals(SSU)) {
+        } else if (emailType.equals(SSU) || emailType.equals(SSUP)) {
             key = SSU_KEY;
         }
         String business_partner = getProperty("business_partner");

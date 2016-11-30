@@ -111,6 +111,10 @@ class Loader {
         String ssu = IOUtils.toString(in);
         userSession.addTemplate(UserSession.SSU, ssu);
 
+        in = getClass().getResourceAsStream("/template/story_status_update_progress.html");
+        String ssup = IOUtils.toString(in);
+        userSession.addTemplate(UserSession.SSUP, ssup);
+
         in = getClass().getResourceAsStream("/template/test_case.html");
         String tc = IOUtils.toString(in);
         userSession.addTemplate(UserSession.TCR, tc);

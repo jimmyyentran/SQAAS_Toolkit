@@ -97,16 +97,14 @@ public class App extends Application {
 
             if(commandLine.hasOption("nogui")){
                 String str = commandLine.getOptionValue("nogui");
-                String template;
+                String template = null;
                 if(str.toLowerCase().equals("ssu")){
                     template = UserSession.SSU;
-                }else{
-                    template = UserSession.EOD;
+                }else if (str.toLowerCase().equals("ssup")){
+                    template = UserSession.SSUP;
                 }
                 userSession = new UserSession();
-                Loader loader = new Loader();
                 RallyWrapper.initialize();
-//                loader.loadUserSession(userSession);
                 initialize();
                 userSession.loadRallyTasks();
                 try {

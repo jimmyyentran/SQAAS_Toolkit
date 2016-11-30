@@ -32,6 +32,7 @@ public class MainController implements Initializable, ControlledScreen {
     public TextField textFieldTo;
     public TextField textFieldSubject;
     public Button genEmailButton;
+    public Button SSUPButton;
     private ScreensController screensController;
     private HostServices hostServices;
     private final UserSession userSession = App.userSession;
@@ -83,6 +84,23 @@ public class MainController implements Initializable, ControlledScreen {
         try {
             String html = App.userSession.generateHtml(UserSession.SSU);
             String to = App.userSession.getEmailTo(UserSession.SSU);
+            String cc = App.userSession.getEmailCC();
+            String subject = App.userSession.getEmailSubject();
+            textFieldTo.setText(to);
+            textFieldCc.setText(cc);
+            textFieldSubject.setText(subject);
+            editor.setHtmlText(html);
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(e.getMessage());
+        }
+        return;
+    }
+
+    public void ssupClick(ActionEvent actionEvent) {
+        try {
+            String html = App.userSession.generateHtml(UserSession.SSUP);
+            String to = App.userSession.getEmailTo(UserSession.SSUP);
             String cc = App.userSession.getEmailCC();
             String subject = App.userSession.getEmailSubject();
             textFieldTo.setText(to);
@@ -205,4 +223,5 @@ public class MainController implements Initializable, ControlledScreen {
         textFieldCc.clear();
         editor.setHtmlText("");
     }
+
 }

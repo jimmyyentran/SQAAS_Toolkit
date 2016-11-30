@@ -2,7 +2,6 @@ package com.sqasquared.toolkit;
 
 import com.sqasquared.toolkit.email.EmailGenerator;
 import com.sqasquared.toolkit.email.EmailGeneratorException;
-import com.sun.tools.internal.xjc.reader.xmlschema.bindinfo.BIConversion;
 import org.apache.commons.mail.EmailException;
 
 import javax.mail.MessagingException;

@@ -199,10 +199,21 @@ public class EmailGenerator {
     }
 
     public String generate(DataObject topNode, String template) throws EmailGeneratorException {
-//        public String generate(UserSession userSession, String template) throws EmailGeneratorException {
         String htmlEmailTemplate = UserSession.getTemplate(template);
         Document doc = Jsoup.parse(htmlEmailTemplate);
-        if (template.equals(UserSession.SSU)) {
+        if (template.equals(UserSession.SSU) || template.equals(UserSession.SSUP)) {
+            //All story status updates
+            if(template.equals(UserSession.SSUP)){
+                // Story status update progress
+                Element completed = doc.select("sqaas[type='completed']").first();
+                DataObject completedNode = topNode.getChildren().get("today").getChildren().get(RALLY.COMPLETED);
+                if (!completedNode.isEmpty()) {
+                    mapLastUpdatedStory(completedNode, completed);
+                } else {
+                    throw new EmailGeneratorException("No completed tasks today. Get to work!!");
+                }
+            }
+
             // story status updates
             Element inProgress = doc.select("sqaas[type='notCompleted']").first();
 
