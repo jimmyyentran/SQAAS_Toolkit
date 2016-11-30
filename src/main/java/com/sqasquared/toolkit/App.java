@@ -10,10 +10,9 @@ import org.apache.commons.cli.*;
 
 import javax.jws.soap.SOAPBinding;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.logging.*;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -73,10 +72,13 @@ public class App extends Application {
     }
 
     public static void main(String[] args) throws URISyntaxException, IOException, ParseException, BackingStoreException {
-        LOG.setLevel(Level.ALL);
-        ConsoleHandler handler = new ConsoleHandler();
-        handler.setLevel(Level.ALL);
-        LOG.addHandler(handler);
+        try{
+            InputStream configFile = UserSession.class.getResourceAsStream("/logger.properties");
+            LogManager.getLogManager().readConfiguration(configFile);
+        } catch (Exception e){
+            System.out.println("WARNING: Could not open configuration file");
+            System.out.println("WARNING: Logging not configured (console output only)");
+        }
 
         // Command line arguments
         CommandLine commandLine;

@@ -5,11 +5,11 @@ import com.sqasquared.toolkit.connection.DataObject;
 /**
  * Created by jimmytran on 11/30/16.
  */
-public class ResourceManager extends ObjectManager<DataObject>{
+public class FileResourceManager extends ObjectManager<String>{
     private Loader loader = new Loader();
 
-
-    public void add (DataObject task) {
-
+    @Override
+    public void add(String item) {
+//        objectContainer.put(item)
     }
 }
