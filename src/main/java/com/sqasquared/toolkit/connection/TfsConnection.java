@@ -2,6 +2,7 @@ package com.sqasquared.toolkit.connection;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
+import com.sqasquared.toolkit.ContainerAlgorithm;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -23,7 +24,9 @@ public class TfsConnection {
             "/_api/_wit/query?__v=5";
     public static final String INSTEP1 = "CRM/PPS/_api/_wit/query?__v=5";
     private static final String USER_AGENT = "Mozilla/5.0";
+    public static final String PRODUCT_BACKLOG_ITEM = "Product Backlog Item";
     public static final String PRODUCT_BACKLOG_ITEM_WIT = "Product+Backlog+Item";
+    public static final String TEST_CASE = "Test Case";
     public static final String TEST_CASE_WIT = "Test+Case";
 
     public TfsConnection(String username, String password){
@@ -54,7 +57,7 @@ public class TfsConnection {
         return formattedPostForm;
     }
 
-    public void getWorkingTree(String apiUrl, String parentWit, String parentId, String childWit) throws IOException {
+    public DataObject getWorkingTree(String apiUrl, String parentWit, String parentId, String childWit) throws IOException {
         URL obj = new URL(TfsConnection.ASM_URL + apiUrl);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         con.setRequestMethod("POST");
@@ -87,15 +90,17 @@ public class TfsConnection {
         }
         in.close();
 
-        mapToObjects(response.toString());
+        ContainerAlgorithm cAlg = new ContainerAlgorithm(PRODUCT_BACKLOG_ITEM);
+        HashMap<String, DataObject> map = mapToObjects(response.toString());
+        return cAlg.constructTree(map);
     }
 
     /**
-     * Map TFS response to list of tfsObjects
+     * Map TFS response to HashMap of tfsObjects
      * @param response
      * @return
      */
-    public HashMap<String, DataObject> mapToObjects(String response){
+    private HashMap<String, DataObject> mapToObjects(String response){
         // Convert string response to JsonObject
         JsonParser jp = new JsonParser();
         JsonObject jo = jp.parse(response).getAsJsonObject();
@@ -111,17 +116,21 @@ public class TfsConnection {
             JsonObject mappedRow = new JsonObject();
             JsonArray rowArray = (JsonArray)row;
             for (int i = 0; i < columnHeader.size(); i++) {
-                mappedRow.addProperty(columnHeader.get(i),
-                        rowArray.get(i).toString());
+                // Strip quotes and add property
+                String stripQuote = rowArray.get(i).toString().replaceAll("^\"|\"$","");
+                mappedRow.addProperty(columnHeader.get(i), stripQuote);
             }
             mappedObject.add(mappedRow.get("Id").getAsString(), mappedRow);
         }
 
 
-        // Convert JsonArray to list of TfsObjects
+        // Convert JsonArray to HashMap of TfsObjects
         Gson gson = new GsonBuilder().create();
         Type tfsObjectType = new TypeToken<HashMap<String, TfsObject>>(){}.getType();
         HashMap<String, DataObject> tfsObjectMap = gson.fromJson(mappedObject, tfsObjectType);
+//        for(DataObject obj : tfsObjectMap.values()){
+//            obj.print();
+//        }
         return tfsObjectMap;
     }
 
@@ -130,7 +139,7 @@ public class TfsConnection {
      * @param response
      * @return
      */
-    public List<TfsObject> mapToObjectList(String response){
+    private List<TfsObject> mapToObjectList(String response){
         // Convert string response to JsonObject
         JsonParser jp = new JsonParser();
         JsonObject jo = jp.parse(response).getAsJsonObject();

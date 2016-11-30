@@ -2,6 +2,7 @@ package com.sqasquared.toolkit;
 
 import com.sqasquared.toolkit.connection.DataObject;
 import com.sqasquared.toolkit.connection.TaskRallyObject;
+import com.sqasquared.toolkit.connection.TfsConnection;
 
 import java.util.HashMap;
 
@@ -17,15 +18,23 @@ public class ContainerAlgorithm implements TreeAlgorithmInterface{
 
     @Override
     public DataObject constructTree(HashMap<String, DataObject> container) {
-        DataObject top = new DataObject("root", "0", "root");
+        HashMap<String, DataObject> containerDeepCopy = new HashMap<>(container);
+        DataObject top = null;
 
-        for (DataObject obj : container.values()) {
-            top.addChild(obj);
+        for (DataObject obj : containerDeepCopy.values()) {
+            if(obj.getType().equals(topNodeWit)){
+                top = obj;
+                containerDeepCopy.remove(obj.getId());
+                break;
+            }
         }
 
-//        buildTree(top);
-//        return top;
+        if(top == null){
+            throw new RuntimeException(String.format("No working item type with %1s name",topNodeWit));
+        }
 
-        return null;
+        top.setChildren(containerDeepCopy);
+
+        return top;
     }
 }

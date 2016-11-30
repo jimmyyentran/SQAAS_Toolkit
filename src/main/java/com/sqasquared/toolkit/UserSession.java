@@ -21,6 +21,7 @@ public class UserSession {
 
     public static final String EOD = "end_of_day";
     public static final String SSU = "story_status_update";
+    public static final String TCR = "test_case_realized";
     public static final String SSU_TAG = "[STORY STATUS UPDATE]";
     public static final String EOD_TAG = "[END OF DAY UPDATE]";
     private static final String SSU_KEY = "SSU";
@@ -158,6 +159,17 @@ public class UserSession {
         return formatted;
     }
 
+    /**
+     * Save format and save email into file location
+     * @param to
+     * @param cc
+     * @param subject
+     * @param html
+     * @param loc
+     * @throws EmailException
+     * @throws MessagingException
+     * @throws IOException
+     */
     public void generateEmail(String to, String cc, String subject, String html, String loc) throws EmailException, MessagingException, IOException {
         gen.createEmail(to, cc, subject, html, getEmail(), loc);
     }

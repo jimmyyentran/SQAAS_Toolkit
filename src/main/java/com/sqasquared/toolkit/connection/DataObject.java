@@ -33,9 +33,9 @@ public class DataObject {
     }
 
     public DataObject(){
-        this.type = "";
-        this.id = "";
-        this.name = "";
+        this.type = null;
+        this.id = null;
+        this.name = null;
         this.children = new HashMap<String, DataObject>();
         this.parent = null;
     }
@@ -44,7 +44,7 @@ public class DataObject {
         return type;
     }
 
-    private String getId() {
+    public String getId() {
         return id;
     }
 
@@ -54,6 +54,10 @@ public class DataObject {
 
     public HashMap<String, DataObject> getChildren() {
         return children;
+    }
+
+    public void setChildren(HashMap<String, DataObject> children){
+        this.children = children;
     }
 
     public void addChild(DataObject... children) {
@@ -93,7 +97,7 @@ public class DataObject {
         String toBePrinted = indent + "Type: " + type + ", ID: " + id + ", Name: " + name;
         System.out.println(toBePrinted);
         for (DataObject obj : children.values()) {
-            System.out.println("obj = " + obj);
+//            System.out.println("obj = " + obj);
             obj.print(indentation, indentation + relictIndentation);
         }
     }
