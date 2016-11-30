@@ -33,6 +33,7 @@ public class MainController implements Initializable, ControlledScreen {
     public TextField textFieldSubject;
     public Button genEmailButton;
     public Button SSUPButton;
+    public Button TCRButton;
     private ScreensController screensController;
     private HostServices hostServices;
     private final UserSession userSession = App.userSession;
@@ -135,7 +136,7 @@ public class MainController implements Initializable, ControlledScreen {
         }
     }
 
-    public void realizedClick(ActionEvent actionEvent){
+    public void tcrClick(ActionEvent actionEvent){
         Dialog<List<String>> dialog = new Dialog<>();
         dialog.setTitle("ASM Login");
         dialog.setHeaderText("Please enter your ASM credentials");

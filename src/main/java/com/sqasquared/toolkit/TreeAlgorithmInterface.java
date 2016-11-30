@@ -7,6 +7,6 @@ import java.util.HashMap;
 /**
  * Created by jimmytran on 11/1/16.
  */
-interface TreeAlgorithmInterface {
-    DataObject constructTree(HashMap<String, DataObject> map);
+interface TreeAlgorithmInterface<T extends DataObject>{
+    DataObject constructTree(HashMap<String, T> map);
 }

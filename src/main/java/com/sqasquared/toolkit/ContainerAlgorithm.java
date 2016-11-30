@@ -9,7 +9,7 @@ import java.util.HashMap;
 /**
  * Created by JTran on 11/28/2016.
  */
-public class ContainerAlgorithm implements TreeAlgorithmInterface{
+public class ContainerAlgorithm implements TreeAlgorithmInterface<DataObject>{
     private String topNodeWit;
 
     public ContainerAlgorithm(String topNodeWit){

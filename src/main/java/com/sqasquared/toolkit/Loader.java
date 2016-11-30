@@ -36,7 +36,7 @@ class Loader {
         userSession.setEmail(email);
     }
 
-    public void loadTasks(ObjectManager objectManager) throws IOException {
+    public void loadTasks(RallyManager rallyManager) throws IOException {
         LOG.log(Level.FINE, "Loading tasks");
         JsonArray response = RallyWrapper.getTasks(UserSession.getEmail());
         for (JsonElement result : response) {
@@ -62,7 +62,7 @@ class Loader {
             } catch (UnsupportedOperationException ex) {
                 estimate = "0.0";
             }
-            objectManager.addObject(new TaskRallyObject(taskName, objectID, formattedID, state, storyName,
+            rallyManager.add(new TaskRallyObject(taskName, objectID, formattedID, state, storyName,
                     storyRef, projectName, projectRef, creationDate, lastUpdateDate, estimate));
         }
     }
@@ -70,22 +70,22 @@ class Loader {
     /**
      * Takes each task's userStoryID and insert userStoryFormattedID
      *
-     * @param objectManager current session persistent variables
+     * @param rallyManager current session persistent variables
      * @throws IOException
      */
 //    public void loadUserStory(UserSession userSession) throws IOException {
-    public void loadUserStory(ObjectManager objectManager) throws IOException {
+    public void loadUserStory(RallyManager rallyManager) throws IOException {
         LOG.log(Level.FINE, "Loading user stories");
-        Map<String, String> storyIds = new HashMap<String, String>();
+        Map<String, String> storyIds = new HashMap<>();
 
         // If children is not of TaskRallyObject, throw
-        if(!(objectManager.getObjectContainer().values().iterator().next() instanceof TaskRallyObject)){
+        if(!(rallyManager.getObjectContainer().values().iterator().next() instanceof TaskRallyObject)){
             throw new IOException("Expected values to be of TaskRallyObject!");
         }
 
         // Get story ID's and insert as keys into hash-map
-        for (DataObject obj : objectManager.getObjectContainer().values()) {
-            storyIds.put(((TaskRallyObject)obj).getStoryID(), null);
+        for (TaskRallyObject obj : rallyManager.getObjectContainer().values()) {
+            storyIds.put(obj.getStoryID(), null);
         }
 
         // Append formattedID's into map
@@ -96,8 +96,8 @@ class Loader {
         }
 
         // Loop over tasks and set storyFormattedID
-        for (DataObject obj : objectManager.getObjectContainer().values()) {
-            ((TaskRallyObject)obj).setStoryFormattedID(storyIds.get(((TaskRallyObject)obj).getStoryID()));
+        for (TaskRallyObject obj : rallyManager.getObjectContainer().values()) {
+            obj.setStoryFormattedID(storyIds.get(obj.getStoryID()));
         }
     }
 

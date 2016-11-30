@@ -10,7 +10,7 @@ import java.util.HashMap;
 /**
  * Created by jimmytran on 11/1/16.
  */
-public class TimeAlgorithm implements TreeAlgorithmInterface {
+public class TimeAlgorithm implements TreeAlgorithmInterface<DataObject>{
     public TimeAlgorithm() {
     }
 

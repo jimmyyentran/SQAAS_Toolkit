@@ -2,26 +2,22 @@ package com.sqasquared.toolkit;
 
 import com.sqasquared.toolkit.connection.DataObject;
 import com.sqasquared.toolkit.connection.TaskRallyObject;
+import com.sun.javafx.tk.Toolkit;
 
 import java.io.IOException;
 
 /**
  * Created by jimmytran on 11/29/16.
  */
-public class RallyManager extends ObjectManager{
-    private TreeAlgorithmInterface alg = null;
-    private Loader loader = new Loader();
+public class RallyManager extends DataManager<TaskRallyObject>{
 
     public RallyManager(){
+        super();
     }
 
     @Override
-    public void addObject(DataObject task) {
-        objectContainer.put(((TaskRallyObject)task).getFormattedID(), task);
-    }
-
-    private void run() {
-        topNode = this.alg.constructTree(objectContainer);
+    public void add(TaskRallyObject task){
+        objectContainer.put(task.getFormattedID(), task);
     }
 
     public void loadTasks() throws IOException {
@@ -40,7 +36,4 @@ public class RallyManager extends ObjectManager{
         run();
     }
 
-    public void setAlgorithm(TreeAlgorithmInterface alg){
-        this.alg = alg;
-    }
 }
