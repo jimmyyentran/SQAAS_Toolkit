@@ -270,6 +270,9 @@ public class EmailGenerator {
         fos.close();
     }
 
+    public void generateTestCase(String template) {
+    }
+
 //    public void createEmail(UserSession userSession, String template) throws Exception {
 //        String subject = "";
 //        String doc = "";

@@ -231,4 +231,13 @@ public class UserSession {
         appDirector.refreshTasks();
     }
 
+    public void generateTestCases(String template){
+        appDirector.generateTestCases(template);
+    }
+
+    public void loginASM(String username, String password) {
+        setProperty("ASM_username", username);
+        setProperty("ASM_password", password);
+
+    }
 }

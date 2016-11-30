@@ -30,6 +30,10 @@ public class TfsConnection {
         CookieHandler.setDefault(cookieManager);
     }
 
+    public boolean loginTest(){
+
+    }
+
     public String formatPostForm(String parentWit, String parentId, String childWit){
         String formFormatter = "wiql=" +
             "SELECT+%%5BSystem.Id%%5D%%2C%%5BSystem.Title%%5D+%%2C%%5BSystem.State%%5D" +

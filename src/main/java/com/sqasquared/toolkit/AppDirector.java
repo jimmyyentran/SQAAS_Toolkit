@@ -53,4 +53,8 @@ public class AppDirector {
         rallyManager.refreshTasks();
     }
 
+    public void generateTestCases(String template){
+        gen.generateTestCase(template);
+    }
+
 }
