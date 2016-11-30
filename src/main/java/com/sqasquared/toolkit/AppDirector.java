@@ -13,6 +13,7 @@ import java.io.IOException;
 public class AppDirector {
     private EmailGenerator gen = new EmailGenerator();
     private RallyManager rallyManager;
+    private FileResourceManager fileResourceManager;
     private UserSession userSession;
 
     public AppDirector(UserSession userSession){
@@ -23,11 +24,42 @@ public class AppDirector {
         rallyManager.refreshTasks();
     }
 
+    public void setRallyManager(RallyManager rallyManager) {
+        this.rallyManager = rallyManager;
+    }
+
+    public void setFileResourceManager(FileResourceManager fileResourceManager) {
+        this.fileResourceManager = fileResourceManager;
+    }
+
+    public String getTemplate(String template) {
+        return fileResourceManager.getTemplate(template);
+    }
+
+    /******************************************
+
+     Load session methods here
+
+     ******************************************/
+
+    public void loadTemplates() {
+        fileResourceManager.loadTemplates();
+    }
+
     public void loadUserInfo() throws IOException {
         Loader loader = new Loader();
         loader.loadUserInfo(userSession);
-        loader.loadTemplates(userSession);
         refreshTasks();
+    }
+
+    /******************************************
+
+     The following are events triggered by the view
+
+     ******************************************/
+
+    public String generateHtml(String template) throws EmailGeneratorException {
+        return gen.generate(rallyManager.topNode, template);
     }
 
     // Save format and save email into file location
@@ -36,17 +68,11 @@ public class AppDirector {
         gen.createEmail(to, cc, subject, html, email, loc);
     }
 
-    public String generateHtml(String template) throws EmailGeneratorException {
-        return gen.generate(rallyManager.topNode, template);
-    }
 
     public String getLastEmailSubject() {
         return gen.getLastEmailSubject();
     }
 
-    public void setRallyManager(RallyManager rallyManager) {
-        this.rallyManager = rallyManager;
-    }
 
     public void refreshTasks() throws IOException {
         rallyManager.refreshTasks();
@@ -55,5 +81,4 @@ public class AppDirector {
     public void generateTestCases(String template){
         gen.generateTestCase(template);
     }
-
 }

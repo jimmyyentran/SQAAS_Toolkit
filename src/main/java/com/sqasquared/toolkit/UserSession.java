@@ -35,8 +35,8 @@ public class UserSession {
     public static Date TODAY_WORK_HOUR;
     public static Date YESTERDAY_WORK_HOUR;
     private static Preferences prop;
-    private static final HashMap<String, String> templateContainer = new HashMap();
-    private AppDirector appDirector;
+//    private static final HashMap<String, String> templateContainer = new HashMap();
+    private static AppDirector appDirector;
 
     public UserSession() {
         Calendar today = Calendar.getInstance();
@@ -188,12 +188,14 @@ public class UserSession {
         prop.put("email", email);
     }
 
-    public void addTemplate(String baseName, String template) {
-        templateContainer.put(baseName, template);
+    public static String getTemplate(String template) {
+        return appDirector.getTemplate(template);
     }
 
-    public static String getTemplate(String template) {
-        return templateContainer.get(template);
+    public void loginASM(String username, String password) {
+        setProperty("ASM_username", username);
+        setProperty("ASM_password", password);
+
     }
 
     /******************************************
@@ -236,9 +238,4 @@ public class UserSession {
         appDirector.generateTestCases(template);
     }
 
-    public void loginASM(String username, String password) {
-        setProperty("ASM_username", username);
-        setProperty("ASM_password", password);
-
-    }
 }

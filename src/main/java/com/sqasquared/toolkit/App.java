@@ -33,11 +33,14 @@ public class App extends Application {
         userSession = new UserSession();
         TreeAlgorithmInterface timeAlgorithm = new TimeAlgorithm();
         RallyManager rallyManager = new RallyManager();
+        FileResourceManager fileResourceManager = new FileResourceManager();
         AppDirector appDirector = new AppDirector(userSession);
-        new Loader().loadTemplates(userSession);
+//        new Loader().loadTemplates(userSession);
 
         rallyManager.setAlgorithm(timeAlgorithm);
         appDirector.setRallyManager(rallyManager);
+        appDirector.setFileResourceManager(fileResourceManager);
+        appDirector.loadTemplates();
         userSession.setAppDirector(appDirector);
     }
 
@@ -56,7 +59,6 @@ public class App extends Application {
             LOG.log(Level.FINE, "Initializing {0} screen", mainScreen);
             RallyWrapper.initialize();
             mainContainer.setScreen(App.mainScreen);
-//            new Loader().loadUserSession(userSession);
             userSession.loadRallyTasks();
         } else {
             LOG.log(Level.FINE, "Initializing {0} screen", loginScreen);
