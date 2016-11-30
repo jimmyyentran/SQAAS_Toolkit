@@ -19,16 +19,6 @@ import java.util.List;
  */
 public class TfsConnection {
 
-    public static final String ASM_URL = "https://tfs.asmnet.com/";
-    public static final String INSTEP2 = "Custom%20Dev%20-%20Team%20El%20Segundo/6bc4d2b6-ee1c-4d01-b0b6-769c1127f56f" +
-            "/_api/_wit/query?__v=5";
-    public static final String INSTEP1 = "CRM/PPS/_api/_wit/query?__v=5";
-    private static final String USER_AGENT = "Mozilla/5.0";
-    public static final String PRODUCT_BACKLOG_ITEM = "Product Backlog Item";
-    public static final String PRODUCT_BACKLOG_ITEM_WIT = "Product+Backlog+Item";
-    public static final String TEST_CASE = "Test Case";
-    public static final String TEST_CASE_WIT = "Test+Case";
-
     public TfsConnection(String username, String password){
         Authenticator.setDefault(new Authenticator() {
             @Override
@@ -58,10 +48,10 @@ public class TfsConnection {
     }
 
     public DataObject getWorkingTree(String apiUrl, String parentWit, String parentId, String childWit) throws IOException {
-        URL obj = new URL(TfsConnection.ASM_URL + apiUrl);
+        URL obj = new URL(ASM.ASM_URL + apiUrl);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         con.setRequestMethod("POST");
-        con.setRequestProperty("User-Agent", USER_AGENT);
+        con.setRequestProperty("User-Agent", ASM.USER_AGENT);
         con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
         con.setDoInput(true);
         con.setDoOutput(true);
@@ -90,7 +80,7 @@ public class TfsConnection {
         }
         in.close();
 
-        ContainerAlgorithm cAlg = new ContainerAlgorithm(PRODUCT_BACKLOG_ITEM);
+        ContainerAlgorithm cAlg = new ContainerAlgorithm(ASM.PRODUCT_BACKLOG_ITEM);
         HashMap<String, DataObject> map = mapToObjects(response.toString());
         return cAlg.constructTree(map);
     }

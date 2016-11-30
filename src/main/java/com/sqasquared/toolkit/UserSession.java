@@ -12,6 +12,7 @@ import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 /**
@@ -33,12 +34,14 @@ public class UserSession {
     public static Date TODAY_WORK_HOUR;
     public static Date YESTERDAY_WORK_HOUR;
     private static Preferences prop;
-    private TreeAlgorithmInterface alg;
-    private HashMap<String, DataObject> taskContainer = new HashMap();
-    private final HashMap<String, String> templateContainer = new HashMap();
-    private DataObject topNode = null;
-    private final Loader loader;
-    private final EmailGenerator gen = new EmailGenerator();
+//    private TreeAlgorithmInterface alg;
+//    private HashMap<String, DataObject> taskContainer = new HashMap();
+    private static final HashMap<String, String> templateContainer = new HashMap();
+//    private DataObject topNode = null;
+//    private final Loader loader;
+//    private final EmailGenerator gen = new EmailGenerator();
+//    private RallyManager dataManager;
+    private AppDirector appDirector;
 
     public UserSession() {
         Calendar today = Calendar.getInstance();
@@ -51,8 +54,10 @@ public class UserSession {
         YESTERDAY_WORK_HOUR = today.getTime();
 
         loadPreferences();
-        setAlg(new TimeAlgorithm());
-        loader = new Loader();
+    }
+
+    public void setAppDirector(AppDirector appDirector){
+        this.appDirector = appDirector;
     }
 
     public static String getProperty(String property) {
@@ -76,28 +81,19 @@ public class UserSession {
             prop.put("ASM_EOD_to", "jramos@sqasquared.com,abyrum@sqasquared.com,jdeleon@sqasquared.com");
             prop.put("ASM_SSU_to", "seth.labrum@advantagesolutions.net,patricia.liu@advantagesolutions.net," +
                     "joel.ramos@advantagesolutions.net,lynnyrd.raymundo@advantagesolutions.net");
+            prop.put("business_partner", "ASM");
         } else {
-//            try {
-//                String[] keys = prop.keys();
-//                for (int i = 0; i < keys.length; i++) {
-//                    System.out.println(keys[i] + " = " + prop.get(keys[i], ""));
-//                }
-//            } catch (BackingStoreException e) {
-//                e.printStackTrace();
-//            }
+            try {
+                String[] keys = prop.keys();
+                for (int i = 0; i < keys.length; i++) {
+                    System.out.println(keys[i] + " = " + prop.get(keys[i], ""));
+                }
+            } catch (BackingStoreException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    public void refreshTasks() throws IOException {
-        taskContainer = new HashMap<String,DataObject>();
-        loader.loadTasks(this);
-        loader.loadUserStory(this);
-        run();
-    }
-
-    private void run() {
-        topNode = this.alg.constructTree(taskContainer);
-    }
 
     public void setProperty(String property, String value) {
         prop.put(property, value);
@@ -109,7 +105,6 @@ public class UserSession {
     }
 
     public boolean isAPIKeySet() {
-        System.out.println(prop.get("api_key", ""));
         return !prop.get("api_key", "").equals("");
     }
 
@@ -124,27 +119,17 @@ public class UserSession {
         } else if (emailType.equals(SSU)) {
             key = SSU_KEY;
         }
-        String keyTo = formatKey(getBusinessPartner(), key, TO);
-//        String emailTo = getProperty(keyTo);
-//        String[] emails = emailTo.split(EMAIL_SEPARATOR);
-//        return emails;
+        String business_partner = getProperty("business_partner");
+        if(business_partner == null || business_partner.length() == 0){
+            business_partner = "ASM";
+        }
+        String keyTo = formatKey(business_partner, key, TO);
         return getProperty(keyTo);
     }
 
     public String getEmailCC() {
         String emailTo = getProperty(CC);
-//        String[] emails = emailTo.split(EMAIL_SEPARATOR);
-//        return emails;
         return emailTo;
-    }
-
-    private String getBusinessPartner() {
-        // If no business partners, default to ASM
-        String bp = getProperty("business_partner");
-        if (bp != null && bp.length() != 0) {
-            return bp;
-        }
-        return "ASM";
     }
 
     private String formatKey(String... str) {
@@ -157,21 +142,6 @@ public class UserSession {
             }
         }
         return formatted;
-    }
-
-    /**
-     * Save format and save email into file location
-     * @param to
-     * @param cc
-     * @param subject
-     * @param html
-     * @param loc
-     * @throws EmailException
-     * @throws MessagingException
-     * @throws IOException
-     */
-    public void generateEmail(String to, String cc, String subject, String html, String loc) throws EmailException, MessagingException, IOException {
-        gen.createEmail(to, cc, subject, html, getEmail(), loc);
     }
 
     public String toString() {
@@ -203,16 +173,8 @@ public class UserSession {
         return result.toString();
     }
 
-    public String generateHtml(String template) throws EmailGeneratorException {
-        run();
-        return gen.generate(this, template);
-    }
 
-    public String getEmailSubject(String template) {
-        return gen.getLastEmailSubject();
-    }
-
-    public String getFullName() {
+    public static String getFullName() {
         return getProperty("firstName") + " " + getProperty("lastName");
     }
 
@@ -224,7 +186,7 @@ public class UserSession {
         prop.put("lastName", lastName);
     }
 
-    public String getEmail() {
+    public static String getEmail() {
         return getProperty("email");
     }
 
@@ -232,27 +194,48 @@ public class UserSession {
         prop.put("email", email);
     }
 
-    public void addTask(TaskRallyObject task) {
-        taskContainer.put(task.getFormattedID(), task);
-    }
-
     public void addTemplate(String baseName, String template) {
         templateContainer.put(baseName, template);
     }
 
-    public String getTemplate(String template) {
+    public static String getTemplate(String template) {
         return templateContainer.get(template);
     }
 
-    private void setAlg(TreeAlgorithmInterface alg) {
-        this.alg = alg;
+    /******************************************
+
+     Load session methods here
+
+     ******************************************/
+
+    public void loadRallyTasks() throws IOException {
+        appDirector.loadRallyTasks();
     }
 
-    public DataObject getTopNode() {
-        return topNode;
+    public void loadUserInfo() throws IOException {
+        appDirector.loadUserInfo();
     }
 
-    public HashMap<String, DataObject> getTaskContainer() {
-        return taskContainer;
+    /******************************************
+
+     The following are events triggered by the view
+
+     ******************************************/
+
+    public String generateHtml(String template) throws EmailGeneratorException {
+        return appDirector.generateHtml(template);
     }
+
+    public void generateEmail(String to, String cc, String subject, String html, String loc) throws EmailException, MessagingException, IOException {
+        appDirector.generateEmail(to, cc, subject, html, getEmail(), loc);
+    }
+
+    public String getEmailSubject() {
+        return appDirector.getLastEmailSubject();
+    }
+
+    public void refreshTasks() throws IOException {
+        appDirector.refreshTasks();
+    }
+
 }

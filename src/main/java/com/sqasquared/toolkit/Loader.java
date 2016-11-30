@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 class Loader {
     private static Logger LOG = Logger.getLogger(Loader.class.getName());
 
-    private void loadUserInfo(UserSession userSession) throws IOException {
+    public void loadUserInfo(UserSession userSession) throws IOException {
         LOG.log(Level.FINE, "Loading user info");
         if (userSession.isUserPreferencesValid()) {
             return;
@@ -36,9 +36,9 @@ class Loader {
         userSession.setEmail(email);
     }
 
-    public void loadTasks(UserSession userSession) throws IOException {
+    public void loadTasks(ObjectManager objectManager) throws IOException {
         LOG.log(Level.FINE, "Loading tasks");
-        JsonArray response = RallyWrapper.getTasks(userSession.getEmail());
+        JsonArray response = RallyWrapper.getTasks(UserSession.getEmail());
         for (JsonElement result : response) {
             JsonObject task = result.getAsJsonObject();
             String taskName = task.get("Name").getAsString();
@@ -62,7 +62,7 @@ class Loader {
             } catch (UnsupportedOperationException ex) {
                 estimate = "0.0";
             }
-            userSession.addTask(new TaskRallyObject(taskName, objectID, formattedID, state, storyName,
+            objectManager.addObject(new TaskRallyObject(taskName, objectID, formattedID, state, storyName,
                     storyRef, projectName, projectRef, creationDate, lastUpdateDate, estimate));
         }
     }
@@ -70,20 +70,21 @@ class Loader {
     /**
      * Takes each task's userStoryID and insert userStoryFormattedID
      *
-     * @param userSession current session persistent variables
+     * @param objectManager current session persistent variables
      * @throws IOException
      */
-    public void loadUserStory(UserSession userSession) throws IOException {
+//    public void loadUserStory(UserSession userSession) throws IOException {
+    public void loadUserStory(ObjectManager objectManager) throws IOException {
         LOG.log(Level.FINE, "Loading user stories");
         Map<String, String> storyIds = new HashMap<String, String>();
 
         // If children is not of TaskRallyObject, throw
-        if(!(userSession.getTaskContainer().values().iterator().next() instanceof TaskRallyObject)){
+        if(!(objectManager.getObjectContainer().values().iterator().next() instanceof TaskRallyObject)){
             throw new IOException("Expected values to be of TaskRallyObject!");
         }
 
         // Get story ID's and insert as keys into hash-map
-        for (DataObject obj : userSession.getTaskContainer().values()) {
+        for (DataObject obj : objectManager.getObjectContainer().values()) {
             storyIds.put(((TaskRallyObject)obj).getStoryID(), null);
         }
 
@@ -95,12 +96,12 @@ class Loader {
         }
 
         // Loop over tasks and set storyFormattedID
-        for (DataObject obj : userSession.getTaskContainer().values()) {
+        for (DataObject obj : objectManager.getObjectContainer().values()) {
             ((TaskRallyObject)obj).setStoryFormattedID(storyIds.get(((TaskRallyObject)obj).getStoryID()));
         }
     }
 
-    private void loadTemplates(UserSession userSession) throws IOException {
+    public void loadTemplates(UserSession userSession) throws IOException {
         LOG.log(Level.FINE, "Loading templates");
         InputStream in = getClass().getResourceAsStream("/template/end_of_day.html");
         String eod = IOUtils.toString(in);
@@ -109,12 +110,9 @@ class Loader {
         in = getClass().getResourceAsStream("/template/story_status_update.html");
         String ssu = IOUtils.toString(in);
         userSession.addTemplate(UserSession.SSU, ssu);
-    }
 
-    public void loadUserSession(UserSession userSession) throws IOException {
-        loadUserInfo(userSession);
-        loadTasks(userSession);
-        loadUserStory(userSession);
-        loadTemplates(userSession);
+        in = getClass().getResourceAsStream("/template/test_case.html");
+        String tc = IOUtils.toString(in);
+        userSession.addTemplate(UserSession.TCR, tc);
     }
 }

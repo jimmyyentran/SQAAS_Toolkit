@@ -13,6 +13,8 @@ import java.net.URISyntaxException;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 /**
  * Created by jimmytran on 10/29/16.
@@ -20,18 +22,30 @@ import java.util.logging.Logger;
 public class App extends Application {
     private static final Logger LOG = Logger.getLogger(App.class.getName());
 
-    private static final String loginScreen = "login";
-    private static final String loginScreenFile = "login.fxml";
+    public static final String loginScreen = "login";
+    public static final String loginScreenFile = "login.fxml";
     public static final String mainScreen = "main";
-    private static final String mainScreenFile = "main.fxml";
+    public static final String mainScreenFile = "main.fxml";
     public static UserSession userSession;
     public static Stage stage;
 
+    public void initialize() throws IOException {
+        userSession = new UserSession();
+        TreeAlgorithmInterface timeAlgorithm = new TimeAlgorithm();
+        RallyManager rallyManager = new RallyManager();
+        AppDirector appDirector = new AppDirector(userSession);
+        new Loader().loadTemplates(userSession);
+
+        rallyManager.setAlgorithm(timeAlgorithm);
+        appDirector.setRallyManager(rallyManager);
+        userSession.setAppDirector(appDirector);
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
+        initialize();
         LOG.log(Level.FINE, "JavaFX starting stage");
         stage = primaryStage;
-        userSession = new UserSession();
 
         ScreensController mainContainer = new ScreensController(getHostServices());
 
@@ -42,7 +56,8 @@ public class App extends Application {
             LOG.log(Level.FINE, "Initializing {0} screen", mainScreen);
             RallyWrapper.initialize();
             mainContainer.setScreen(App.mainScreen);
-            new Loader().loadUserSession(userSession);
+//            new Loader().loadUserSession(userSession);
+            userSession.loadRallyTasks();
         } else {
             LOG.log(Level.FINE, "Initializing {0} screen", loginScreen);
             mainContainer.setScreen(App.loginScreen);
@@ -56,7 +71,7 @@ public class App extends Application {
         primaryStage.show();
     }
 
-    public static void main(String[] args) throws URISyntaxException, IOException, ParseException {
+    public static void main(String[] args) throws URISyntaxException, IOException, ParseException, BackingStoreException {
         LOG.setLevel(Level.ALL);
         ConsoleHandler handler = new ConsoleHandler();
         handler.setLevel(Level.ALL);
@@ -65,25 +80,32 @@ public class App extends Application {
         // Command line arguments
         CommandLine commandLine;
         Option option_noGui = Option.builder("ng").longOpt("nogui").numberOfArgs(1).hasArg().build();
+        Option option_clearPreferences = Option.builder("c").longOpt("clear-preferences").build();
         Options options = new Options();
         CommandLineParser parser = new DefaultParser();
 
         options.addOption(option_noGui);
+        options.addOption(option_clearPreferences);
 
         try{
             commandLine = parser.parse(options, args);
+            if(commandLine.hasOption("clear-preferences")){
+                Preferences prop = Preferences.userNodeForPackage(UserSession.class);
+                prop.clear();
+            }
 
             if(commandLine.hasOption("nogui")){
                 String str = commandLine.getOptionValue("nogui");
                 userSession = new UserSession();
                 Loader loader = new Loader();
                 RallyWrapper.initialize();
-                loader.loadUserSession(userSession);
+//                loader.loadUserSession(userSession);
+                userSession.loadRallyTasks();
                 try {
                     String html = userSession.generateHtml(UserSession.SSU);
                     String to = userSession.getEmailTo(UserSession.SSU);
                     String cc = userSession.getEmailCC();
-                    String subject = userSession.getEmailSubject(UserSession.SSU);
+                    String subject = userSession.getEmailSubject();
                     System.out.println("html = " + html);
                     System.out.println("to = " + to);
                     System.out.println("cc = " + cc);

@@ -16,7 +16,6 @@ import java.util.regex.Pattern;
 public class TaskRallyObject extends DataObject {
     private final String formattedUserTasksLink = "https://rally1.rallydev.com/#/%s/detail/userstory/%s/tasks";
 
-    private final String objectID;
     private final String state;
     private final String storyName;
     private final String formattedID;
@@ -35,7 +34,6 @@ public class TaskRallyObject extends DataObject {
                            String storyRef, String projectName, String projectRef, String creationDate, String lastUpdateDate,
                            String estimate) {
         super("task", objectID, taskName);
-        this.objectID = objectID;
         this.formattedID = formattedID;
         this.state = state;
         this.storyName = storyName;
@@ -65,7 +63,7 @@ public class TaskRallyObject extends DataObject {
     }
 
     private Date stringToDate(String date) {
-        SimpleDateFormat sdf = new SimpleDateFormat(DATEFORMAT);
+        SimpleDateFormat sdf = new SimpleDateFormat(RALLY.DATEFORMAT);
         try {
             return sdf.parse(date);
         } catch (ParseException e) {

@@ -190,7 +190,7 @@ public class RallyWrapper {
         }
         QueryRequest tasks = new QueryRequest("tasks");
 
-        String past = new SimpleDateFormat(DataObject.DATEFORMAT).format(UserSession.YESTERDAY_WORK_HOUR);
+        String past = new SimpleDateFormat(RALLY.DATEFORMAT).format(UserSession.YESTERDAY_WORK_HOUR);
         tasks.setQueryFilter(new QueryFilter("Owner.name", "=", email)
                 .and(new QueryFilter("LastUpdateDate", ">", past)));
 

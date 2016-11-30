@@ -2,6 +2,7 @@ package com.sqasquared.toolkit.email;
 
 import com.sqasquared.toolkit.UserSession;
 import com.sqasquared.toolkit.connection.DataObject;
+import com.sqasquared.toolkit.connection.RALLY;
 import com.sqasquared.toolkit.connection.TaskRallyObject;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
@@ -12,6 +13,7 @@ import org.jsoup.nodes.TextNode;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.xml.crypto.Data;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -180,21 +182,22 @@ public class EmailGenerator {
         return generateSubject(lastUpdatedEmail);
     }
 
-    public String generate(UserSession userSession, String template) throws EmailGeneratorException {
-        String htmlEmailTemplate = userSession.getTemplate(template);
+    public String generate(DataObject topNode, String template) throws EmailGeneratorException {
+//        public String generate(UserSession userSession, String template) throws EmailGeneratorException {
+        String htmlEmailTemplate = UserSession.getTemplate(template);
         Document doc = Jsoup.parse(htmlEmailTemplate);
         if (template.equals(UserSession.SSU)) {
             // story status updates
             Element inProgress = doc.select("sqaas[type='notCompleted']").first();
 
             // use today's in-progress task
-            DataObject inProgressNode = userSession.getTopNode().getChildren().get("today").getChildren().get(DataObject.INPROGRESS);
+            DataObject inProgressNode = topNode.getChildren().get("today").getChildren().get(RALLY.INPROGRESS);
             if (!inProgressNode.isEmpty()) {
                 lastUpdatedEmail = mapLastUpdatedStory(inProgressNode, inProgress);
             } else {
                 // Use yesterday's in-progress task
-                DataObject pastInProgressNode = userSession.getTopNode().getChildren().get("past")
-                        .getChildren().get(DataObject.INPROGRESS);
+                DataObject pastInProgressNode = topNode.getChildren().get("past")
+                        .getChildren().get(RALLY.INPROGRESS);
                 if (!pastInProgressNode.isEmpty()) {
                     lastUpdatedEmail = mapLastUpdatedStory(pastInProgressNode, inProgress);
                 } else {
@@ -204,7 +207,7 @@ public class EmailGenerator {
         } else {
             Element completed = doc.select("sqaas[type='completed']").first();
             // End of day
-            DataObject completedNode = userSession.getTopNode().getChildren().get("today").getChildren().get(DataObject.COMPLETED);
+            DataObject completedNode = topNode.getChildren().get("today").getChildren().get(RALLY.COMPLETED);
             if (!completedNode.isEmpty()) {
                 mapStory(completedNode, completed);
             } else {
@@ -212,11 +215,11 @@ public class EmailGenerator {
             }
 
             Element notCompleted = doc.select("sqaas[type='notCompleted']").first();
-            DataObject notCompletedNode = userSession.getTopNode().getChildren().get("today").getChildren().get(DataObject.DEFINED);
+            DataObject notCompletedNode = topNode.getChildren().get("today").getChildren().get(RALLY.DEFINED);
             if (!notCompletedNode.isEmpty()) {
                 mapStory(notCompletedNode, notCompleted);
             } else {
-                notCompletedNode = userSession.getTopNode().getChildren().get("today").getChildren().get(DataObject.INPROGRESS);
+                notCompletedNode = topNode.getChildren().get("today").getChildren().get(RALLY.INPROGRESS);
                 if (!notCompletedNode.isEmpty()) {
                     mapStory(notCompletedNode, notCompleted);
                 } else {
@@ -228,7 +231,7 @@ public class EmailGenerator {
         // Map full name
         Element fullName = doc.select("sqaas[type='fullName']").first();
         if (fullName != null) {
-            fullName.replaceWith(new TextNode(userSession.getFullName(), ""));
+            fullName.replaceWith(new TextNode(UserSession.getFullName(), ""));
         }
 
         return doc.toString();
@@ -245,8 +248,27 @@ public class EmailGenerator {
         email.setHtmlMsg(html);
         email.buildMimeMessage();
         MimeMessage mimeMessage = email.getMimeMessage();
+        FileOutputStream fos = new FileOutputStream(new File(loc));
+        mimeMessage.writeTo(fos);
+        fos.flush();
+        fos.close();
+    }
 
-        // Create random output
+//    public void createEmail(UserSession userSession, String template) throws Exception {
+//        String subject = "";
+//        String doc = "";
+//        // Compose email
+//        HtmlEmail email = new HtmlEmail();
+//        email.setHostName("smtp.googlemail.com");
+//        email.setFrom(userSession.getEmail());
+//        email.addTo(userSession.getEmailTo(template));
+//        email.addCc(userSession.getEmailCC());
+//        email.setSubject(subject);
+//        email.setHtmlMsg(doc.toString());
+//        email.buildMimeMessage();
+//        MimeMessage mimeMessage = email.getMimeMessage();
+//
+//        // Create random output
 //        String uuid = UUID.randomUUID().toString();
 //        File tempFile = null;
 //        if (System.getProperty("os.name").startsWith("Mac")) {
@@ -256,39 +278,9 @@ public class EmailGenerator {
 //            tempFile = new File(System.getProperty("user.home") + "\\Desktop\\newemail" + uuid + ".eml");
 //        }
 //        tempFile.createNewFile();
-        FileOutputStream fos = new FileOutputStream(new File(loc));
-        mimeMessage.writeTo(fos);
-        fos.flush();
-        fos.close();
-    }
-
-    public void createEmail(UserSession userSession, String template) throws Exception {
-        String subject = "";
-        String doc = "";
-        // Compose email
-        HtmlEmail email = new HtmlEmail();
-        email.setHostName("smtp.googlemail.com");
-        email.setFrom(userSession.getEmail());
-        email.addTo(userSession.getEmailTo(template));
-        email.addCc(userSession.getEmailCC());
-        email.setSubject(subject);
-        email.setHtmlMsg(doc.toString());
-        email.buildMimeMessage();
-        MimeMessage mimeMessage = email.getMimeMessage();
-
-        // Create random output
-        String uuid = UUID.randomUUID().toString();
-        File tempFile = null;
-        if (System.getProperty("os.name").startsWith("Mac")) {
-            tempFile = new File("resources/email/" + template + uuid + ".eml");
-            tempFile.getParentFile().mkdir();
-        } else {
-            tempFile = new File(System.getProperty("user.home") + "\\Desktop\\newemail" + uuid + ".eml");
-        }
-        tempFile.createNewFile();
-        FileOutputStream fos = new FileOutputStream(tempFile);
-        mimeMessage.writeTo(fos);
-        fos.flush();
-        fos.close();
-    }
+//        FileOutputStream fos = new FileOutputStream(tempFile);
+//        mimeMessage.writeTo(fos);
+//        fos.flush();
+//        fos.close();
+//    }
 }

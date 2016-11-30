@@ -1,6 +1,7 @@
 package com.sqasquared.toolkit;
 
 import com.sqasquared.toolkit.connection.DataObject;
+import com.sqasquared.toolkit.connection.RALLY;
 import com.sqasquared.toolkit.connection.TaskRallyObject;
 
 import java.util.Date;
@@ -51,18 +52,18 @@ public class TimeAlgorithm implements TreeAlgorithmInterface {
             buildTree(tdy);
             buildTree(past);
         } else if (node.getType().equals("time")) {
-            DataObject completed = new DataObject("state", DataObject.COMPLETED, null);
-            DataObject inProgress = new DataObject("state", DataObject.INPROGRESS, null);
-            DataObject defined = new DataObject("state", DataObject.DEFINED, null);
+            DataObject completed = new DataObject("state", RALLY.COMPLETED, null);
+            DataObject inProgress = new DataObject("state", RALLY.INPROGRESS, null);
+            DataObject defined = new DataObject("state", RALLY.DEFINED, null);
             for (DataObject obj : node.getChildren().values()) {
                 if (obj.getType().equals("task")) {
                     TaskRallyObject taskRallyObject = ((TaskRallyObject) obj);
                     String storyState = taskRallyObject.getState();
-                    if (storyState.equals(DataObject.COMPLETED)) {
+                    if (storyState.equals(RALLY.COMPLETED)) {
                         completed.addChild(obj);
-                    } else if (storyState.equals(DataObject.INPROGRESS)) {
+                    } else if (storyState.equals(RALLY.INPROGRESS)) {
                         inProgress.addChild(obj);
-                    } else if (storyState.equals(DataObject.DEFINED)) {
+                    } else if (storyState.equals(RALLY.DEFINED)) {
                         defined.addChild(obj);
                     }
                 }

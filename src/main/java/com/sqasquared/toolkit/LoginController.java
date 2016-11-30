@@ -37,7 +37,8 @@ public class LoginController implements Initializable, ControlledScreen {
         App.userSession.setAPIKey(api_key);
         try {
             RallyWrapper.initialize();
-            loader.loadUserSession(App.userSession);
+//            loader.loadUserSession(App.userSession);
+            App.userSession.loadUserInfo();
             goToMain();
         } catch (IOException e) {
             e.printStackTrace();

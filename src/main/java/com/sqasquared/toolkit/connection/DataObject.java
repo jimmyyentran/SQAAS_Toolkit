@@ -8,23 +8,14 @@ import java.util.HashMap;
  * Created by jimmytran on 11/1/16.
  */
 public class DataObject {
-    public static final String DATEFORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-    public static final String COMPLETED = "Completed";
-    public static final String DEFINED = "Defined";
-    public static final String INPROGRESS = "In-Progress";
-
 
     HashMap<String, DataObject> children = new HashMap<String, DataObject>();
     DataObject parent;
-//    String type;
-//    String id;
-//    String name;
     @SerializedName("WorkItemType") String type;
     @SerializedName("Id") String id;
     @SerializedName("Title") String name;
 
     public DataObject(String type, String id, String name) {
-        System.out.println("OBJECT CREATED");
         this.type = type;
         this.id = id;
         this.name = name;

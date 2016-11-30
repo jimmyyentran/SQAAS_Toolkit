@@ -69,36 +69,38 @@ public class MainController implements Initializable, ControlledScreen {
 //        });
     }
 
+    private void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Email Generator Error");
+        alert.setContentText(message);
+        alert.showAndWait();
+
+    }
+
     public void ssuClick(ActionEvent actionEvent) {
         try {
             String html = App.userSession.generateHtml(UserSession.SSU);
-            String to =  App.userSession.getEmailTo(UserSession.SSU);
+            String to = App.userSession.getEmailTo(UserSession.SSU);
             String cc = App.userSession.getEmailCC();
-            String subject = App.userSession.getEmailSubject(UserSession.SSU);
+            String subject = App.userSession.getEmailSubject();
             textFieldTo.setText(to);
             textFieldCc.setText(cc);
             textFieldSubject.setText(subject);
             editor.setHtmlText(html);
         } catch (Exception e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Email Generator Error");
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
+            e.printStackTrace();
+            showAlert(e.getMessage());
         }
         return;
     }
 
     public void eodClick(ActionEvent actionEvent) {
         try {
-//            System.out.println("@@@@@@@@");
             String html = App.userSession.generateHtml(UserSession.EOD);
             editor.setHtmlText(html);
-//            System.out.println("@@@@@@@@");
-        } catch (EmailGeneratorException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Email Generator Error");
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(e.getMessage());
         }
         return;
     }
@@ -107,8 +109,9 @@ public class MainController implements Initializable, ControlledScreen {
         clearFields();
         try {
             App.userSession.refreshTasks();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+            showAlert(e.getMessage());
         }
     }
 
@@ -119,7 +122,7 @@ public class MainController implements Initializable, ControlledScreen {
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home") + System.getProperty("file.separator")
                 + "/Desktop"));
         File selectedFile = fileChooser.showSaveDialog(App.stage);
-        if(selectedFile == null){
+        if (selectedFile == null) {
             return;
         }
 
@@ -150,7 +153,7 @@ public class MainController implements Initializable, ControlledScreen {
         return;
     }
 
-    private void clearFields(){
+    private void clearFields() {
         textFieldTo.clear();
         textFieldSubject.clear();
         textFieldCc.clear();
