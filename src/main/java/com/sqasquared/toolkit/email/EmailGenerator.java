@@ -37,12 +37,19 @@ public class EmailGenerator {
         Element eta = listItem.select("sqaas[type='ETA']").first();
         if (eta != null) {
             eta.replaceWith(new TextNode(estimate, ""));
+            if(Double.parseDouble(estimate) > 1.0){
+                Element plural = listItem.select("sqaas[type='plural_s']").first();
+                if(plural != null){
+                    plural.replaceWith(new TextNode("s", ""));
+                }
+            }
         }
         return listItem;
     }
 
     private Element mapStory(DataObject node, Element completedRoot, int order) {
         Element completed = completedRoot.clone();
+        int countTasks = 0;
         String storyName = "";
         String storyLink = "";
         String storySubTag = "";
@@ -67,6 +74,7 @@ public class EmailGenerator {
                 throw new RuntimeException(
                         String.format("Wrong children node type. Expected %s, got %s", "task", node.getType()));
             }
+            countTasks++;
         }
 
         // remove order template
@@ -104,6 +112,14 @@ public class EmailGenerator {
         Element si = completed.select("sqaas[type='storyId']").first();
         if(si != null) {
             si.replaceWith(new TextNode(storyId, ""));
+        }
+
+        // task_plural
+        Element tp = completed.select("sqaas[type='plural_s']").first();
+        if(tp != null) {
+            if(countTasks > 1) {
+                tp.replaceWith(new TextNode("s", ""));
+            }
         }
 
         // delete the list item template

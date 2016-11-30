@@ -38,7 +38,6 @@ public class AppDirector {
     }
 
     public String generateHtml(String template) throws EmailGeneratorException {
-//        run();
         return gen.generate(rallyManager.topNode, template);
     }
 

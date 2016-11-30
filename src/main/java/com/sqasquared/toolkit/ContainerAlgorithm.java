@@ -22,7 +22,7 @@ public class ContainerAlgorithm implements TreeAlgorithmInterface{
         DataObject top = null;
 
         for (DataObject obj : containerDeepCopy.values()) {
-            if(obj.getType().equals(topNodeWit)){
+            if(obj.getType().equals(removeAdditionSigns(topNodeWit))){
                 top = obj;
                 containerDeepCopy.remove(obj.getId());
                 break;
@@ -36,5 +36,9 @@ public class ContainerAlgorithm implements TreeAlgorithmInterface{
         top.setChildren(containerDeepCopy);
 
         return top;
+    }
+
+    private String removeAdditionSigns(String wit){
+        return wit.replace("+", " ");
     }
 }

@@ -2,7 +2,6 @@ package com.sqasquared.toolkit;
 
 import com.sqasquared.toolkit.connection.DataObject;
 
-import javax.xml.crypto.Data;
 import java.util.HashMap;
 
 /**

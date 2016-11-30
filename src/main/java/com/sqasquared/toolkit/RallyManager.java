@@ -2,13 +2,8 @@ package com.sqasquared.toolkit;
 
 import com.sqasquared.toolkit.connection.DataObject;
 import com.sqasquared.toolkit.connection.TaskRallyObject;
-import com.sqasquared.toolkit.email.EmailGenerator;
-import com.sqasquared.toolkit.email.EmailGeneratorException;
-import com.sun.xml.internal.messaging.saaj.packaging.mime.MessagingException;
-import org.apache.commons.mail.EmailException;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 /**
  * Created by jimmytran on 11/29/16.
@@ -27,10 +22,6 @@ public class RallyManager extends ObjectManager{
 
     private void run() {
         topNode = this.alg.constructTree(objectContainer);
-    }
-
-    private void setAlg(TreeAlgorithmInterface alg) {
-        this.alg = alg;
     }
 
     public void loadTasks() throws IOException {

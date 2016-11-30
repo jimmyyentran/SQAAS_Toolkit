@@ -34,13 +34,7 @@ public class UserSession {
     public static Date TODAY_WORK_HOUR;
     public static Date YESTERDAY_WORK_HOUR;
     private static Preferences prop;
-//    private TreeAlgorithmInterface alg;
-//    private HashMap<String, DataObject> taskContainer = new HashMap();
     private static final HashMap<String, String> templateContainer = new HashMap();
-//    private DataObject topNode = null;
-//    private final Loader loader;
-//    private final EmailGenerator gen = new EmailGenerator();
-//    private RallyManager dataManager;
     private AppDirector appDirector;
 
     public UserSession() {
@@ -93,7 +87,6 @@ public class UserSession {
             }
         }
     }
-
 
     public void setProperty(String property, String value) {
         prop.put(property, value);

@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.apache.commons.cli.*;
 
+import javax.jws.soap.SOAPBinding;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.logging.ConsoleHandler;
@@ -29,7 +30,7 @@ public class App extends Application {
     public static UserSession userSession;
     public static Stage stage;
 
-    public void initialize() throws IOException {
+    public static void initialize() throws IOException {
         userSession = new UserSession();
         TreeAlgorithmInterface timeAlgorithm = new TimeAlgorithm();
         RallyManager rallyManager = new RallyManager();
@@ -96,16 +97,26 @@ public class App extends Application {
 
             if(commandLine.hasOption("nogui")){
                 String str = commandLine.getOptionValue("nogui");
+                String template;
+                if(str.toLowerCase().equals("ssu")){
+                    template = UserSession.SSU;
+                }else{
+                    template = UserSession.EOD;
+                }
                 userSession = new UserSession();
                 Loader loader = new Loader();
                 RallyWrapper.initialize();
 //                loader.loadUserSession(userSession);
+                initialize();
                 userSession.loadRallyTasks();
                 try {
-                    String html = userSession.generateHtml(UserSession.SSU);
-                    String to = userSession.getEmailTo(UserSession.SSU);
+                    String html = userSession.generateHtml(template);
+                    String to = userSession.getEmailTo(template);
                     String cc = userSession.getEmailCC();
-                    String subject = userSession.getEmailSubject();
+                    String subject = "";
+                    if(template.equals(UserSession.SSU)) {
+                        subject = userSession.getEmailSubject();
+                    }
                     System.out.println("html = " + html);
                     System.out.println("to = " + to);
                     System.out.println("cc = " + cc);

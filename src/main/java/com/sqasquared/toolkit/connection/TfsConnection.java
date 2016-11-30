@@ -51,7 +51,6 @@ public class TfsConnection {
         URL obj = new URL(ASM.ASM_URL + apiUrl);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         con.setRequestMethod("POST");
-        con.setRequestProperty("User-Agent", ASM.USER_AGENT);
         con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
         con.setDoInput(true);
         con.setDoOutput(true);
@@ -80,7 +79,7 @@ public class TfsConnection {
         }
         in.close();
 
-        ContainerAlgorithm cAlg = new ContainerAlgorithm(ASM.PRODUCT_BACKLOG_ITEM);
+        ContainerAlgorithm cAlg = new ContainerAlgorithm(parentWit);
         HashMap<String, DataObject> map = mapToObjects(response.toString());
         return cAlg.constructTree(map);
     }
