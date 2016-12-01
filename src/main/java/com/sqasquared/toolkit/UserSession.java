@@ -230,9 +230,8 @@ public class UserSession {
         appDirector.refreshTasks();
     }
 
-    public String generateTestCases(String template) {
-        appDirector.generateTestCases(template);
-        return "";
+    public String generateTestCases(String template) throws IOException {
+        return appDirector.generateTestCases(template);
     }
 
     public void loginASM() throws IOException, InvalidCredentialsException {

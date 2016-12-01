@@ -14,11 +14,9 @@ public class TfsManager extends DataManager<DataObject> {
         super();
     }
 
-    public void loadWorkingTree(String apiUrl, String parentWit,
-                                String parentId, String childWit) throws
-            IOException {
-        ((TfsLoader) loader).loadWorkingTree(apiUrl, parentWit, parentId,
-                childWit);
+    public void loadWorkingTree(String apiUrl, String parentWit, String parentId, String childWit) throws IOException {
+        ((TfsLoader) loader).loadWorkingTree(apiUrl, parentWit, parentId, childWit);
+        ((ContainerAlgorithm)alg).setTopNodeWit(parentWit);
         run();
     }
 

@@ -132,7 +132,6 @@ public class TfsConnection {
      * @param response
      * @return
      */
-//    private HashMap<String, DataObject> mapToJsonObjects(String response){
     private JsonObject mapToJsonObjects(String response) {
         // Convert string response to JsonObject
         JsonParser jp = new JsonParser();

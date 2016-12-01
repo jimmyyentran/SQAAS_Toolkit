@@ -1,6 +1,7 @@
 package com.sqasquared.toolkit.email;
 
 import com.sqasquared.toolkit.UserSession;
+import com.sqasquared.toolkit.connection.ASM;
 import com.sqasquared.toolkit.connection.DataObject;
 import com.sqasquared.toolkit.connection.RALLY;
 import com.sqasquared.toolkit.connection.TaskRallyObject;
@@ -215,8 +216,7 @@ public class EmailGenerator {
             EmailGeneratorException {
         String htmlEmailTemplate = UserSession.getTemplate(template);
         Document doc = Jsoup.parse(htmlEmailTemplate);
-        if (template.equals(UserSession.SSU) || template.equals(UserSession
-                .SSUP)) {
+        if (template.equals(UserSession.SSU) || template.equals(UserSession.SSUP)) {
             //All story status updates
             if (template.equals(UserSession.SSUP)) {
                 // Story status update progress
@@ -313,40 +313,61 @@ public class EmailGenerator {
         fos.close();
     }
 
-    public String generateTestCase(DataObject obj, String template) {
-        return "";
+    private Element mapRowItem(String tfs_id, String tfs_name,Element rowItemTemplate) {
+        Element rowItem = rowItemTemplate.clone();
+        Element fi = rowItem.select("sqaas[type='tfs_id']").first();
+        fi.replaceWith(new TextNode(tfs_id, ""));
+        Element tn = rowItem.select("sqaas[type='tfs_name']").first();
+        tn.replaceWith(new TextNode(tfs_name, ""));
+        Element a = rowItem.select("a").first();
+        if (a != null) {
+            a.attr("href", ASM.INSTEP1_LINK + tfs_id);
+        }
+        return rowItem;
     }
 
-//    public void createEmail(UserSession userSession, String template)
-// throws Exception {
-//        String subject = "";
-//        String doc = "";
-//        // Compose email
-//        HtmlEmail email = new HtmlEmail();
-//        email.setHostName("smtp.googlemail.com");
-//        email.setFrom(userSession.getEmail());
-//        email.addTo(userSession.getEmailTo(template));
-//        email.addCc(userSession.getEmailCC());
-//        email.setSubject(subject);
-//        email.setHtmlMsg(doc.toString());
-//        email.buildMimeMessage();
-//        MimeMessage mimeMessage = email.getMimeMessage();
-//
-//        // Create random output
-//        String uuid = UUID.randomUUID().toString();
-//        File tempFile = null;
-//        if (System.getProperty("os.name").startsWith("Mac")) {
-//            tempFile = new File("resources/email/" + template + uuid + "
-// .eml");
-//            tempFile.getParentFile().mkdir();
-//        } else {
-//            tempFile = new File(System.getProperty("user.home") +
-// "\\Desktop\\newemail" + uuid + ".eml");
-//        }
-//        tempFile.createNewFile();
-//        FileOutputStream fos = new FileOutputStream(tempFile);
-//        mimeMessage.writeTo(fos);
-//        fos.flush();
-//        fos.close();
-//    }
+    public String generateTestCase(DataObject top, String template) {
+        String htmlEmailTemplate = UserSession.getTemplate(template);
+        Document doc = Jsoup.parse(htmlEmailTemplate);
+        Element row = doc.select("tr").get(1);
+        for(DataObject obj : top.getChildren().values()){
+            Element rowItem = mapRowItem(obj.getId(), obj.getName(), row);
+            row.after(rowItem);
+        }
+
+        // project name
+        Element sp = doc.select("sqaas[type='subProject']").first();
+        if (sp != null) {
+            sp.replaceWith(new TextNode("SUBPROJECT", ""));
+        }
+
+        // top node link
+        Element a = doc.select("a").first();
+        if (a != null) {
+            a.attr("href", ASM.INSTEP1_LINK + top.getId());
+        }
+
+        // top node type
+        Element tnt = doc.select("sqaas[type='topNodeType']").first();
+        if (tnt != null) {
+            tnt.replaceWith(new TextNode(top.getType(), ""));
+        }
+
+        // top node type
+        Element tni = doc.select("sqaas[type='topNodeId']").first();
+        if (tni != null) {
+            tni.replaceWith(new TextNode(top.getId(), ""));
+        }
+
+        // top node name
+        Element tnn = doc.select("sqaas[type='topNodeName']").first();
+        if (tnn != null) {
+            tnn.replaceWith(new TextNode(top.getName(), ""));
+        }
+
+
+        row.remove();
+
+        return doc.toString();
+    }
 }

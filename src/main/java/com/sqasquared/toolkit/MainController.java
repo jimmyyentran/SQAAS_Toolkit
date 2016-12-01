@@ -149,8 +149,7 @@ public class MainController implements Initializable, ControlledScreen {
 
             if (result.isPresent()) {
                 try {
-                    App.userSession.loginASM(result.get().get(0).toString(),
-                            result.get().get(1).toString());
+                    App.userSession.loginASM(result.get().get(0).toString(), result.get().get(1).toString());
                     //TODO pop up to ask for PBI
                 } catch (IOException ex) {
                     ex.printStackTrace();
@@ -160,10 +159,21 @@ public class MainController implements Initializable, ControlledScreen {
                     ex.printStackTrace();
                     showAlert("Invalid Login: " + e.getMessage());
                     return;
+                } catch (Exception ex){
+                    ex.printStackTrace();
+                    showAlert("Internal Error! " + e.getMessage());
+                    return;
                 }
             }
         }
-        editor.setHtmlText(App.userSession.generateTestCases(UserSession.TCR));
+        ;
+        try {
+            editor.setHtmlText(App.userSession.generateTestCases(UserSession.TCR));
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("Internal Error! " + e.getMessage());
+            return;
+        }
     }
 
     private Optional<List<String>> tfsLoginDialog() {

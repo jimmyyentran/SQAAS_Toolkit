@@ -1,5 +1,6 @@
 package com.sqasquared.toolkit;
 
+import com.sqasquared.toolkit.connection.ASM;
 import com.sqasquared.toolkit.email.EmailGenerator;
 import com.sqasquared.toolkit.email.EmailGeneratorException;
 import org.apache.commons.mail.EmailException;
@@ -85,8 +86,11 @@ public class AppDirector {
         rallyManager.refreshTasks();
     }
 
-    public String generateTestCases(String template) {
-        return gen.generateTestCase(tfsManager.topNode, template);
+    public String generateTestCases(String template) throws IOException {
+        tfsManager.loadWorkingTree(ASM.INSTEP1, ASM.PRODUCT_BACKLOG_ITEM_WIT, "25544", ASM
+                .TEST_CASE_WIT);
+        System.out.println(gen.generateTestCase(tfsManager.getTopNode(), template));
+        return gen.generateTestCase(tfsManager.getTopNode(), template);
     }
 
     public void loginASM() throws IOException, InvalidCredentialsException {

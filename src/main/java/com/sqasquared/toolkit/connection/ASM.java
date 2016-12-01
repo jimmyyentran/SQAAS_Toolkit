@@ -6,9 +6,8 @@ package com.sqasquared.toolkit.connection;
 public final class ASM {
     public static final String ASM_URL = "https://tfs.asmnet.com/";
     public static final String INSTEP2 =
-            "Custom%20Dev%20-%20Team%20El%20Segundo/6bc4d2b6-ee1c-4d01-b0b6" +
-                    "-769c1127f56f" +
-                    "/_api/_wit/query?__v=5";
+            "Custom%20Dev%20-%20Team%20El%20Segundo/6bc4d2b6-ee1c-4d01-b0b6-769c1127f56f/_api" +
+                    "/_wit/query?__v=5";
     public static final String INSTEP1 = "CRM/PPS/_api/_wit/query?__v=5";
     public static final String PRODUCT_BACKLOG_ITEM = "Product Backlog Item";
     public static final String PRODUCT_BACKLOG_ITEM_WIT =
@@ -16,4 +15,8 @@ public final class ASM {
     public static final String TEST_CASE = "Test Case";
     public static final String TEST_CASE_WIT = "Test+Case";
     public static final String USER_AGENT = "Mozilla/5.0";
+    public static final String INSTEP1_LINK = "https://tfs.asmnet" +
+            ".com/CRM/PPS/_workitems?newQuery=true&_a=edit&id=";
+    public static final String INSTEP2_LINK = "https://tfs.asmnet" +
+            ".com/Custom%20Dev%20-%20Team%20El%20Segundo/INSTEP/_workitems?_a=edit&id=";
 }

@@ -48,6 +48,9 @@ public class FileResourceManager extends ObjectManager<String> {
 
 
     public String getTemplate(String template) {
+        if(template.equals(UserSession.TCR)){
+            return objectContainer.get("test_case");
+        }
         return objectContainer.get(template);
     }
 }
