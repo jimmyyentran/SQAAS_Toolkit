@@ -14,7 +14,8 @@ import java.util.regex.Pattern;
  */
 
 public class TaskRallyObject extends DataObject {
-    private final String formattedUserTasksLink = "https://rally1.rallydev.com/#/%s/detail/userstory/%s/tasks";
+    private final String formattedUserTasksLink = "https://rally1.rallydev" +
+            ".com/#/%s/detail/userstory/%s/tasks";
 
     private final String state;
     private final String storyName;
@@ -30,8 +31,11 @@ public class TaskRallyObject extends DataObject {
     private String baseStoryName;
     private String storyFormattedID;
 
-    public TaskRallyObject(String taskName, String objectID, String formattedID, String state, String storyName,
-                           String storyRef, String projectName, String projectRef, String creationDate, String lastUpdateDate,
+    public TaskRallyObject(String taskName, String objectID, String
+            formattedID, String state, String storyName,
+                           String storyRef, String projectName, String
+                                   projectRef, String creationDate, String
+                                   lastUpdateDate,
                            String estimate) {
         super("task", objectID, taskName);
         this.formattedID = formattedID;
@@ -115,7 +119,8 @@ public class TaskRallyObject extends DataObject {
         } catch (Exception ex) {
             indent = "";
         }
-        String toBePrinted = indent + "Type: " + type + ", ID: " + id + ", Name: " + name +
+        String toBePrinted = indent + "Type: " + type + ", ID: " + id + ", " +
+                "Name: " + name +
                 ", Status: " + state + ", LastUpdated: " + lastUpdateDate;
         System.out.println(toBePrinted);
     }
@@ -172,7 +177,7 @@ public class TaskRallyObject extends DataObject {
         int size = this.storyTags.size();
         String bracketOpen = "";
         String bracketClose = "";
-        if(addBrackets) {
+        if (addBrackets) {
             bracketOpen = "[";
             bracketClose = "]";
         }

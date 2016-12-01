@@ -5,12 +5,13 @@ import com.sqasquared.toolkit.connection.DataObject;
 /**
  * Created by JTran on 11/30/2016.
  */
-public abstract class DataManager<T extends DataObject> extends ObjectManager<T>{
+public abstract class DataManager<T extends DataObject> extends
+        ObjectManager<T> {
     protected DataObject topNode = null;
     protected TreeAlgorithmInterface alg = null;
     protected Loader<T> loader = null;
 
-    public DataManager(){
+    public DataManager() {
         super();
     }
 
@@ -18,7 +19,7 @@ public abstract class DataManager<T extends DataObject> extends ObjectManager<T>
         return topNode;
     }
 
-    public void setAlgorithm(TreeAlgorithmInterface alg){
+    public void setAlgorithm(TreeAlgorithmInterface alg) {
         this.alg = alg;
     }
 
@@ -26,7 +27,7 @@ public abstract class DataManager<T extends DataObject> extends ObjectManager<T>
         topNode = this.alg.constructTree(objectContainer);
     }
 
-    public void setLoader(Loader<T> loader){
+    public void setLoader(Loader<T> loader) {
         this.loader = loader;
     }
 }

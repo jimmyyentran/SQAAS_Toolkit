@@ -13,22 +13,22 @@ import org.jsoup.nodes.TextNode;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import javax.xml.crypto.Data;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.UUID;
 
 /**
  * Created by jimmytran on 10/30/16.
  */
 public class EmailGenerator {
     DataObject lastUpdatedEmail;
+
     public EmailGenerator() {
 
     }
 
-    private Element mapListItem(String formattedId, String taskName, String estimate, Element listItemTemplate) {
+    private Element mapListItem(String formattedId, String taskName, String
+            estimate, Element listItemTemplate) {
         Element listItem = listItemTemplate.clone();
         Element fi = listItem.select("sqaas[type='formattedID']").first();
         fi.replaceWith(new TextNode(formattedId, ""));
@@ -37,9 +37,10 @@ public class EmailGenerator {
         Element eta = listItem.select("sqaas[type='ETA']").first();
         if (eta != null) {
             eta.replaceWith(new TextNode(estimate, ""));
-            if(Double.parseDouble(estimate) > 1.0){
-                Element plural = listItem.select("sqaas[type='plural_s']").first();
-                if(plural != null){
+            if (Double.parseDouble(estimate) > 1.0) {
+                Element plural = listItem.select("sqaas[type='plural_s']")
+                        .first();
+                if (plural != null) {
                     plural.replaceWith(new TextNode("s", ""));
                 }
             }
@@ -47,7 +48,8 @@ public class EmailGenerator {
         return listItem;
     }
 
-    private Element mapStory(DataObject node, Element completedRoot, int order) {
+    private Element mapStory(DataObject node, Element completedRoot, int
+            order) {
         Element completed = completedRoot.clone();
         int countTasks = 0;
         String storyName = "";
@@ -68,11 +70,13 @@ public class EmailGenerator {
                     storySubTagBracket = task.getSubProjectTag(true);
                     storyId = task.getStoryFormattedID();
                 }
-                Element listItemMapped = mapListItem(task.getFormattedID(), task.getName(), task.getEstimate(), listItem);
+                Element listItemMapped = mapListItem(task.getFormattedID(),
+                        task.getName(), task.getEstimate(), listItem);
                 list.appendChild(listItemMapped);
             } else {
                 throw new RuntimeException(
-                        String.format("Wrong children node type. Expected %s, got %s", "task", node.getType()));
+                        String.format("Wrong children node type. Expected %s," +
+                                " got %s", "task", node.getType()));
             }
             countTasks++;
         }
@@ -85,39 +89,41 @@ public class EmailGenerator {
         }
 
         // sub-project
-        Element subProject = completed.select("sqaas[type='subProject'").first();
-        if(subProject != null) {
+        Element subProject = completed.select("sqaas[type='subProject'")
+                .first();
+        if (subProject != null) {
             subProject.replaceWith(new TextNode(storySubTag, ""));
         }
 
         // sub-project bracket
-        Element subProjectBracket = completed.select("sqaas[type='subProjectBracket'").first();
-        if(subProjectBracket != null) {
+        Element subProjectBracket = completed.select
+                ("sqaas[type='subProjectBracket'").first();
+        if (subProjectBracket != null) {
             subProjectBracket.replaceWith(new TextNode(storySubTagBracket, ""));
         }
 
         // href links
         Element a = completed.select("a").first();
-        if(a != null){
+        if (a != null) {
             a.attr("href", storyLink);
         }
 
         // story name
         Element sn = completed.select("sqaas[type='storyName']").first();
-        if(sn != null){
+        if (sn != null) {
             sn.replaceWith(new TextNode(storyName, ""));
         }
 
         // story id
         Element si = completed.select("sqaas[type='storyId']").first();
-        if(si != null) {
+        if (si != null) {
             si.replaceWith(new TextNode(storyId, ""));
         }
 
         // task_plural
         Element tp = completed.select("sqaas[type='plural_s']").first();
-        if(tp != null) {
-            if(countTasks > 1) {
+        if (tp != null) {
+            if (countTasks > 1) {
                 tp.replaceWith(new TextNode("s", ""));
             }
         }
@@ -136,7 +142,8 @@ public class EmailGenerator {
                 completed.before(completedMapped);
             } else {
                 throw new RuntimeException(
-                        String.format("Wrong children node type. Expected %s, got %s", "story", story.getType()));
+                        String.format("Wrong children node type. Expected %s," +
+                                " got %s", "story", story.getType()));
             }
             order++;
         }
@@ -158,18 +165,22 @@ public class EmailGenerator {
                         if (latestTask == null || latestStory == null) {
                             latestTask = task;
                             latestStory = story;
-                        } else if (latestTask.getLastUpdateDate().before(task.getLastUpdateDate())) {
+                        } else if (latestTask.getLastUpdateDate().before(task
+                                .getLastUpdateDate())) {
                             latestTask = task;
                             latestStory = story;
                         }
                     } else {
                         throw new RuntimeException(
-                                String.format("Wrong children node type. Expected %s, got %s", "task", node.getType()));
+                                String.format("Wrong children node type. " +
+                                        "Expected %s, got %s", "task", node
+                                        .getType()));
                     }
                 }
             } else {
                 throw new RuntimeException(
-                        String.format("Wrong children node type. Expected %s, got %s", "story", story.getType()));
+                        String.format("Wrong children node type. Expected %s," +
+                                " got %s", "story", story.getType()));
             }
         }
         Element mapLatestStory = mapStory(latestStory, completed, 1);
@@ -180,7 +191,8 @@ public class EmailGenerator {
 
     private String generateSubject(DataObject ro) {
         String subject = UserSession.SSU_TAG;
-        TaskRallyObject task = (TaskRallyObject) ro.getChildren().values().iterator().next();
+        TaskRallyObject task = (TaskRallyObject) ro.getChildren().values()
+                .iterator().next();
         if (task.getType().equals("task")) {
             String storyName = task.getStoryName();
             int i = storyName.lastIndexOf("] ");
@@ -189,68 +201,86 @@ public class EmailGenerator {
             subject += (" " + tags + " " + task.getStoryFormattedID() + base);
         } else {
             throw new RuntimeException(
-                    String.format("Wrong children node type. Expected %s, got %s", "task", task.getType()));
+                    String.format("Wrong children node type. Expected %s, got" +
+                            " %s", "task", task.getType()));
         }
         return subject;
     }
 
-    public String getLastEmailSubject(){
+    public String getLastEmailSubject() {
         return generateSubject(lastUpdatedEmail);
     }
 
-    public String generate(DataObject topNode, String template) throws EmailGeneratorException {
+    public String generate(DataObject topNode, String template) throws
+            EmailGeneratorException {
         String htmlEmailTemplate = UserSession.getTemplate(template);
         Document doc = Jsoup.parse(htmlEmailTemplate);
-        if (template.equals(UserSession.SSU) || template.equals(UserSession.SSUP)) {
+        if (template.equals(UserSession.SSU) || template.equals(UserSession
+                .SSUP)) {
             //All story status updates
-            if(template.equals(UserSession.SSUP)){
+            if (template.equals(UserSession.SSUP)) {
                 // Story status update progress
-                Element completed = doc.select("sqaas[type='completed']").first();
-                DataObject completedNode = topNode.getChildren().get("today").getChildren().get(RALLY.COMPLETED);
+                Element completed = doc.select("sqaas[type='completed']")
+                        .first();
+                DataObject completedNode = topNode.getChildren().get("today")
+                        .getChildren().get(RALLY.COMPLETED);
                 if (!completedNode.isEmpty()) {
                     mapLastUpdatedStory(completedNode, completed);
                 } else {
-                    throw new EmailGeneratorException("No completed tasks today. Get to work!!");
+                    throw new EmailGeneratorException("No completed tasks " +
+                            "today. Get to work!!");
                 }
             }
 
             // story status updates
-            Element inProgress = doc.select("sqaas[type='notCompleted']").first();
+            Element inProgress = doc.select("sqaas[type='notCompleted']")
+                    .first();
 
             // use today's in-progress task
-            DataObject inProgressNode = topNode.getChildren().get("today").getChildren().get(RALLY.INPROGRESS);
+            DataObject inProgressNode = topNode.getChildren().get("today")
+                    .getChildren().get(RALLY.INPROGRESS);
             if (!inProgressNode.isEmpty()) {
-                lastUpdatedEmail = mapLastUpdatedStory(inProgressNode, inProgress);
+                lastUpdatedEmail = mapLastUpdatedStory(inProgressNode,
+                        inProgress);
             } else {
                 // Use yesterday's in-progress task
-                DataObject pastInProgressNode = topNode.getChildren().get("past")
+                DataObject pastInProgressNode = topNode.getChildren().get
+                        ("past")
                         .getChildren().get(RALLY.INPROGRESS);
                 if (!pastInProgressNode.isEmpty()) {
-                    lastUpdatedEmail = mapLastUpdatedStory(pastInProgressNode, inProgress);
+                    lastUpdatedEmail = mapLastUpdatedStory
+                            (pastInProgressNode, inProgress);
                 } else {
-                    throw new EmailGeneratorException("No in-progress tasks today. Get to work!!");
+                    throw new EmailGeneratorException("No in-progress tasks " +
+                            "today. Get to work!!");
                 }
             }
         } else {
             Element completed = doc.select("sqaas[type='completed']").first();
             // End of day
-            DataObject completedNode = topNode.getChildren().get("today").getChildren().get(RALLY.COMPLETED);
+            DataObject completedNode = topNode.getChildren().get("today")
+                    .getChildren().get(RALLY.COMPLETED);
             if (!completedNode.isEmpty()) {
                 mapStory(completedNode, completed);
             } else {
-                throw new EmailGeneratorException("No completed tasks today. Get to work!!");
+                throw new EmailGeneratorException("No completed tasks today. " +
+                        "Get to work!!");
             }
 
-            Element notCompleted = doc.select("sqaas[type='notCompleted']").first();
-            DataObject notCompletedNode = topNode.getChildren().get("today").getChildren().get(RALLY.DEFINED);
+            Element notCompleted = doc.select("sqaas[type='notCompleted']")
+                    .first();
+            DataObject notCompletedNode = topNode.getChildren().get("today")
+                    .getChildren().get(RALLY.DEFINED);
             if (!notCompletedNode.isEmpty()) {
                 mapStory(notCompletedNode, notCompleted);
             } else {
-                notCompletedNode = topNode.getChildren().get("today").getChildren().get(RALLY.INPROGRESS);
+                notCompletedNode = topNode.getChildren().get("today")
+                        .getChildren().get(RALLY.INPROGRESS);
                 if (!notCompletedNode.isEmpty()) {
                     mapStory(notCompletedNode, notCompleted);
                 } else {
-                    throw new EmailGeneratorException("No in-progress or declared tasks today");
+                    throw new EmailGeneratorException("No in-progress or " +
+                            "declared tasks today");
                 }
             }
         }
@@ -264,7 +294,9 @@ public class EmailGenerator {
         return doc.toString();
     }
 
-    public void createEmail(String to, String cc, String subject, String html, String from, String loc) throws EmailException, IOException, MessagingException {
+    public void createEmail(String to, String cc, String subject, String
+            html, String from, String loc) throws EmailException,
+            IOException, MessagingException {
         // Compose email
         HtmlEmail email = new HtmlEmail();
         email.setHostName("smtp.googlemail.com");
@@ -285,7 +317,8 @@ public class EmailGenerator {
         return "";
     }
 
-//    public void createEmail(UserSession userSession, String template) throws Exception {
+//    public void createEmail(UserSession userSession, String template)
+// throws Exception {
 //        String subject = "";
 //        String doc = "";
 //        // Compose email
@@ -303,10 +336,12 @@ public class EmailGenerator {
 //        String uuid = UUID.randomUUID().toString();
 //        File tempFile = null;
 //        if (System.getProperty("os.name").startsWith("Mac")) {
-//            tempFile = new File("resources/email/" + template + uuid + ".eml");
+//            tempFile = new File("resources/email/" + template + uuid + "
+// .eml");
 //            tempFile.getParentFile().mkdir();
 //        } else {
-//            tempFile = new File(System.getProperty("user.home") + "\\Desktop\\newemail" + uuid + ".eml");
+//            tempFile = new File(System.getProperty("user.home") +
+// "\\Desktop\\newemail" + uuid + ".eml");
 //        }
 //        tempFile.createNewFile();
 //        FileOutputStream fos = new FileOutputStream(tempFile);

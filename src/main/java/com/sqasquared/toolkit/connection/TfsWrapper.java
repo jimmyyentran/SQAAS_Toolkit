@@ -11,15 +11,20 @@ import java.io.IOException;
 public class TfsWrapper {
     private static TfsConnection tfsConnection;
 
-    protected TfsWrapper(){}
+    protected TfsWrapper() {
+    }
 
-    public static void initialize(){
-        tfsConnection = new TfsConnection(UserSession.getProperty("ASM_username"),
+    public static void initialize() {
+        tfsConnection = new TfsConnection(UserSession.getProperty
+                ("ASM_username"),
                 UserSession.getProperty("ASM_password"));
     }
 
-    public static JsonObject getWorkingTree(String apiUrl, String parentWit, String parentId, String childWit) throws IOException {
-        return tfsConnection.getWorkingTree(apiUrl, parentWit, parentId,childWit);
+    public static JsonObject getWorkingTree(String apiUrl, String parentWit,
+                                            String parentId, String childWit)
+            throws IOException {
+        return tfsConnection.getWorkingTree(apiUrl, parentWit, parentId,
+                childWit);
     }
 
     public static boolean isValidCredentials() throws IOException {

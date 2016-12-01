@@ -11,11 +11,12 @@ import java.util.logging.Logger;
 /**
  * Created by jimmytran on 11/30/16.
  */
-public class FileResourceManager extends ObjectManager<String>{
-    private static Logger LOG = Logger.getLogger(FileResourceManager.class.getName());
+public class FileResourceManager extends ObjectManager<String> {
+    private static Logger LOG = Logger.getLogger(FileResourceManager.class
+            .getName());
     private RallyLoader rallyLoader = new RallyLoader();
 
-    public void loadTemplates(){
+    public void loadTemplates() {
         LOG.log(Level.FINE, "Loading templates");
         add("/template/end_of_day.html");
         add("/template/story_status_update.html");
@@ -24,7 +25,7 @@ public class FileResourceManager extends ObjectManager<String>{
     }
 
     // Load html templates from class path
-    private String getTemplateResource(String path){
+    private String getTemplateResource(String path) {
         InputStream in = UserSession.class.getResourceAsStream(path);
         try {
             return IOUtils.toString(in);
@@ -35,13 +36,14 @@ public class FileResourceManager extends ObjectManager<String>{
     }
 
     // Convert path to template variable
-    private String pathToTemplateVariable(String path){
+    private String pathToTemplateVariable(String path) {
         return FilenameUtils.removeExtension(FilenameUtils.getName(path));
     }
 
     @Override
     public void add(String path) {
-        objectContainer.put(pathToTemplateVariable(path), getTemplateResource(path));
+        objectContainer.put(pathToTemplateVariable(path), getTemplateResource
+                (path));
     }
 
 

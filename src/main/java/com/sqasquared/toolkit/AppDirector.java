@@ -18,7 +18,7 @@ public class AppDirector {
     private TfsManager tfsManager;
     private UserSession userSession;
 
-    public AppDirector(UserSession userSession){
+    public AppDirector(UserSession userSession) {
         this.userSession = userSession;
     }
 
@@ -26,9 +26,12 @@ public class AppDirector {
         this.rallyManager = rallyManager;
     }
 
-    public void setTfsManager(TfsManager tfsManager){this.tfsManager = tfsManager;}
+    public void setTfsManager(TfsManager tfsManager) {
+        this.tfsManager = tfsManager;
+    }
 
-    public void setFileResourceManager(FileResourceManager fileResourceManager) {
+    public void setFileResourceManager(FileResourceManager
+                                               fileResourceManager) {
         this.fileResourceManager = fileResourceManager;
     }
 
@@ -66,7 +69,8 @@ public class AppDirector {
     }
 
     // Save format and save email into file location
-    public void generateEmail(String to, String cc, String subject, String html, String email, String loc) throws
+    public void generateEmail(String to, String cc, String subject, String
+            html, String email, String loc) throws
             EmailException, MessagingException, IOException {
         gen.createEmail(to, cc, subject, html, email, loc);
     }
@@ -81,14 +85,14 @@ public class AppDirector {
         rallyManager.refreshTasks();
     }
 
-    public String generateTestCases(String template){
+    public String generateTestCases(String template) {
         return gen.generateTestCase(tfsManager.topNode, template);
     }
 
     public void loginASM() throws IOException, InvalidCredentialsException {
-        if(userSession.getProperty("ASM_username").equals("") ||
-                userSession.getProperty("ASM_username").equals("ASM\\") ||
-                userSession.getProperty("ASM_password").equals("") ||
+        if (UserSession.getProperty("ASM_username").equals("") ||
+                UserSession.getProperty("ASM_username").equals("ASM\\") ||
+                UserSession.getProperty("ASM_password").equals("") ||
                 !tfsManager.isValidCredentials()) {
             throw new InvalidCredentialsException("Wrong TFS credentials");
         }

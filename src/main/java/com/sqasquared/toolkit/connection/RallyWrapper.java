@@ -30,19 +30,18 @@ public class RallyWrapper {
 
     private static RallyRestApi rallyAPIConnection;
 
-    protected RallyWrapper(){}
+    protected RallyWrapper() {
+    }
 
     /**
-     * Initializes the RallyRestApi by using the server and api key. No actual network connections are made here.
+     * Initializes the RallyRestApi by using the server and api key. No
+     * actual network connections are made here.
      *
      * @throws URISyntaxException Malformed URI from server preferences
      */
     public static void initialize() throws URISyntaxException {
-        rallyAPIConnection = new RallyRestApi(new URI(UserSession.getProperty("server")), UserSession.getProperty("api_key"));
-    }
-
-    public RallyRestApi getConnection() {
-        return rallyAPIConnection;
+        rallyAPIConnection = new RallyRestApi(new URI(UserSession.getProperty
+                ("server")), UserSession.getProperty("api_key"));
     }
 
     public static void closeConnection() {
@@ -52,7 +51,6 @@ public class RallyWrapper {
             e.printStackTrace();
         }
     }
-
 
     /**
      * Query Rally for the user information such as full name and email address
@@ -72,7 +70,8 @@ public class RallyWrapper {
      * @return JsonObject containing the Rally user information
      * @throws IOException
      */
-    private static JsonObject getUserInfo(String saveJsonToDir, String jsonLoc) throws IOException {
+    private static JsonObject getUserInfo(String saveJsonToDir, String
+            jsonLoc) throws IOException {
         LOG.log(Level.FINE, "Fetching user info");
         if (jsonLoc != null) {
             File file = getLatestFileWithPrefix("UserInfo", jsonLoc);
@@ -86,8 +85,10 @@ public class RallyWrapper {
                 DateFormat df = new SimpleDateFormat("MM_dd_yyyy'T'HH_mm_ss");
                 Date today = Calendar.getInstance().getTime();
                 String reportDate = df.format(today);
-                File file = new File(saveJsonToDir + "/UserInfo_" + reportDate + ".json");
-                FileUtils.writeStringToFile(file, response.getObject().toString());
+                File file = new File(saveJsonToDir + "/UserInfo_" +
+                        reportDate + ".json");
+                FileUtils.writeStringToFile(file, response.getObject()
+                        .toString());
             }
             return response.getObject();
         } else {
@@ -100,7 +101,8 @@ public class RallyWrapper {
     }
 
     /**
-     * Query formattedID of Rally stories using it's objectID. Formatted story ID takes the form of US#####.
+     * Query formattedID of Rally stories using it's objectID. Formatted
+     * story ID takes the form of US#####.
      * Example: US17781
      *
      * @param storyIds      ObjectIDs of stories to be fetched
@@ -109,7 +111,8 @@ public class RallyWrapper {
      * @return JsonArray containing information of story objects
      * @throws IOException File IO
      */
-    public static JsonArray getUserStory(Map<String, String> storyIds, String saveJsonToDir, String jsonLoc) throws IOException {
+    public static JsonArray getUserStory(Map<String, String> storyIds, String
+            saveJsonToDir, String jsonLoc) throws IOException {
         LOG.log(Level.FINE, "Fetching user story info");
 //        if(jsonLoc != null){
 //            File file = getLatestFileWithPrefix("UserInfo", jsonLoc);
@@ -142,8 +145,10 @@ public class RallyWrapper {
 //                DateFormat df = new SimpleDateFormat("MM_dd_yyyy'T'HH_mm_ss");
 //                Date today = Calendar.getInstance().getTime();
 //                String reportDate = df.format(today);
-//                File file = new File(saveJsonToDir + "/UserInfo_" + reportDate + ".json");
-//                FileUtils.writeStringToFile(file, response.getObject().toString());
+//                File file = new File(saveJsonToDir + "/UserInfo_" +
+// reportDate + ".json");
+//                FileUtils.writeStringToFile(file, response.getObject()
+// .toString());
 //            }
             return response.getResults();
         } else {
@@ -175,7 +180,8 @@ public class RallyWrapper {
      * @return JsonArray containing JSON tasks
      * @throws IOException File IO
      */
-    private static JsonArray getTasks(String email, String saveJsonToDir, String jsonLoc) throws IOException {
+    private static JsonArray getTasks(String email, String saveJsonToDir,
+                                      String jsonLoc) throws IOException {
         if (jsonLoc != null) {
             File file = getLatestFileWithPrefix("Tasks", jsonLoc);
             String raw = FileUtils.readFileToString(file);
@@ -184,7 +190,8 @@ public class RallyWrapper {
         }
         QueryRequest tasks = new QueryRequest("tasks");
 
-        String past = new SimpleDateFormat(RALLY.DATEFORMAT).format(UserSession.YESTERDAY_WORK_HOUR);
+        String past = new SimpleDateFormat(RALLY.DATEFORMAT).format
+                (UserSession.YESTERDAY_WORK_HOUR);
         tasks.setQueryFilter(new QueryFilter("Owner.name", "=", email)
                 .and(new QueryFilter("LastUpdateDate", ">", past)));
 
@@ -194,8 +201,10 @@ public class RallyWrapper {
                 DateFormat df = new SimpleDateFormat("MM_dd_yyyy'T'HH_mm_ss");
                 Date today = Calendar.getInstance().getTime();
                 String reportDate = df.format(today);
-                File file = new File(saveJsonToDir + "/Tasks_" + reportDate + ".json");
-                FileUtils.writeStringToFile(file, response.getResults().toString());
+                File file = new File(saveJsonToDir + "/Tasks_" + reportDate +
+                        ".json");
+                FileUtils.writeStringToFile(file, response.getResults()
+                        .toString());
             }
             return response.getResults();
         } else {
@@ -225,5 +234,9 @@ public class RallyWrapper {
             }
         }
         return null;
+    }
+
+    public RallyRestApi getConnection() {
+        return rallyAPIConnection;
     }
 }

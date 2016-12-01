@@ -7,6 +7,8 @@ import javafx.application.HostServices;
  */
 interface ControlledScreen {
     void setScreenParent(ScreensController screenPage);
+
     void setHostController(HostServices hostServices);
+
     void active();
 }

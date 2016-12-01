@@ -1,8 +1,5 @@
 package com.sqasquared.toolkit;
 
-import com.sqasquared.toolkit.connection.DataObject;
-import com.sqasquared.toolkit.connection.TaskRallyObject;
-import com.sqasquared.toolkit.email.EmailGenerator;
 import com.sqasquared.toolkit.email.EmailGeneratorException;
 import org.apache.commons.mail.EmailException;
 import org.apache.http.auth.InvalidCredentialsException;
@@ -12,7 +9,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -27,12 +23,12 @@ public class UserSession {
     public static final String TCR = "test_case_realized";
     public static final String SSU_TAG = "[STORY STATUS UPDATE]";
     public static final String EOD_TAG = "[END OF DAY UPDATE]";
+    public static final String EMAIL_SEPARATOR = ",";
     private static final String SSU_KEY = "SSU";
     private static final String EOD_KEY = "EOD";
     private static final String TO = "to";
     private static final String CC = "cc";
     private static final String SEPARATOR = "_";
-    public static final String EMAIL_SEPARATOR = ",";
     public static Date TODAY_WORK_HOUR;
     public static Date YESTERDAY_WORK_HOUR;
     private static Preferences prop;
@@ -51,16 +47,32 @@ public class UserSession {
         loadPreferences();
     }
 
-    public void setAppDirector(AppDirector appDirector){
-        this.appDirector = appDirector;
-    }
-
     public static String getProperty(String property) {
         String val = prop.get(property, "");
         if (val.equals("")) {
             System.err.println("Unset property: " + property);
         }
         return val;
+    }
+
+    public static String getFullName() {
+        return getProperty("firstName") + " " + getProperty("lastName");
+    }
+
+    public static String getEmail() {
+        return getProperty("email");
+    }
+
+    public void setEmail(String email) {
+        prop.put("email", email);
+    }
+
+    public static String getTemplate(String template) {
+        return appDirector.getTemplate(template);
+    }
+
+    public void setAppDirector(AppDirector appDirector) {
+        UserSession.appDirector = appDirector;
     }
 
     private void loadPreferences() {
@@ -72,9 +84,12 @@ public class UserSession {
             prop.put("server", "https://rally1.rallydev.com");
             prop.put("cc", "sqaas@sqasquared.com");
             prop.put("DEFAULT_to", "sqaas@sqasquared.com");
-            prop.put("ASM_EOD_to", "jramos@sqasquared.com,abyrum@sqasquared.com,jdeleon@sqasquared.com");
-            prop.put("ASM_SSU_to", "seth.labrum@advantagesolutions.net,patricia.liu@advantagesolutions.net," +
-                    "joel.ramos@advantagesolutions.net,lynnyrd.raymundo@advantagesolutions.net");
+            prop.put("ASM_EOD_to", "jramos@sqasquared.com,abyrum@sqasquared" +
+                    ".com,jdeleon@sqasquared.com");
+            prop.put("ASM_SSU_to", "seth.labrum@advantagesolutions.net," +
+                    "patricia.liu@advantagesolutions.net," +
+                    "joel.ramos@advantagesolutions.net,lynnyrd" +
+                    ".raymundo@advantagesolutions.net");
             prop.put("business_partner", "ASM");
             prop.put("ASM_username", "");
             prop.put("ASM_password", "");
@@ -95,7 +110,8 @@ public class UserSession {
     }
 
     public boolean isUserPreferencesValid() {
-        return !(prop.get("firstName", "").equals("") || prop.get("lastName", "").equals("")
+        return !(prop.get("firstName", "").equals("") || prop.get("lastName",
+                "").equals("")
                 || prop.get("email", "").equals(""));
     }
 
@@ -115,7 +131,7 @@ public class UserSession {
             key = SSU_KEY;
         }
         String business_partner = getProperty("business_partner");
-        if(business_partner == null || business_partner.length() == 0){
+        if (business_partner == null || business_partner.length() == 0) {
             business_partner = "ASM";
         }
         String keyTo = formatKey(business_partner, key, TO);
@@ -168,29 +184,12 @@ public class UserSession {
         return result.toString();
     }
 
-
-    public static String getFullName() {
-        return getProperty("firstName") + " " + getProperty("lastName");
-    }
-
     public void setFirstName(String firstName) {
         prop.put("firstName", firstName);
     }
 
     public void setLastName(String lastName) {
         prop.put("lastName", lastName);
-    }
-
-    public static String getEmail() {
-        return getProperty("email");
-    }
-
-    public void setEmail(String email) {
-        prop.put("email", email);
-    }
-
-    public static String getTemplate(String template) {
-        return appDirector.getTemplate(template);
     }
 
     /******************************************
@@ -217,7 +216,9 @@ public class UserSession {
         return appDirector.generateHtml(template);
     }
 
-    public void generateEmail(String to, String cc, String subject, String html, String loc) throws EmailException, MessagingException, IOException {
+    public void generateEmail(String to, String cc, String subject, String
+            html, String loc) throws EmailException, MessagingException,
+            IOException {
         appDirector.generateEmail(to, cc, subject, html, getEmail(), loc);
     }
 
@@ -229,7 +230,7 @@ public class UserSession {
         appDirector.refreshTasks();
     }
 
-    public String generateTestCases(String template){
+    public String generateTestCases(String template) {
         appDirector.generateTestCases(template);
         return "";
     }
@@ -238,7 +239,8 @@ public class UserSession {
         appDirector.loginASM();
     }
 
-    public void loginASM(String username, String password) throws IOException, InvalidCredentialsException {
+    public void loginASM(String username, String password) throws
+            IOException, InvalidCredentialsException {
         setProperty("ASM_username", "ASM\\" + username);
         setProperty("ASM_password", password);
         appDirector.loginASM();

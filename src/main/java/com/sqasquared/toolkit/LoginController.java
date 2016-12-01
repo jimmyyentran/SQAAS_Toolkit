@@ -19,14 +19,14 @@ import java.util.ResourceBundle;
  * Created by JTran on 11/16/2016.
  */
 public class LoginController implements Initializable, ControlledScreen {
+    private final RallyLoader rallyLoader;
     @FXML
     public Hyperlink hyperlink;
-    private ScreensController screensController;
-    private final RallyLoader rallyLoader;
-    private HostServices hostServices;
     public Button loginButton;
     public TextField apiField;
     public Label errorMessage;
+    private ScreensController screensController;
+    private HostServices hostServices;
 
     public LoginController() {
         rallyLoader = new RallyLoader();
@@ -49,8 +49,9 @@ public class LoginController implements Initializable, ControlledScreen {
     }
 
     @FXML
-    private void openURL(){
-        hostServices.showDocument("https://rally1.rallydev.com/login/accounts/index.html#/keys");
+    private void openURL() {
+        hostServices.showDocument("https://rally1.rallydev" +
+                ".com/login/accounts/index.html#/keys");
     }
 
 

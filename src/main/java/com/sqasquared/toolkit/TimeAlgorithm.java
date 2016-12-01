@@ -10,7 +10,7 @@ import java.util.HashMap;
 /**
  * Created by jimmytran on 11/1/16.
  */
-public class TimeAlgorithm implements TreeAlgorithmInterface<DataObject>{
+public class TimeAlgorithm implements TreeAlgorithmInterface<DataObject> {
     public TimeAlgorithm() {
     }
 
@@ -34,13 +34,16 @@ public class TimeAlgorithm implements TreeAlgorithmInterface<DataObject>{
         if (node.getType().equals("root")) {
             Date workTime = UserSession.TODAY_WORK_HOUR;
 
-//            DataObject tdy = new DataObject("time", Long.toString(workTime.getTime()), "today");
-//            DataObject past = new DataObject("time", Long.toString(workTime.getTime() - 1), "past");
+//            DataObject tdy = new DataObject("time", Long.toString(workTime
+// .getTime()), "today");
+//            DataObject past = new DataObject("time", Long.toString(workTime
+// .getTime() - 1), "past");
             DataObject tdy = new DataObject("time", "today", "today");
             DataObject past = new DataObject("time", "past", "past");
             for (DataObject obj : node.getChildren().values()) {
                 if (obj.getType().equals("task")) {
-                    if (((TaskRallyObject) obj).getLastUpdateDate().after(workTime)) {
+                    if (((TaskRallyObject) obj).getLastUpdateDate().after
+                            (workTime)) {
                         tdy.addChild(obj);
                     } else {
                         past.addChild(obj);
@@ -52,8 +55,10 @@ public class TimeAlgorithm implements TreeAlgorithmInterface<DataObject>{
             buildTree(tdy);
             buildTree(past);
         } else if (node.getType().equals("time")) {
-            DataObject completed = new DataObject("state", RALLY.COMPLETED, null);
-            DataObject inProgress = new DataObject("state", RALLY.INPROGRESS, null);
+            DataObject completed = new DataObject("state", RALLY.COMPLETED,
+                    null);
+            DataObject inProgress = new DataObject("state", RALLY.INPROGRESS,
+                    null);
             DataObject defined = new DataObject("state", RALLY.DEFINED, null);
             for (DataObject obj : node.getChildren().values()) {
                 if (obj.getType().equals("task")) {
@@ -74,13 +79,16 @@ public class TimeAlgorithm implements TreeAlgorithmInterface<DataObject>{
             buildTree(inProgress);
             buildTree(defined);
         } else if (node.getType().equals("state")) {
-            HashMap<String, DataObject> objectContainer = new HashMap<String, DataObject>();
+            HashMap<String, DataObject> objectContainer = new HashMap<String,
+                    DataObject>();
             for (DataObject obj : node.getChildren().values()) {
                 if (obj.getType().equals("task")) {
                     String storyID = ((TaskRallyObject) obj).getStoryID();
                     if (!objectContainer.containsKey(storyID)) {
-                        String storyName = ((TaskRallyObject) obj).getStoryName();
-                        objectContainer.put(storyID, new DataObject("story", storyID, storyName));
+                        String storyName = ((TaskRallyObject) obj)
+                                .getStoryName();
+                        objectContainer.put(storyID, new DataObject("story",
+                                storyID, storyName));
                     }
                     objectContainer.get(storyID).addChild(obj);
                 }

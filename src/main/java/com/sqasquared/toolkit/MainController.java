@@ -1,6 +1,5 @@
 package com.sqasquared.toolkit;
 
-import com.sqasquared.toolkit.email.EmailGeneratorException;
 import javafx.application.HostServices;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
@@ -26,6 +25,7 @@ import java.util.ResourceBundle;
  * Created by JTran on 11/17/2016.
  */
 public class MainController implements Initializable, ControlledScreen {
+    private final UserSession userSession = App.userSession;
     public Button SSUButton;
     public HTMLEditor editor;
     public Label fullName;
@@ -37,7 +37,6 @@ public class MainController implements Initializable, ControlledScreen {
     public Button TCRButton;
     private ScreensController screensController;
     private HostServices hostServices;
-    private final UserSession userSession = App.userSession;
 
     public void setScreenParent(ScreensController screenParent) {
         screensController = screenParent;
@@ -48,24 +47,29 @@ public class MainController implements Initializable, ControlledScreen {
     }
 
     public void active() {
-        fullName.setText(userSession.getFullName());
+        fullName.setText(UserSession.getFullName());
     }
 
     public void initialize(URL location, ResourceBundle resources) {
         WebView webview = (WebView) editor.lookup(".web-view");
 
         // Removing internal rallyLoader
-//        webview.getEngine().getLoadWorker().stateProperty().addListener(new ChangeListener<State>() {
+//        webview.getEngine().getLoadWorker().stateProperty().addListener(new
+// ChangeListener<State>() {
 //            @Override
-//            public void changed(ObservableValue<? extends State> observable, State oldValue, State newValue) {
-//                Platform.runLater(() -> webview.getEngine().getLoadWorker().cancel());
+//            public void changed(ObservableValue<? extends State>
+// observable, State oldValue, State newValue) {
+//                Platform.runLater(() -> webview.getEngine().getLoadWorker()
+// .cancel());
 //            }
 //        });
 //
 //        // Adding external host services
-//        webview.getEngine().locationProperty().addListener(new ChangeListener<String>() {
+//        webview.getEngine().locationProperty().addListener(new
+// ChangeListener<String>() {
 //            @Override
-//            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+//            public void changed(ObservableValue<? extends String>
+// observable, String oldValue, String newValue) {
 //                System.out.println("observable = " + observable);
 //                System.out.println("oldValue = " + oldValue);
 //                System.out.println("newValue = " + newValue);
@@ -137,7 +141,7 @@ public class MainController implements Initializable, ControlledScreen {
         }
     }
 
-    public void tcrClick(ActionEvent actionEvent){
+    public void tcrClick(ActionEvent actionEvent) {
         try {
             App.userSession.loginASM();
         } catch (Exception e) {
@@ -162,7 +166,7 @@ public class MainController implements Initializable, ControlledScreen {
         editor.setHtmlText(App.userSession.generateTestCases(UserSession.TCR));
     }
 
-    private Optional<List<String>> tfsLoginDialog(){
+    private Optional<List<String>> tfsLoginDialog() {
         // Login Dialog
         Dialog<List<String>> dialog = new Dialog<>();
         dialog.setTitle("ASM Login");
@@ -181,7 +185,8 @@ public class MainController implements Initializable, ControlledScreen {
         grid.add(text2, 2, 2);
         dialog.getDialogPane().setContent(grid);
 
-        ButtonType buttonTypeOk = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
+        ButtonType buttonTypeOk = new ButtonType("Okay", ButtonBar.ButtonData
+                .OK_DONE);
         dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
 
         dialog.setResultConverter(new Callback<ButtonType, List<String>>() {
@@ -206,8 +211,10 @@ public class MainController implements Initializable, ControlledScreen {
     public void generateEmail(ActionEvent actionEvent) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save Email");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Email", "*.eml"));
-        fileChooser.setInitialDirectory(new File(System.getProperty("user.home") + System.getProperty("file.separator")
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter
+                ("Email", "*.eml"));
+        fileChooser.setInitialDirectory(new File(System.getProperty("user" +
+                ".home") + System.getProperty("file.separator")
                 + "/Desktop"));
         File selectedFile = fileChooser.showSaveDialog(App.stage);
         if (selectedFile == null) {

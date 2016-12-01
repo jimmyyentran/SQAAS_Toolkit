@@ -3,16 +3,17 @@ package com.sqasquared.toolkit.connection;
 import com.google.gson.annotations.SerializedName;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 
 /**
  * Created by JTran on 11/28/2016.
  */
-public class TfsObject extends DataObject{
-    @SerializedName("TeamProject") String teamProject;
-    @SerializedName("State") String state;
+public class TfsObject extends DataObject {
+    @SerializedName("TeamProject")
+    String teamProject;
+    @SerializedName("State")
+    String state;
 
-    public TfsObject(){
+    public TfsObject() {
         super();
         teamProject = "";
         state = "";

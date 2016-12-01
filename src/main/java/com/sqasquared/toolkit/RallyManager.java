@@ -7,23 +7,23 @@ import java.io.IOException;
 /**
  * Created by jimmytran on 11/29/16.
  */
-public class RallyManager extends DataManager<TaskRallyObject>{
+public class RallyManager extends DataManager<TaskRallyObject> {
 
-    public RallyManager(){
+    public RallyManager() {
         super();
     }
 
     @Override
-    public void add(TaskRallyObject task){
+    public void add(TaskRallyObject task) {
         objectContainer.put(task.getFormattedID(), task);
     }
 
     public void loadTasks() throws IOException {
-        ((RallyLoader)loader).loadTasks();
+        ((RallyLoader) loader).loadTasks();
     }
 
     public void loadUserStory() throws IOException {
-        ((RallyLoader)loader).loadUserStory();
+        ((RallyLoader) loader).loadUserStory();
     }
 
     public void refreshTasks() throws IOException {
@@ -34,6 +34,6 @@ public class RallyManager extends DataManager<TaskRallyObject>{
     }
 
     public void loadUserInfo() throws IOException {
-        ((RallyLoader)loader).loadUserInfo();
+        ((RallyLoader) loader).loadUserInfo();
     }
 }

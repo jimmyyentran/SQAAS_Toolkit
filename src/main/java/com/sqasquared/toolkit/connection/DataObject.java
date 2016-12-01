@@ -11,9 +11,12 @@ public class DataObject {
 
     HashMap<String, DataObject> children = new HashMap<String, DataObject>();
     DataObject parent;
-    @SerializedName("WorkItemType") String type;
-    @SerializedName("Id") String id;
-    @SerializedName("Title") String name;
+    @SerializedName("WorkItemType")
+    String type;
+    @SerializedName("Id")
+    String id;
+    @SerializedName("Title")
+    String name;
 
     public DataObject(String type, String id, String name) {
         this.type = type;
@@ -23,7 +26,7 @@ public class DataObject {
         this.parent = null;
     }
 
-    public DataObject(){
+    public DataObject() {
         this.type = null;
         this.id = null;
         this.name = null;
@@ -47,7 +50,7 @@ public class DataObject {
         return children;
     }
 
-    public void setChildren(HashMap<String, DataObject> children){
+    public void setChildren(HashMap<String, DataObject> children) {
         this.children = children;
     }
 
@@ -62,12 +65,12 @@ public class DataObject {
         return children.isEmpty();
     }
 
-    private void setParent(DataObject par) {
-        this.parent = par;
-    }
-
     public DataObject getParent() {
         return parent;
+    }
+
+    private void setParent(DataObject par) {
+        this.parent = par;
     }
 
     public void clearChildren() {
@@ -85,7 +88,8 @@ public class DataObject {
         } catch (Exception ex) {
             indent = "";
         }
-        String toBePrinted = indent + "Type: " + type + ", ID: " + id + ", Name: " + name;
+        String toBePrinted = indent + "Type: " + type + ", ID: " + id + ", " +
+                "Name: " + name;
         System.out.println(toBePrinted);
         for (DataObject obj : children.values()) {
 //            System.out.println("obj = " + obj);
