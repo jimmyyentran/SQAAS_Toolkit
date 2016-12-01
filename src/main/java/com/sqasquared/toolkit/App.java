@@ -1,6 +1,7 @@
 package com.sqasquared.toolkit;
 
 import com.sqasquared.toolkit.connection.RallyWrapper;
+import com.sqasquared.toolkit.connection.TfsWrapper;
 import com.sqasquared.toolkit.email.EmailGeneratorException;
 import javafx.application.Application;
 import javafx.scene.Group;
@@ -29,16 +30,40 @@ public class App extends Application {
     public static UserSession userSession;
     public static Stage stage;
 
-    public static void initialize() throws IOException {
+    public static void initialize() throws IOException, URISyntaxException {
         userSession = new UserSession();
-        TreeAlgorithmInterface timeAlgorithm = new TimeAlgorithm();
-        RallyManager rallyManager = new RallyManager();
-        FileResourceManager fileResourceManager = new FileResourceManager();
-        AppDirector appDirector = new AppDirector(userSession);
-//        new Loader().loadTemplates(userSession);
 
+        //Algorithms
+        TreeAlgorithmInterface timeAlgorithm = new TimeAlgorithm();
+        TreeAlgorithmInterface containerAlgorithm = new ContainerAlgorithm();
+
+        //Loaders
+        RallyLoader rallyLoader = new RallyLoader();
+        TfsLoader tfsLoader = new TfsLoader();
+
+        //Managers
+        RallyManager rallyManager = new RallyManager();
+        TfsManager tfsManager = new TfsManager();
+        FileResourceManager fileResourceManager = new FileResourceManager();
+
+        AppDirector appDirector = new AppDirector(userSession);
+
+        //Set up Rally
+        rallyLoader.setObjectManager(rallyManager);
+        rallyManager.setLoader(rallyLoader);
         rallyManager.setAlgorithm(timeAlgorithm);
+
+        //Set up TFS
+        tfsLoader.setObjectManager(tfsManager);
+        tfsManager.setLoader(tfsLoader);
+        tfsManager.setAlgorithm(containerAlgorithm);
+
+        RallyWrapper.initialize();
+        TfsWrapper.initialize();
+
+        //Set up main app director
         appDirector.setRallyManager(rallyManager);
+        appDirector.setTfsManager(tfsManager);
         appDirector.setFileResourceManager(fileResourceManager);
         appDirector.loadTemplates();
         userSession.setAppDirector(appDirector);

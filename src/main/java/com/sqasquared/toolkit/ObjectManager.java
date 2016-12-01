@@ -20,5 +20,9 @@ public abstract class ObjectManager<T> implements ContainerInterface<T>{
         objectContainer.clear();
     }
 
+    public void setObjectContainer(HashMap<String, T> objectContainer) {
+        this.objectContainer = objectContainer;
+    }
+
     public abstract void add(T item);
 }

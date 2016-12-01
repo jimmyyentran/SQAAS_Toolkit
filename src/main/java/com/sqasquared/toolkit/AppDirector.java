@@ -3,6 +3,7 @@ package com.sqasquared.toolkit;
 import com.sqasquared.toolkit.email.EmailGenerator;
 import com.sqasquared.toolkit.email.EmailGeneratorException;
 import org.apache.commons.mail.EmailException;
+import org.apache.http.auth.InvalidCredentialsException;
 
 import javax.mail.MessagingException;
 import java.io.IOException;
@@ -14,19 +15,18 @@ public class AppDirector {
     private EmailGenerator gen = new EmailGenerator();
     private RallyManager rallyManager;
     private FileResourceManager fileResourceManager;
+    private TfsManager tfsManager;
     private UserSession userSession;
 
     public AppDirector(UserSession userSession){
         this.userSession = userSession;
     }
 
-    public void loadRallyTasks() throws IOException {
-        rallyManager.refreshTasks();
-    }
-
     public void setRallyManager(RallyManager rallyManager) {
         this.rallyManager = rallyManager;
     }
+
+    public void setTfsManager(TfsManager tfsManager){this.tfsManager = tfsManager;}
 
     public void setFileResourceManager(FileResourceManager fileResourceManager) {
         this.fileResourceManager = fileResourceManager;
@@ -46,9 +46,12 @@ public class AppDirector {
         fileResourceManager.loadTemplates();
     }
 
+    public void loadRallyTasks() throws IOException {
+        rallyManager.refreshTasks();
+    }
+
     public void loadUserInfo() throws IOException {
-        Loader loader = new Loader();
-        loader.loadUserInfo(userSession);
+        rallyManager.loadUserInfo();
         refreshTasks();
     }
 
@@ -80,5 +83,14 @@ public class AppDirector {
 
     public void generateTestCases(String template){
         gen.generateTestCase(template);
+    }
+
+    public void loginASM() throws IOException, InvalidCredentialsException {
+        if(userSession.getProperty("ASM_username").equals("") ||
+                userSession.getProperty("ASM_username").equals("ASM\\") ||
+                userSession.getProperty("ASM_password").equals("") ||
+                !tfsManager.isValidCredentials()) {
+            throw new InvalidCredentialsException("Wrong TFS credentials");
+        }
     }
 }

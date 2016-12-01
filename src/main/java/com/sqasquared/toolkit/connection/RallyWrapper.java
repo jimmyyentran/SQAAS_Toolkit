@@ -30,13 +30,7 @@ public class RallyWrapper {
 
     private static RallyRestApi rallyAPIConnection;
 
-    protected RallyWrapper(String server, String api_key) {
-        try {
-            rallyAPIConnection = new RallyRestApi(new URI(server), api_key);
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-    }
+    protected RallyWrapper(){}
 
     /**
      * Initializes the RallyRestApi by using the server and api key. No actual network connections are made here.

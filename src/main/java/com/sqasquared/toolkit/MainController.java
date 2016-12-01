@@ -11,6 +11,7 @@ import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.util.Callback;
 import org.apache.commons.mail.EmailException;
+import org.apache.http.auth.InvalidCredentialsException;
 
 import javax.mail.MessagingException;
 import java.io.File;
@@ -53,7 +54,7 @@ public class MainController implements Initializable, ControlledScreen {
     public void initialize(URL location, ResourceBundle resources) {
         WebView webview = (WebView) editor.lookup(".web-view");
 
-        // Removing internal loader
+        // Removing internal rallyLoader
 //        webview.getEngine().getLoadWorker().stateProperty().addListener(new ChangeListener<State>() {
 //            @Override
 //            public void changed(ObservableValue<? extends State> observable, State oldValue, State newValue) {
@@ -137,47 +138,62 @@ public class MainController implements Initializable, ControlledScreen {
     }
 
     public void tcrClick(ActionEvent actionEvent){
-        Dialog<List<String>> dialog = new Dialog<>();
-        dialog.setTitle("ASM Login");
-        dialog.setHeaderText("Please enter your ASM credentials");
-        dialog.setResizable(true);
+        try {
+            App.userSession.loginASM();
+        } catch (Exception e) {
+            // Login Dialog
+            Dialog<List<String>> dialog = new Dialog<>();
+            dialog.setTitle("ASM Login");
+            dialog.setHeaderText("Please enter your ASM credentials");
+            dialog.setResizable(true);
 
-        Label label1 = new Label("Name: ");
-        Label label2 = new Label("Phone: ");
-        TextField text1 = new TextField();
-        TextField text2 = new TextField();
+            Label label1 = new Label("Username: ");
+            Label label2 = new Label("Password: ");
+            TextField text1 = new TextField();
+            TextField text2 = new PasswordField();
 
-        GridPane grid = new GridPane();
-        grid.add(label1, 1, 1);
-        grid.add(text1, 2, 1);
-        grid.add(label2, 1, 2);
-        grid.add(text2, 2, 2);
-        dialog.getDialogPane().setContent(grid);
+            GridPane grid = new GridPane();
+            grid.add(label1, 1, 1);
+            grid.add(text1, 2, 1);
+            grid.add(label2, 1, 2);
+            grid.add(text2, 2, 2);
+            dialog.getDialogPane().setContent(grid);
 
-        ButtonType buttonTypeOk = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+            ButtonType buttonTypeOk = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
+            dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
 
-        dialog.setResultConverter(new Callback<ButtonType, List<String>>() {
-            @Override
-            public List<String> call(ButtonType b) {
+            dialog.setResultConverter(new Callback<ButtonType, List<String>>() {
+                @Override
+                public List<String> call(ButtonType b) {
 
-                if (b == buttonTypeOk) {
-                    List<String> credentials = new ArrayList<String>();
-                    credentials.add(text1.getText());
-                    credentials.add(text2.getText());
+                    if (b == buttonTypeOk) {
+                        List<String> credentials = new ArrayList<String>();
+                        credentials.add(text1.getText());
+                        credentials.add(text2.getText());
 
-                    return credentials;
+                        return credentials;
+                    }
+
+                    return null;
                 }
+            });
 
-                return null;
+            Optional<List<String>> result = dialog.showAndWait();
+
+            if (result.isPresent()) {
+                try {
+                    App.userSession.loginASM(result.get().get(0).toString(),
+                            result.get().get(1).toString());
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                    showAlert("Internal Error! " + e.getMessage());
+                } catch (InvalidCredentialsException ex) {
+                    ex.printStackTrace();
+                    showAlert("Invalid Login: " + e.getMessage());
+                }
             }
-        });
-
-        Optional<List<String>> result = dialog.showAndWait();
-
-        if (result.isPresent()) {
-            App.userSession.loginASM(result.get().get(0), result.get().get(1));
         }
+
     }
 
     public void generateEmail(ActionEvent actionEvent) {

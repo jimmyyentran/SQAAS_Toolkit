@@ -1,8 +1,6 @@
 package com.sqasquared.toolkit;
 
-import com.sqasquared.toolkit.connection.DataObject;
 import com.sqasquared.toolkit.connection.TaskRallyObject;
-import com.sun.javafx.tk.Toolkit;
 
 import java.io.IOException;
 
@@ -21,12 +19,11 @@ public class RallyManager extends DataManager<TaskRallyObject>{
     }
 
     public void loadTasks() throws IOException {
-        loader.loadTasks(this);
+        ((RallyLoader)loader).loadTasks();
     }
 
     public void loadUserStory() throws IOException {
-        loader.loadUserStory(this);
-
+        ((RallyLoader)loader).loadUserStory();
     }
 
     public void refreshTasks() throws IOException {
@@ -36,4 +33,7 @@ public class RallyManager extends DataManager<TaskRallyObject>{
         run();
     }
 
+    public void loadUserInfo() throws IOException {
+        ((RallyLoader)loader).loadUserInfo();
+    }
 }

@@ -2,7 +2,10 @@ package com.sqasquared.toolkit.connection;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
+import com.sqasquared.toolkit.App;
 import com.sqasquared.toolkit.ContainerAlgorithm;
+import com.sqasquared.toolkit.UserSession;
+import com.sun.org.apache.xpath.internal.SourceTree;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -11,7 +14,6 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -28,10 +30,6 @@ public class TfsConnection {
         });
         @SuppressWarnings("Since15") CookieManager cookieManager = new CookieManager(null, CookiePolicy.ACCEPT_ALL);
         CookieHandler.setDefault(cookieManager);
-    }
-
-    public boolean loginTest(){
-        return false;
     }
 
     public String formatPostForm(String parentWit, String parentId, String childWit){
@@ -51,7 +49,7 @@ public class TfsConnection {
         return formattedPostForm;
     }
 
-    public DataObject getWorkingTree(String apiUrl, String parentWit, String parentId, String childWit) throws IOException {
+    public JsonObject getWorkingTree(String apiUrl, String parentWit, String parentId, String childWit) throws IOException {
         URL obj = new URL(ASM.ASM_URL + apiUrl);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         con.setRequestMethod("POST");
@@ -83,17 +81,50 @@ public class TfsConnection {
         }
         in.close();
 
-        ContainerAlgorithm cAlg = new ContainerAlgorithm(parentWit);
-        HashMap<String, DataObject> map = mapToObjects(response.toString());
-        return cAlg.constructTree(map);
+        return mapToJsonObjects(response.toString());
     }
 
     /**
-     * Map TFS response to HashMap of tfsObjects
+     * Execute simple GET request to base URL
+     * @return boolean whether or not login is successful
+     * @throws IOException
+     */
+    public boolean isValidCredentials() throws IOException {
+        URL obj = new URL(ASM.ASM_URL);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        con.setRequestMethod("GET");
+        int responseCode = con.getResponseCode();
+        System.out.println(App.userSession.getProperty("ASM_username"));
+        System.out.println(App.userSession.getProperty("ASM_password"));
+        System.out.println(responseCode);
+        return responseCode == 200 ? true : false;
+    }
+
+    /**
+     * Map TFS response to HashMap of tfsObjects determined by the object ID
+     * Sample:
+
+     {
+     "25544": {
+     "Id": "25544",
+     "WorkItemType": "Product Backlog Item",
+     "TeamProject": "PPS",
+     "Title": "Rename Current \\\"Fr/Sa/Su/Mo (reschedule)\\\" and Default ALBCO Program Type to other",
+     "State": "QA Accepted"
+     },
+     "25706": {
+     "Id": "25706",
+     "WorkItemType": "Test Case",
+     "TeamProject": "PPS",
+     "Title": "Verify \\\"Fr/Sa/Su/Mo (6d reschedule)\\\" Period Type exists",
+     "State": "Design"
+     },...
+
      * @param response
      * @return
      */
-    private HashMap<String, DataObject> mapToObjects(String response){
+//    private HashMap<String, DataObject> mapToJsonObjects(String response){
+    private JsonObject mapToJsonObjects(String response){
         // Convert string response to JsonObject
         JsonParser jp = new JsonParser();
         JsonObject jo = jp.parse(response).getAsJsonObject();
@@ -116,15 +147,9 @@ public class TfsConnection {
             mappedObject.add(mappedRow.get("Id").getAsString(), mappedRow);
         }
 
+        return mappedObject;
 
-        // Convert JsonArray to HashMap of TfsObjects
-        Gson gson = new GsonBuilder().create();
-        Type tfsObjectType = new TypeToken<HashMap<String, TfsObject>>(){}.getType();
-        HashMap<String, DataObject> tfsObjectMap = gson.fromJson(mappedObject, tfsObjectType);
-//        for(DataObject obj : tfsObjectMap.values()){
-//            obj.print();
-//        }
-        return tfsObjectMap;
+
     }
 
     /**

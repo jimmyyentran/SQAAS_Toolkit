@@ -8,14 +8,12 @@ import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.sqasquared.toolkit.App.userSession;
-
 /**
  * Created by jimmytran on 11/30/16.
  */
 public class FileResourceManager extends ObjectManager<String>{
     private static Logger LOG = Logger.getLogger(FileResourceManager.class.getName());
-    private Loader loader = new Loader();
+    private RallyLoader rallyLoader = new RallyLoader();
 
     public void loadTemplates(){
         LOG.log(Level.FINE, "Loading templates");

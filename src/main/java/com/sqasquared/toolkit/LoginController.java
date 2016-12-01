@@ -22,14 +22,14 @@ public class LoginController implements Initializable, ControlledScreen {
     @FXML
     public Hyperlink hyperlink;
     private ScreensController screensController;
-    private final Loader loader;
+    private final RallyLoader rallyLoader;
     private HostServices hostServices;
     public Button loginButton;
     public TextField apiField;
     public Label errorMessage;
 
     public LoginController() {
-        loader = new Loader();
+        rallyLoader = new RallyLoader();
     }
 
     public void launchToolkit(ActionEvent actionEvent) {
@@ -43,7 +43,8 @@ public class LoginController implements Initializable, ControlledScreen {
             e.printStackTrace();
             errorMessage.setText("Invalid API Key!");
         } catch (URISyntaxException e) {
-            errorMessage.setText("Something went wrong!");
+            e.printStackTrace();
+            errorMessage.setText("Invalid API Key!");
         }
     }
 

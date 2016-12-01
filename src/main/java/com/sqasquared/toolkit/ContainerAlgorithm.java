@@ -12,7 +12,9 @@ import java.util.HashMap;
 public class ContainerAlgorithm implements TreeAlgorithmInterface<DataObject>{
     private String topNodeWit;
 
-    public ContainerAlgorithm(String topNodeWit){
+    public ContainerAlgorithm(){}
+
+    public void setTopNodeWit(String topNodeWit){
         this.topNodeWit = topNodeWit;
     }
 

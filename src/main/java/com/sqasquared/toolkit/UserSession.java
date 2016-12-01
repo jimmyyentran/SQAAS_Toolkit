@@ -5,6 +5,7 @@ import com.sqasquared.toolkit.connection.TaskRallyObject;
 import com.sqasquared.toolkit.email.EmailGenerator;
 import com.sqasquared.toolkit.email.EmailGeneratorException;
 import org.apache.commons.mail.EmailException;
+import org.apache.http.auth.InvalidCredentialsException;
 
 import javax.mail.MessagingException;
 import java.io.IOException;
@@ -35,7 +36,6 @@ public class UserSession {
     public static Date TODAY_WORK_HOUR;
     public static Date YESTERDAY_WORK_HOUR;
     private static Preferences prop;
-//    private static final HashMap<String, String> templateContainer = new HashMap();
     private static AppDirector appDirector;
 
     public UserSession() {
@@ -65,6 +65,14 @@ public class UserSession {
 
     private void loadPreferences() {
         prop = Preferences.userNodeForPackage(UserSession.class);
+        try {
+            String[] keys = prop.keys();
+            for (int i = 0; i < keys.length; i++) {
+                System.out.println(keys[i] + " = " + prop.get(keys[i], ""));
+            }
+        } catch (BackingStoreException e) {
+            e.printStackTrace();
+        }
 
         if (prop.getBoolean("first", true)) {
             prop.putBoolean("first", false);
@@ -77,6 +85,8 @@ public class UserSession {
             prop.put("ASM_SSU_to", "seth.labrum@advantagesolutions.net,patricia.liu@advantagesolutions.net," +
                     "joel.ramos@advantagesolutions.net,lynnyrd.raymundo@advantagesolutions.net");
             prop.put("business_partner", "ASM");
+            prop.put("ASM_username", "");
+            prop.put("ASM_password", "");
         } else {
             try {
                 String[] keys = prop.keys();
@@ -192,12 +202,6 @@ public class UserSession {
         return appDirector.getTemplate(template);
     }
 
-    public void loginASM(String username, String password) {
-        setProperty("ASM_username", username);
-        setProperty("ASM_password", password);
-
-    }
-
     /******************************************
 
      Load session methods here
@@ -238,4 +242,13 @@ public class UserSession {
         appDirector.generateTestCases(template);
     }
 
+    public void loginASM() throws IOException, InvalidCredentialsException {
+        appDirector.loginASM();
+    }
+
+    public void loginASM(String username, String password) throws IOException, InvalidCredentialsException {
+        setProperty("ASM_username", "ASM\\" + username);
+        setProperty("ASM_password", password);
+        appDirector.loginASM();
+    }
 }
