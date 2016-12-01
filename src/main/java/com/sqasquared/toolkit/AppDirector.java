@@ -81,8 +81,8 @@ public class AppDirector {
         rallyManager.refreshTasks();
     }
 
-    public void generateTestCases(String template){
-        gen.generateTestCase(template);
+    public String generateTestCases(String template){
+        return gen.generateTestCase(tfsManager.topNode, template);
     }
 
     public void loginASM() throws IOException, InvalidCredentialsException {

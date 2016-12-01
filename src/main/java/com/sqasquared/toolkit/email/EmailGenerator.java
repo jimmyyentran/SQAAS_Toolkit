@@ -281,7 +281,8 @@ public class EmailGenerator {
         fos.close();
     }
 
-    public void generateTestCase(String template) {
+    public String generateTestCase(DataObject obj, String template) {
+        return "";
     }
 
 //    public void createEmail(UserSession userSession, String template) throws Exception {
