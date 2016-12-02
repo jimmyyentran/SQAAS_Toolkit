@@ -166,7 +166,6 @@ public class MainController implements Initializable, ControlledScreen {
                 }
             }
         }
-        ;
         try {
             editor.setHtmlText(App.userSession.generateTestCases(UserSession.TCR));
         } catch (IOException e) {
@@ -177,6 +176,48 @@ public class MainController implements Initializable, ControlledScreen {
     }
 
     private Optional<List<String>> tfsLoginDialog() {
+        // Login Dialog
+        Dialog<List<String>> dialog = new Dialog<>();
+        dialog.setTitle("ASM Login");
+        dialog.setHeaderText("Please enter your ASM credentials");
+        dialog.setResizable(true);
+
+        Label label1 = new Label("Username: ");
+        Label label2 = new Label("Password: ");
+        TextField text1 = new TextField();
+        TextField text2 = new PasswordField();
+
+        GridPane grid = new GridPane();
+        grid.add(label1, 1, 1);
+        grid.add(text1, 2, 1);
+        grid.add(label2, 1, 2);
+        grid.add(text2, 2, 2);
+        dialog.getDialogPane().setContent(grid);
+
+        ButtonType buttonTypeOk = new ButtonType("Okay", ButtonBar.ButtonData
+                .OK_DONE);
+        dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+
+        dialog.setResultConverter(new Callback<ButtonType, List<String>>() {
+            @Override
+            public List<String> call(ButtonType b) {
+
+                if (b == buttonTypeOk) {
+                    List<String> credentials = new ArrayList<String>();
+                    credentials.add(text1.getText());
+                    credentials.add(text2.getText());
+
+                    return credentials;
+                }
+
+                return null;
+            }
+        });
+
+        return dialog.showAndWait();
+    }
+
+    private Optional<List<String>> tfsItemChooser() {
         // Login Dialog
         Dialog<List<String>> dialog = new Dialog<>();
         dialog.setTitle("ASM Login");

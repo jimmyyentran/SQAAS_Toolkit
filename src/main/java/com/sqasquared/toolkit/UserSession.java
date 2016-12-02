@@ -77,6 +77,7 @@ public class UserSession {
 
     private void loadPreferences() {
         prop = Preferences.userNodeForPackage(UserSession.class);
+        System.out.println(getClass().getPackage().getImplementationVersion());
         if (prop.getBoolean("first", true)) {
             prop.putBoolean("first", false);
             prop.put("user", "");
