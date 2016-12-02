@@ -1,17 +1,20 @@
 package com.sqasquared.toolkit;
 
+import com.sqasquared.toolkit.connection.GithubConnection;
 import com.sqasquared.toolkit.connection.RallyWrapper;
 import com.sqasquared.toolkit.connection.TfsWrapper;
 import com.sqasquared.toolkit.email.EmailGeneratorException;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import org.apache.commons.cli.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -148,11 +151,28 @@ public class App extends Application {
         launch(args);
     }
 
+    public void checkNewReleases() throws IOException {
+        String currentVersion = App.userSession.getProperty("version");
+        String latestVersion = GithubConnection.getLastestRelease();
+        LOG.log(Level.FINE, currentVersion);
+        if(!currentVersion.equals(latestVersion)){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("New Release");
+            alert.setHeaderText(String.format("New release: %1s", latestVersion));
+            alert.setContentText("Please pull updates from the repository");
+            alert.showAndWait();
+        }
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         initialize();
+
+        checkNewReleases();
+
         LOG.log(Level.FINE, "JavaFX starting stage");
         stage = primaryStage;
+
 
         ScreensController mainContainer = new ScreensController
                 (getHostServices());

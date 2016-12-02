@@ -77,7 +77,6 @@ public class UserSession {
 
     private void loadPreferences() {
         prop = Preferences.userNodeForPackage(UserSession.class);
-        System.out.println(getClass().getPackage().getImplementationVersion());
         if (prop.getBoolean("first", true)) {
             prop.putBoolean("first", false);
             prop.put("user", "");
@@ -94,6 +93,11 @@ public class UserSession {
             prop.put("business_partner", "ASM");
             prop.put("ASM_username", "");
             prop.put("ASM_password", "");
+            try {
+                prop.put("version", getClass().getPackage().getImplementationVersion());
+            } catch (Exception e){
+                e.printStackTrace();
+            }
         } else {
             try {
                 String[] keys = prop.keys();

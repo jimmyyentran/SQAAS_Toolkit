@@ -87,7 +87,7 @@ public class AppDirector {
     }
 
     public String generateTestCases(String template) throws IOException {
-        tfsManager.loadWorkingTree(ASM.INSTEP1, ASM.PRODUCT_BACKLOG_ITEM_WIT, "25544", ASM
+        tfsManager.loadWorkingTree(ASM.INSTEP2, ASM.PRODUCT_BACKLOG_ITEM_WIT, "12386", ASM
                 .TEST_CASE_WIT);
         System.out.println(gen.generateTestCase(tfsManager.getTopNode(), template));
         return gen.generateTestCase(tfsManager.getTopNode(), template);
