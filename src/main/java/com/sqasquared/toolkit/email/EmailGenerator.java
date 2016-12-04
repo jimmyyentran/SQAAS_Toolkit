@@ -294,17 +294,10 @@ public class EmailGenerator {
         return doc.toString();
     }
 
-    public void createEmail(String to, String cc, String subject, String
+    public void saveEmail(String to, String cc, String subject, String
             html, String from, String loc) throws EmailException,
             IOException, MessagingException {
-        // Compose email
-        HtmlEmail email = new HtmlEmail();
-        email.setHostName("smtp.googlemail.com");
-        email.addTo(to.split(UserSession.EMAIL_SEPARATOR));
-        email.setFrom(from);
-        email.addCc(cc.split(UserSession.EMAIL_SEPARATOR));
-        email.setSubject(subject);
-        email.setHtmlMsg(html);
+        HtmlEmail email = buildEmail(to, cc, subject, html, from);
         email.buildMimeMessage();
         MimeMessage mimeMessage = email.getMimeMessage();
         FileOutputStream fos = new FileOutputStream(new File(loc));
@@ -312,6 +305,31 @@ public class EmailGenerator {
         fos.flush();
         fos.close();
     }
+
+    public HtmlEmail buildEmail(String to, String cc, String subject, String
+            html, String from) throws EmailException,
+            IOException, MessagingException {
+        HtmlEmail email = new HtmlEmail();
+        email.setHostName("secure.emailsrvr.com");
+        email.setSmtpPort(993);
+//        email.setSslSmtpPort("465");
+        email.addTo(to.split(UserSession.EMAIL_SEPARATOR));
+        email.setFrom(from);
+        email.addCc(cc.split(UserSession.EMAIL_SEPARATOR));
+        email.setSubject(subject);
+        email.setHtmlMsg(html);
+        return email;
+    }
+
+    public void sendEmail (String to, String cc, String subject, String
+            html, String from) throws EmailException, IOException, MessagingException {
+        HtmlEmail email = buildEmail(to, cc, subject, html, from);
+        email.setAuthentication("username", "pass");
+        email.setSSLOnConnect(true);
+        email.send();
+    }
+
+
 
     private Element mapRowItem(String tfs_id, String tfs_name,Element rowItemTemplate) {
         Element rowItem = rowItemTemplate.clone();

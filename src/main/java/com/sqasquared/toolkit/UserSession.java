@@ -93,11 +93,7 @@ public class UserSession {
             prop.put("business_partner", "ASM");
             prop.put("ASM_username", "");
             prop.put("ASM_password", "");
-            try {
-                prop.put("version", getClass().getPackage().getImplementationVersion());
-            } catch (Exception e){
-                e.printStackTrace();
-            }
+            prop.put("version", "v1.1.0-alpha");
         } else {
             try {
                 String[] keys = prop.keys();
@@ -225,6 +221,12 @@ public class UserSession {
             html, String loc) throws EmailException, MessagingException,
             IOException {
         appDirector.generateEmail(to, cc, subject, html, getEmail(), loc);
+    }
+
+    public void sendEmail(String to, String cc, String subject, String
+            html) throws EmailException, MessagingException,
+            IOException {
+        appDirector.sendEmail(to, cc, subject, html, getEmail());
     }
 
     public String getEmailSubject() {

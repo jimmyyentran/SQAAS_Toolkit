@@ -73,7 +73,13 @@ public class AppDirector {
     public void generateEmail(String to, String cc, String subject, String
             html, String email, String loc) throws
             EmailException, MessagingException, IOException {
-        gen.createEmail(to, cc, subject, html, email, loc);
+        gen.saveEmail(to, cc, subject, html, email, loc);
+    }
+
+    public void sendEmail(String to, String cc, String subject, String
+            html, String email) throws
+            EmailException, MessagingException, IOException {
+        gen.sendEmail(to, cc, subject, html, email);
     }
 
 

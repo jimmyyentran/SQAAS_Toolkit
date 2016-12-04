@@ -299,6 +299,24 @@ public class MainController implements Initializable, ControlledScreen {
         return;
     }
 
+    public void sendEmail(ActionEvent actionEvent) {
+        String to = textFieldTo.getText();
+        String cc = textFieldCc.getText();
+        String subject = textFieldSubject.getText();
+        String html = editor.getHtmlText();
+
+        try {
+            App.userSession.sendEmail(to, cc, subject, html);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Email Generator Error");
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+        }
+        return;
+    }
+
     private void clearFields() {
         textFieldTo.clear();
         textFieldSubject.clear();
