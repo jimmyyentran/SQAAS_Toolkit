@@ -87,7 +87,8 @@ public class MainController implements Initializable, ControlledScreen {
                                 String href = anchorElement.getHref();
 
                                 //handle opening URL outside JavaFX WebView
-                                hostServices.showDocument(evt.toString());
+                                hostServices.showDocument(href);
+
                                 System.out.println(href);
                                 evt.preventDefault();
                             }
