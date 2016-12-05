@@ -31,38 +31,19 @@ public class TfsConnection {
         CookieHandler.setDefault(cookieManager);
     }
 
-    public String formatPostForm(String parentWit, String parentId, String
-            childWit) {
+    public String formatPostForm(String parentId){
         String formFormatter = "wiql=" +
-//                "SELECT+%%5BSystem.Id%%5D%%2C%%5BSystem" +
-//                ".Title%%5D+%%2C%%5BSystem.State%%5D" +
-//                "FROM+WorkItemLinks+" +
-//                "WHERE" +
-//                "(%%5BSource%%5D.%%5BSystem.TeamProject%%5D+%%3D+%%40project+" +
-//                "AND+%%5BSource%%5D.%%5BSystem.WorkItemType%%5D+%%3D+" +
-//                "'%1s'" + "+" +
-//                "AND+" +
-//                "%%5BSource%%5D.%%5BSystem.Id%%5D+%%3D+" + "%2s" + ")+" +
-//                "(%%5BSource%%5D.%%5BSystem.Id%%5D+%%3D+" + "%2s" + ")+" +
-//                "AND+" +
-//                "(%%5BTarget%%5D.%%5BSystem.TeamProject%%5D+%%3D+%%40project+" +
-//                "AND+%%5BTarget%%5D.%%5BSystem.WorkItemType%%5D+%%3D+" +
-//                "'%3s'" + ")+" +
-//                "ORDER+BY+%%5BSystem.Id%%5D+" +
-//                "mode(MustContain)";
                 "SELECT [System.Id],[System.WorkItemType],[System.Title],[System.AssignedTo]," +
                 "[System.State],[System.Tags] FROM WorkItemLinks WHERE ([Source].[System" +
                 ".TeamProject] = @project AND [Source].[System.Id] = " + "%1s" + ") AND ([Target]" +
                 " .[System" +
                 ".TeamProject] = @project) ORDER BY [System.Id] mode(MustContain)";
-//        String formattedPostForm = String.format(formFormatter, parentWit,
-//                parentId, childWit);
         String formattedPostForm = String.format(formFormatter, parentId);
         return formattedPostForm;
     }
 
-    public JsonObject getWorkingTree(String apiUrl, String parentWit, String
-            parentId, String childWit) throws IOException {
+    public JsonObject getWorkingTree(String apiUrl, String parentWit, String parentId, String
+            childWit) throws IOException {
         URL obj = new URL(ASM.ASM_URL + apiUrl);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         con.setRequestMethod("POST");
@@ -72,7 +53,7 @@ public class TfsConnection {
         con.setDoOutput(true);
 
         DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-        wr.writeBytes(formatPostForm(parentWit, parentId, childWit));
+        wr.writeBytes(formatPostForm(parentId));
         wr.flush();
         wr.close();
 

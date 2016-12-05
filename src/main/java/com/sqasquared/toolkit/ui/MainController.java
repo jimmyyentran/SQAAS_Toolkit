@@ -8,6 +8,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -21,6 +22,12 @@ import javafx.stage.Popup;
 import javafx.util.Callback;
 import org.apache.commons.mail.EmailException;
 import org.apache.http.auth.InvalidCredentialsException;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.events.Event;
+import org.w3c.dom.events.EventListener;
+import org.w3c.dom.events.EventTarget;
+import org.w3c.dom.html.HTMLAnchorElement;
 
 import javax.mail.MessagingException;
 import java.io.File;
@@ -62,9 +69,73 @@ public class MainController implements Initializable, ControlledScreen {
     }
 
     public void initialize(URL location, ResourceBundle resources) {
-//        WebView webview = (WebView) editor.lookup(".web-view");
+        WebView webview = (WebView) editor.lookup(".web-view");
+        webview.getEngine().getLoadWorker().stateProperty().addListener(new ChangeListener<Worker.State>() {
+            @Override
+            public void changed(ObservableValue<? extends Worker.State> observable, Worker.State
+                    oldValue, Worker.State newValue) {
+                if (newValue.equals(Worker.State.SUCCEEDED)) {
+                    NodeList nodeList = webview.getEngine().getDocument().getElementsByTagName("a");
+                    for (int i = 0; i < nodeList.getLength(); i++) {
+                        Node node = nodeList.item(i);
+                        EventTarget eventTarget = (EventTarget) node;
+                        eventTarget.addEventListener("click", new EventListener() {
+                            @Override
+                            public void handleEvent(Event evt) {
+                                EventTarget target = evt.getCurrentTarget();
+                                HTMLAnchorElement anchorElement = (HTMLAnchorElement) target;
+                                String href = anchorElement.getHref();
 
-        // Removing internal rallyLoader
+                                //handle opening URL outside JavaFX WebView
+                                hostServices.showDocument(evt.toString());
+                                System.out.println(href);
+                                evt.preventDefault();
+                            }
+                        }, false);
+                    }
+                }
+            }
+        });
+//        webview.getEngine().locationProperty().addListener(new ChangeListener<String>() {
+//
+//            @Override
+//            public void changed(ObservableValue<? extends String>
+// observable, String oldValue, String newValue) {
+//                System.out.println("observable = " + observable);
+//                System.out.println("oldValue = " + oldValue);
+//                System.out.println("newValue = " + newValue);
+////                hostServices.showDocument(newValue);
+//            }
+//            @Override
+//            public void changed(ObservableValue<? extends String> observable, final String oldValue, String newValue)
+//            {
+//                Desktop d = Desktop.getDesktop();
+//                try
+//                {
+//                    URI address = new URI(newValue);
+//                    if ((address.getQuery() + "").indexOf("_openmodal=true") > -1)
+//                    {
+//                        Platform.runLater(new Runnable() {
+//                            @Override
+//                            public void run()
+//                            {
+//                                grid_layout.getChildren().remove(wv);
+//                                wv = new WebView();
+//                                grid_layout.add(wv, 0, 1);
+//                                wv.getEngine().load(oldValue);
+//                            }
+//                        });
+//                        d.browse(address);
+//                    }
+//                }
+//                catch (IOException | URISyntaxException e)
+//                {
+//                    displayError(e);
+//                }
+//            }
+//        });
+
+//        // Removing internal rallyLoader
 //        webview.getEngine().getLoadWorker().stateProperty().addListener(new
 // ChangeListener<State>() {
 //            @Override
@@ -74,8 +145,8 @@ public class MainController implements Initializable, ControlledScreen {
 // .cancel());
 //            }
 //        });
-//
-//        // Adding external host services
+////
+////        // Adding external host services
 //        webview.getEngine().locationProperty().addListener(new
 // ChangeListener<String>() {
 //            @Override
@@ -224,10 +295,13 @@ public class MainController implements Initializable, ControlledScreen {
             editor.setHtmlText(App.userSession.generateTestCases(pbi, project, UserSession.TCR));
 
             statusLabel.setTextFill(Color.GREEN);
-            statusLabel.setText("Test case ... successful!");
+            statusLabel.setText("WARNING: Work in progress. Test case ... successful!");
         } catch (Exception e) {
             e.printStackTrace();
-            showAlert("Query failed: " + e.getMessage());
+            showAlert(e.getMessage());
+
+            statusLabel.setTextFill(Color.RED);
+            statusLabel.setText("Test case ... failed!");
             return;
         }
     }
@@ -410,7 +484,7 @@ public class MainController implements Initializable, ControlledScreen {
 
     public void preferencesClick(ActionEvent actionEvent) {
         statusLabel.setTextFill(Color.RED);
-        statusLabel.setText("WARNING: Becareful what you edit!");
+        statusLabel.setText("WARNING: Be careful what you edit!");
 //        final Popup popup = new Popup();
         final Dialog dialog = new Dialog();
         BorderPane borderPane = new BorderPane();
