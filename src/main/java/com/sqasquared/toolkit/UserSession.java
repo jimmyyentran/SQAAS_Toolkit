@@ -87,12 +87,13 @@ public class UserSession {
             prop.put("server", "https://rally1.rallydev.com");
             prop.put("cc", "sqaas@sqasquared.com");
             prop.put("DEFAULT_to", "sqaas@sqasquared.com");
-            prop.put("ASM_EOD_to", "jramos@sqasquared.com,abyrum@sqasquared" +
-                    ".com,jdeleon@sqasquared.com");
+            prop.put("ASM_EOD_to", "jramos@sqasquared.com," +
+                    "abyrum@sqasquared.com," +
+                    "jdeleon@sqasquared.com");
             prop.put("ASM_SSU_to", "seth.labrum@advantagesolutions.net," +
-                    "patricia.liu@advantagesolutions.net" +
-                    "joel.ramos@advantagesolutions.net,lynnyrd" +
-                    ".raymundo@advantagesolutions.net");
+                    "patricia.liu@advantagesolutions.net," +
+                    "joel.ramos@advantagesolutions.net," +
+                    "lynnyrd.raymundo@advantagesolutions.net");
             prop.put("business_partner", "ASM");
             prop.put("ASM_username", "");
             prop.put("ASM_password", "");
