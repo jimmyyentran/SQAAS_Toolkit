@@ -90,7 +90,7 @@ public class UserSession {
             prop.put("ASM_EOD_to", "jramos@sqasquared.com,abyrum@sqasquared" +
                     ".com,jdeleon@sqasquared.com");
             prop.put("ASM_SSU_to", "seth.labrum@advantagesolutions.net," +
-                    "patricia.liu@advantagesolutions.net," +
+                    "patricia.liu@advantagesolutions.net" +
                     "joel.ramos@advantagesolutions.net,lynnyrd" +
                     ".raymundo@advantagesolutions.net");
             prop.put("business_partner", "ASM");
@@ -142,7 +142,7 @@ public class UserSession {
             business_partner = "ASM";
         }
         String keyTo = formatKey(business_partner, key, TO);
-        return getProperty(keyTo);
+        return getProperty(keyTo) + "," + getEmail();
     }
 
     public String getEmailCC() {

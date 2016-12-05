@@ -157,6 +157,12 @@ public class MainController implements Initializable, ControlledScreen {
     public void eodClick(ActionEvent actionEvent) {
         try {
             String html = App.userSession.generateHtml(UserSession.EOD);
+            String to = App.userSession.getEmailTo(UserSession.SSUP);
+            String cc = App.userSession.getEmailCC();
+            String subject = App.userSession.getEmailSubject();
+
+            textFieldTo.setText(to);
+            textFieldCc.setText(cc);
             editor.setHtmlText(html);
 
             statusLabel.setTextFill(Color.GREEN);
