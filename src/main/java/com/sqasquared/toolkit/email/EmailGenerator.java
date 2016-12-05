@@ -317,10 +317,6 @@ public class EmailGenerator {
         email.setFrom(from);
         String[] ccs = cc.split(UserSession.EMAIL_SEPARATOR);
         if (ccs.length > 0 && ccs[0].length() > 0) {
-            System.out.println("ccs.length = " + ccs.length);
-            System.out.println("ccs[0].length() = " + ccs[0].length());
-            System.out.println(ccs[0]);
-            System.out.println(ccs[0]);
             email.addCc(ccs);
         }
         email.setSubject(subject);

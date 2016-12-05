@@ -382,22 +382,29 @@ public class MainController implements Initializable, ControlledScreen {
         String subject = textFieldSubject.getText();
         String html = editor.getHtmlText();
 
-        statusLabel.setTextFill(Color.GREEN);
-        statusLabel.setText("Send email successful!");
         try {
             App.userSession.sendEmail(to, cc, subject, html);
-        } catch (InvalidCredentialsException e) {
+
+            statusLabel.setTextFill(Color.GREEN);
+            statusLabel.setText("Send email successful!");
+        } catch (InvalidCredentialsException | EmailException e) {
             e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Invalid Credentials");
-            alert.setContentText(e.getMessage());
+            alert.setContentText("Invalid Credentials: " + e.getMessage());
             alert.showAndWait();
+
+            statusLabel.setTextFill(Color.RED);
+            statusLabel.setText("Send email failed!");
         } catch (Exception e) {
             e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Email Generator Error");
             alert.setContentText(e.getMessage());
             alert.showAndWait();
+
+            statusLabel.setTextFill(Color.RED);
+            statusLabel.setText("Send email failed!");
         }
     }
 
@@ -446,8 +453,8 @@ public class MainController implements Initializable, ControlledScreen {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     int selected = pos.getRow();
                     alert.setTitle("Unsaved edits");
-                    alert.setContentText(String.format("Unsaved values in row %1s", (String.valueOf
-                            (selected))));
+                    alert.setContentText(String.format("Unsaved values in row %1s. Press enter" +
+                            " on the selected cell to commit.", (String.valueOf(selected))));
                     alert.showAndWait();
                 }
             }
