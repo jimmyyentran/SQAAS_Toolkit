@@ -148,7 +148,7 @@ public class App extends Application {
     }
 
     public void checkNewReleases() throws IOException {
-        String currentVersion = "v1.2.0-alpha";
+        String currentVersion = "v1.2.1-alpha";
         String latestVersion = GithubConnection.getLastestRelease();
         LOG.log(Level.FINE, currentVersion);
         if (!currentVersion.equals(latestVersion)) {

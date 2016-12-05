@@ -6,7 +6,7 @@
 
     <groupId>com.sqasquared.toolkit</groupId>
     <artifactId>sqaas-toolkit</artifactId>
-    <version>v1.2.0-alpha</version>
+    <version>v1.2.1-alpha</version>
 
     <build>
         <plugins>
