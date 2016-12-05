@@ -96,56 +96,52 @@ public class App extends Application {
         options.addOption(option_noGui);
         options.addOption(option_clearPreferences);
 
-        try {
-            commandLine = parser.parse(options, args);
-            if (commandLine.hasOption("clear-preferences")) {
-                Preferences prop = Preferences.userNodeForPackage(UserSession
-                        .class);
-                prop.clear();
+        commandLine = parser.parse(options, args);
+        if (commandLine.hasOption("clear-preferences")) {
+            Preferences prop = Preferences.userNodeForPackage(UserSession
+                    .class);
+            prop.clear();
+        }
+
+        if (commandLine.hasOption("nogui")) {
+            String str = commandLine.getOptionValue("nogui");
+            String template = null;
+            if (str.toLowerCase().equals("ssu")) {
+                template = UserSession.SSU;
+            } else if (str.toLowerCase().equals("ssup")) {
+                template = UserSession.SSUP;
+            }
+            userSession = new UserSession();
+            RallyWrapper.initialize();
+            initialize();
+            userSession.loadRallyTasks();
+            try {
+                String html = userSession.generateHtml(template);
+                String to = userSession.getEmailTo(template);
+                String cc = userSession.getEmailCC();
+                String subject = "";
+                if (template.equals(UserSession.SSU)) {
+                    subject = userSession.getEmailSubject();
+                }
+                System.out.println("html = " + html);
+                System.out.println("to = " + to);
+                System.out.println("cc = " + cc);
+                System.out.println("subject = " + subject);
+            } catch (EmailGeneratorException e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+
+        {
+            String[] remainder = commandLine.getArgs();
+            System.out.print("Remaining arguments: ");
+            for (String argument : remainder) {
+                System.out.print(argument);
+                System.out.print(" ");
             }
 
-            if (commandLine.hasOption("nogui")) {
-                String str = commandLine.getOptionValue("nogui");
-                String template = null;
-                if (str.toLowerCase().equals("ssu")) {
-                    template = UserSession.SSU;
-                } else if (str.toLowerCase().equals("ssup")) {
-                    template = UserSession.SSUP;
-                }
-                userSession = new UserSession();
-                RallyWrapper.initialize();
-                initialize();
-                userSession.loadRallyTasks();
-                try {
-                    String html = userSession.generateHtml(template);
-                    String to = userSession.getEmailTo(template);
-                    String cc = userSession.getEmailCC();
-                    String subject = "";
-                    if (template.equals(UserSession.SSU)) {
-                        subject = userSession.getEmailSubject();
-                    }
-                    System.out.println("html = " + html);
-                    System.out.println("to = " + to);
-                    System.out.println("cc = " + cc);
-                    System.out.println("subject = " + subject);
-                } catch (EmailGeneratorException e) {
-                    e.printStackTrace();
-                }
-                return;
-            }
-
-            {
-                String[] remainder = commandLine.getArgs();
-                System.out.print("Remaining arguments: ");
-                for (String argument : remainder) {
-                    System.out.print(argument);
-                    System.out.print(" ");
-                }
-
-                System.out.println();
-            }
-        } catch (ParseException e) {
-            throw e;
+            System.out.println();
         }
 
         launch(args);
@@ -155,7 +151,7 @@ public class App extends Application {
         String currentVersion = App.userSession.getProperty("version");
         String latestVersion = GithubConnection.getLastestRelease();
         LOG.log(Level.FINE, currentVersion);
-        if(!currentVersion.equals(latestVersion)){
+        if (!currentVersion.equals(latestVersion)) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("New Release");
             alert.setHeaderText(String.format("New release: %1s", latestVersion));

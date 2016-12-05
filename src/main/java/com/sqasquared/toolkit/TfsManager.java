@@ -14,11 +14,12 @@ public class TfsManager extends DataManager<DataObject> {
         super();
     }
 
-    public void loadWorkingTree(String apiUrl, String parentWit, String parentId, String childWit) throws IOException {
+    public void loadWorkingTree(String apiUrl, String parentWit, String parentId, String
+            childWit) throws IOException {
         ((TfsLoader) loader).loadWorkingTree(apiUrl, parentWit, parentId, childWit);
 //        ((ContainerAlgorithm)alg).setTopNodeWit(parentWit);
-        ((ContainerAlgorithm)alg).setTopNodeID(parentId);
-        ((ContainerAlgorithm)alg).setChildNodeWit(childWit);
+        ((ContainerAlgorithm) alg).setTopNodeID(parentId);
+        ((ContainerAlgorithm) alg).setChildNodeWit(childWit);
         run();
     }
 

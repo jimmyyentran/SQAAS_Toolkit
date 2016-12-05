@@ -316,7 +316,7 @@ public class EmailGenerator {
         email.addTo(to.split(UserSession.EMAIL_SEPARATOR));
         email.setFrom(from);
         String[] ccs = cc.split(UserSession.EMAIL_SEPARATOR);
-        if(ccs.length > 0 && ccs[0].length() > 0){
+        if (ccs.length > 0 && ccs[0].length() > 0) {
             System.out.println("ccs.length = " + ccs.length);
             System.out.println("ccs[0].length() = " + ccs[0].length());
             System.out.println(ccs[0]);
@@ -328,7 +328,7 @@ public class EmailGenerator {
         return email;
     }
 
-    public void sendEmail (String to, String cc, String subject, String
+    public void sendEmail(String to, String cc, String subject, String
             html, String from, String username, String password) throws EmailException,
             IOException, MessagingException {
         HtmlEmail email = buildEmail(to, cc, subject, html, from);
@@ -338,8 +338,7 @@ public class EmailGenerator {
     }
 
 
-
-    private Element mapRowItem(String tfs_id, String tfs_name,Element rowItemTemplate) {
+    private Element mapRowItem(String tfs_id, String tfs_name, Element rowItemTemplate) {
         Element rowItem = rowItemTemplate.clone();
         Element fi = rowItem.select("sqaas[type='tfs_id']").first();
         fi.replaceWith(new TextNode(tfs_id, ""));
@@ -356,7 +355,7 @@ public class EmailGenerator {
         String htmlEmailTemplate = UserSession.getTemplate(template);
         Document doc = Jsoup.parse(htmlEmailTemplate);
         Element row = doc.select("tr").get(1);
-        for(DataObject obj : top.getChildren().values()){
+        for (DataObject obj : top.getChildren().values()) {
             Element rowItem = mapRowItem(obj.getId(), obj.getName(), row);
             row.after(rowItem);
         }

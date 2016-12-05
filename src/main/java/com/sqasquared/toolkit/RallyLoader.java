@@ -88,7 +88,7 @@ public class RallyLoader extends Loader<TaskRallyObject> {
                     instanceof TaskRallyObject)) {
                 throw new IOException("Expected values to be of TaskRallyObject!");
             }
-        } catch (NoSuchElementException nsee){
+        } catch (NoSuchElementException nsee) {
             LOG.log(Level.WARNING, "No stories loaded!");
         }
 

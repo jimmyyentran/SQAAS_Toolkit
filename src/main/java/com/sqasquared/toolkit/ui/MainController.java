@@ -18,7 +18,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.web.HTMLEditor;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
-import javafx.stage.Popup;
 import javafx.util.Callback;
 import org.apache.commons.mail.EmailException;
 import org.apache.http.auth.InvalidCredentialsException;
@@ -37,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.prefs.BackingStoreException;
 
 /**
  * Created by JTran on 11/17/2016.
@@ -70,7 +70,8 @@ public class MainController implements Initializable, ControlledScreen {
 
     public void initialize(URL location, ResourceBundle resources) {
         WebView webview = (WebView) editor.lookup(".web-view");
-        webview.getEngine().getLoadWorker().stateProperty().addListener(new ChangeListener<Worker.State>() {
+        webview.getEngine().getLoadWorker().stateProperty().addListener(new ChangeListener<Worker
+                .State>() {
             @Override
             public void changed(ObservableValue<? extends Worker.State> observable, Worker.State
                     oldValue, Worker.State newValue) {
@@ -97,68 +98,6 @@ public class MainController implements Initializable, ControlledScreen {
                 }
             }
         });
-//        webview.getEngine().locationProperty().addListener(new ChangeListener<String>() {
-//
-//            @Override
-//            public void changed(ObservableValue<? extends String>
-// observable, String oldValue, String newValue) {
-//                System.out.println("observable = " + observable);
-//                System.out.println("oldValue = " + oldValue);
-//                System.out.println("newValue = " + newValue);
-////                hostServices.showDocument(newValue);
-//            }
-//            @Override
-//            public void changed(ObservableValue<? extends String> observable, final String oldValue, String newValue)
-//            {
-//                Desktop d = Desktop.getDesktop();
-//                try
-//                {
-//                    URI address = new URI(newValue);
-//                    if ((address.getQuery() + "").indexOf("_openmodal=true") > -1)
-//                    {
-//                        Platform.runLater(new Runnable() {
-//                            @Override
-//                            public void run()
-//                            {
-//                                grid_layout.getChildren().remove(wv);
-//                                wv = new WebView();
-//                                grid_layout.add(wv, 0, 1);
-//                                wv.getEngine().load(oldValue);
-//                            }
-//                        });
-//                        d.browse(address);
-//                    }
-//                }
-//                catch (IOException | URISyntaxException e)
-//                {
-//                    displayError(e);
-//                }
-//            }
-//        });
-
-//        // Removing internal rallyLoader
-//        webview.getEngine().getLoadWorker().stateProperty().addListener(new
-// ChangeListener<State>() {
-//            @Override
-//            public void changed(ObservableValue<? extends State>
-// observable, State oldValue, State newValue) {
-//                Platform.runLater(() -> webview.getEngine().getLoadWorker()
-// .cancel());
-//            }
-//        });
-////
-////        // Adding external host services
-//        webview.getEngine().locationProperty().addListener(new
-// ChangeListener<String>() {
-//            @Override
-//            public void changed(ObservableValue<? extends String>
-// observable, String oldValue, String newValue) {
-//                System.out.println("observable = " + observable);
-//                System.out.println("oldValue = " + oldValue);
-//                System.out.println("newValue = " + newValue);
-//                hostServices.showDocument(newValue);
-//            }
-//        });
     }
 
     private void showAlert(String message) {
@@ -189,7 +128,6 @@ public class MainController implements Initializable, ControlledScreen {
             statusLabel.setTextFill(Color.RED);
             statusLabel.setText("Story status update failed!");
         }
-        return;
     }
 
     public void ssupClick(ActionEvent actionEvent) {
@@ -212,7 +150,6 @@ public class MainController implements Initializable, ControlledScreen {
             statusLabel.setTextFill(Color.RED);
             statusLabel.setText("Story status update progress failed!");
         }
-        return;
     }
 
     public void eodClick(ActionEvent actionEvent) {
@@ -229,7 +166,6 @@ public class MainController implements Initializable, ControlledScreen {
             statusLabel.setTextFill(Color.RED);
             statusLabel.setText("End of day failed!");
         }
-        return;
     }
 
     public void refreshClick(ActionEvent actionEvent) {
@@ -256,7 +192,7 @@ public class MainController implements Initializable, ControlledScreen {
 
             if (result.isPresent()) {
                 try {
-                    App.userSession.loginASM(result.get().get(0).toString(), result.get().get(1).toString());
+                    App.userSession.loginASM(result.get().get(0), result.get().get(1));
                 } catch (IOException ex) {
                     ex.printStackTrace();
                     showAlert("Internal Error! " + ex.getMessage());
@@ -265,11 +201,13 @@ public class MainController implements Initializable, ControlledScreen {
                     ex.printStackTrace();
                     showAlert("Invalid Login: " + ex.getMessage());
                     return;
-                } catch (Exception ex){
+                } catch (Exception ex) {
                     ex.printStackTrace();
                     showAlert("Internal Error! " + ex.getMessage());
                     return;
                 }
+            } else {
+                return;
             }
         }
 
@@ -283,13 +221,13 @@ public class MainController implements Initializable, ControlledScreen {
             String pbi = res.get().get(0);
             String project = "";
 
-            if(pbi.length() == 0){
+            if (pbi.length() == 0) {
                 return;
             }
 
-            if(res.get().get(1).equals("Instep 1.0")){
+            if (res.get().get(1).equals("Instep 1.0")) {
                 project = ASM.INSTEP1;
-            } else if(res.get().get(1).equals("Instep 2.0")){
+            } else if (res.get().get(1).equals("Instep 2.0")) {
                 project = ASM.INSTEP2;
             }
 
@@ -303,7 +241,6 @@ public class MainController implements Initializable, ControlledScreen {
 
             statusLabel.setTextFill(Color.RED);
             statusLabel.setText("Test case ... failed!");
-            return;
         }
     }
 
@@ -361,14 +298,15 @@ public class MainController implements Initializable, ControlledScreen {
                 "Instep 2.0"
         );
 
-        Label label1 = new Label("PBI id:" );
+        Label label1 = new Label("PBI id:");
         Label label2 = new Label("Project: ");
         TextField text1 = new TextField();
 
         //Force numbers only
         text1.textProperty().addListener(new ChangeListener<String>() {
             @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+            public void changed(ObservableValue<? extends String> observable, String oldValue,
+                                String newValue) {
                 if (!newValue.matches("\\d*")) {
                     text1.setText(newValue.replaceAll("[^\\d]", ""));
                 }
@@ -389,20 +327,17 @@ public class MainController implements Initializable, ControlledScreen {
                 .OK_DONE);
         dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
 
-        dialog.setResultConverter(new Callback<ButtonType, List<String>>() {
-            @Override
-            public List<String> call(ButtonType b) {
+        dialog.setResultConverter(b -> {
 
-                if (b == buttonTypeOk) {
-                    List<String> credentials = new ArrayList<String>();
-                    credentials.add(text1.getText());
-                    credentials.add((String)comboBox.getValue());
+            if (b == buttonTypeOk) {
+                List<String> credentials = new ArrayList<>();
+                credentials.add(text1.getText());
+                credentials.add((String) comboBox.getValue());
 
-                    return credentials;
-                }
-
-                return null;
+                return credentials;
             }
+
+            return null;
         });
 
         return dialog.showAndWait();
@@ -431,23 +366,12 @@ public class MainController implements Initializable, ControlledScreen {
         statusLabel.setText("Save email successful!");
         try {
             App.userSession.generateEmail(to, cc, subject, html, loc);
-        } catch (EmailException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Email Generator Error");
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
-        } catch (MessagingException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Email Generator Error");
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
-        } catch (IOException e) {
+        } catch (EmailException | IOException | MessagingException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Email Generator Error");
             alert.setContentText(e.getMessage());
             alert.showAndWait();
         }
-        return;
     }
 
     public void sendEmail(ActionEvent actionEvent) {
@@ -460,7 +384,7 @@ public class MainController implements Initializable, ControlledScreen {
         statusLabel.setText("Send email successful!");
         try {
             App.userSession.sendEmail(to, cc, subject, html);
-        } catch (InvalidCredentialsException e){
+        } catch (InvalidCredentialsException e) {
             e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Invalid Credentials");
@@ -473,7 +397,6 @@ public class MainController implements Initializable, ControlledScreen {
             alert.setContentText(e.getMessage());
             alert.showAndWait();
         }
-        return;
     }
 
     private void clearFields() {
@@ -486,17 +409,28 @@ public class MainController implements Initializable, ControlledScreen {
     public void preferencesClick(ActionEvent actionEvent) {
         statusLabel.setTextFill(Color.RED);
         statusLabel.setText("WARNING: Be careful what you edit!");
-//        final Popup popup = new Popup();
         final Dialog dialog = new Dialog();
         BorderPane borderPane = new BorderPane();
         PreferencesView preferencesView = new PreferencesView();
         TableView tableView = preferencesView.generatePreferences();
         borderPane.setCenter(tableView);
         dialog.getDialogPane().setContent(tableView);
-        ButtonType buttonTypeOk = new ButtonType("Done", ButtonBar.ButtonData.OK_DONE);
+        ButtonType buttonTypeReset = new ButtonType("Reset", ButtonBar.ButtonData.LEFT);
+        ButtonType buttonTypeOk = new ButtonType("Done", ButtonBar.ButtonData.CANCEL_CLOSE);
+        dialog.getDialogPane().getButtonTypes().add(buttonTypeReset);
         dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+
+        dialog.setResultConverter(buttonType -> {
+            if (buttonType == buttonTypeReset) {
+                try {
+                    App.userSession.resetToDefault();
+                    screensController.setScreen(App.loginScreen);
+                } catch (BackingStoreException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
+        });
         dialog.showAndWait();
-//        popup.getContent().addAll(tableView);
-//        popup.show(fullName.getScene().getWindow());
     }
 }

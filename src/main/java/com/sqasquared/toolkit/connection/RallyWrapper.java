@@ -76,8 +76,7 @@ public class RallyWrapper {
         if (jsonLoc != null) {
             File file = getLatestFileWithPrefix("UserInfo", jsonLoc);
             String raw = FileUtils.readFileToString(file);
-            JsonObject result = (JsonObject) (new JsonParser()).parse(raw);
-            return result;
+            return (JsonObject) (new JsonParser()).parse(raw);
         }
         GetResponse response = rallyAPIConnection.get(new GetRequest("user"));
         if (response.wasSuccessful()) {
@@ -120,7 +119,7 @@ public class RallyWrapper {
 //            JsonObject result = (JsonObject)(new JsonParser()).parse(raw);
 //            return result;
 //        }
-        List<QueryFilter> filters = new ArrayList<QueryFilter>();
+        List<QueryFilter> filters = new ArrayList<>();
 
         // Create query for each story id
         for (String storyId : storyIds.keySet()) {
@@ -185,8 +184,7 @@ public class RallyWrapper {
         if (jsonLoc != null) {
             File file = getLatestFileWithPrefix("Tasks", jsonLoc);
             String raw = FileUtils.readFileToString(file);
-            JsonArray result = (JsonArray) (new JsonParser()).parse(raw);
-            return result;
+            return (JsonArray) (new JsonParser()).parse(raw);
         }
         QueryRequest tasks = new QueryRequest("tasks");
 

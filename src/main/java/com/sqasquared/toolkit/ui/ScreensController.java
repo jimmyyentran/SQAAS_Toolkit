@@ -1,9 +1,5 @@
 package com.sqasquared.toolkit.ui;
 
-/**
- * Created by JTran on 11/17/2016.
- */
-
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -22,9 +18,9 @@ import java.util.HashMap;
 public class ScreensController extends StackPane {
     //Holds the screens to be displayed
 
-    private final HashMap<String, Node> screens = new HashMap<String, Node>();
+    private final HashMap<String, Node> screens = new HashMap<>();
     private final HashMap<String, ControlledScreen> controllers = new
-            HashMap<String, ControlledScreen>();
+            HashMap<>();
     private HostServices hostServices;
 
     public ScreensController(HostServices hostServices) {
@@ -54,10 +50,8 @@ public class ScreensController extends StackPane {
             myScreenControler.setHostController(hostServices);
             controllers.put(name, myScreenControler);
             addScreen(name, loadScreen);
-            return;
         } catch (Exception e) {
             e.printStackTrace();
-            return;
         }
     }
 
@@ -106,10 +100,8 @@ public class ScreensController extends StackPane {
                                 1.0)));
                 fadeIn.play();
             }
-            return;
         } else {
             System.out.println("screen hasn't been loaded!!! \n");
-            return;
         }
 
 

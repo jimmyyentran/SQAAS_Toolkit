@@ -9,7 +9,7 @@ import java.util.HashMap;
  */
 public class DataObject {
 
-    HashMap<String, DataObject> children = new HashMap<String, DataObject>();
+    HashMap<String, DataObject> children = new HashMap<>();
     DataObject parent;
     @SerializedName("WorkItemType")
     String type;
@@ -22,7 +22,7 @@ public class DataObject {
         this.type = type;
         this.id = id;
         this.name = name;
-        this.children = new HashMap<String, DataObject>();
+        this.children = new HashMap<>();
         this.parent = null;
     }
 
@@ -30,7 +30,7 @@ public class DataObject {
         this.type = null;
         this.id = null;
         this.name = null;
-        this.children = new HashMap<String, DataObject>();
+        this.children = new HashMap<>();
         this.parent = null;
     }
 

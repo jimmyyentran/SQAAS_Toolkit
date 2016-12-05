@@ -51,6 +51,7 @@ public class UserSession {
         String val = prop.get(property, "");
         if (val.equals("")) {
             System.err.println("Unset property: " + property);
+            prop.put(property, "");
         }
         return val;
     }
@@ -65,7 +66,7 @@ public class UserSession {
 
     public void setEmail(String email) {
         prop.put("email", email);
-        if(getProperty("sqaas_username").length() == 0){
+        if (getProperty("sqaas_username").length() == 0) {
             prop.put("sqaas_username", email);
         }
     }
@@ -103,8 +104,8 @@ public class UserSession {
         } else {
             try {
                 String[] keys = prop.keys();
-                for (int i = 0; i < keys.length; i++) {
-                    System.out.println(keys[i] + " = " + prop.get(keys[i], ""));
+                for (String key : keys) {
+                    System.out.println(key + " = " + prop.get(key, ""));
                 }
             } catch (BackingStoreException e) {
                 e.printStackTrace();
@@ -146,8 +147,7 @@ public class UserSession {
     }
 
     public String getEmailCC() {
-        String emailTo = getProperty(CC);
-        return emailTo;
+        return getProperty(CC);
     }
 
     private String formatKey(String... str) {
@@ -234,12 +234,12 @@ public class UserSession {
             IOException, InvalidCredentialsException {
         String username = getEmail();
         String password = getProperty("sqaas_password");
-        if(username.length() * password.length() == 0){
+        if (username.length() * password.length() == 0) {
             throw new InvalidCredentialsException("SQAAS email or password is unset! Fix in File " +
                     "> Settings");
         }
 //        try {
-            appDirector.sendEmail(to, cc, subject, html, getEmail(), username, password);
+        appDirector.sendEmail(to, cc, subject, html, getEmail(), username, password);
 //        } catch ()
     }
 
@@ -266,4 +266,12 @@ public class UserSession {
         setProperty("ASM_password", password);
         appDirector.loginASM();
     }
+
+    public void resetToDefault() throws BackingStoreException {
+        Preferences prop = Preferences.userNodeForPackage(UserSession.class);
+        prop.clear();
+
+        loadPreferences();
+    }
+
 }

@@ -7,11 +7,12 @@ package com.sqasquared.toolkit.ui;
 import com.sqasquared.toolkit.UserSession;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.cell.MapValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
@@ -32,18 +33,17 @@ public class PreferencesView {
         String[] keys = prop.keys();
 
         ObservableList<Map> allData = FXCollections.observableArrayList();
-        for (int i = 0; i < keys.length; i++) {
+        for (String key : keys) {
             Map<String, String> dataRow = new HashMap<>();
 
-            dataRow.put(Column1MapKey, keys[i]);
-            dataRow.put(Column2MapKey, prop.get(keys[i], ""));
+            dataRow.put(Column1MapKey, key);
+            dataRow.put(Column2MapKey, prop.get(key, ""));
             allData.add(dataRow);
-            System.out.println(keys[i] + " = " + prop.get(keys[i], ""));
         }
         return allData;
     }
 
-    public TableView generatePreferences(){
+    public TableView generatePreferences() {
         final Label label = new Label("Preferences");
         label.setFont(new Font("Arial", 20));
 
@@ -83,12 +83,12 @@ public class PreferencesView {
                     public Object fromString(String string) {
                         return string;
                     }
-                }){
+                }) {
                     @Override
                     public void commitEdit(Object newValue) {
-                        Map map = (Map)this.getTableView().getItems().get(this.getIndex());
-                        Preferences.userNodeForPackage(UserSession.class).put((String)map.get
-                                (Column1MapKey), (String)newValue);
+                        Map map = (Map) this.getTableView().getItems().get(this.getIndex());
+                        Preferences.userNodeForPackage(UserSession.class).put((String) map.get
+                                (Column1MapKey), (String) newValue);
                         super.commitEdit(newValue);
                     }
                 };

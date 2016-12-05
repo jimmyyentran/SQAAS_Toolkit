@@ -155,7 +155,7 @@ public class TaskRallyObject extends DataObject {
     }
 
     private void setSplitTags(String storyName) {
-        List<String> parsedTags = new ArrayList<String>();
+        List<String> parsedTags = new ArrayList<>();
         Matcher m = Pattern.compile("\\[(.*?)\\]").matcher(storyName);
         while (m.find()) {
             parsedTags.add(m.group(1));

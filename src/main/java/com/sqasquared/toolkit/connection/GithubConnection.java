@@ -1,15 +1,12 @@
 package com.sqasquared.toolkit.connection;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -44,7 +41,7 @@ public class GithubConnection {
         in.close();
 
         JsonParser jp = new JsonParser();
-        JsonObject jo= jp.parse(response.toString()).getAsJsonObject();
+        JsonObject jo = jp.parse(response.toString()).getAsJsonObject();
         return jo.get("tag_name").getAsString();
     }
 }

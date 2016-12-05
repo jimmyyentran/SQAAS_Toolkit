@@ -2,7 +2,6 @@ package com.sqasquared.toolkit.connection;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import com.sqasquared.toolkit.UserSession;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -31,15 +30,14 @@ public class TfsConnection {
         CookieHandler.setDefault(cookieManager);
     }
 
-    public String formatPostForm(String parentId){
+    public String formatPostForm(String parentId) {
         String formFormatter = "wiql=" +
                 "SELECT [System.Id],[System.WorkItemType],[System.Title],[System.AssignedTo]," +
                 "[System.State],[System.Tags] FROM WorkItemLinks WHERE ([Source].[System" +
                 ".TeamProject] = @project AND [Source].[System.Id] = " + "%1s" + ") AND ([Target]" +
                 " .[System" +
                 ".TeamProject] = @project) ORDER BY [System.Id] mode(MustContain)";
-        String formattedPostForm = String.format(formFormatter, parentId);
-        return formattedPostForm;
+        return String.format(formFormatter, parentId);
     }
 
     public JsonObject getWorkingTree(String apiUrl, String parentWit, String parentId, String
@@ -65,7 +63,7 @@ public class TfsConnection {
         BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 
         String inputLine;
-        StringBuffer response = new StringBuffer();
+        StringBuilder response = new StringBuilder();
 
         while ((inputLine = in.readLine()) != null) {
             response.append(inputLine);
@@ -196,7 +194,7 @@ public class TfsConnection {
      * @return
      */
     private List<String> createColumnHeaders(JsonArray jsonColumn) {
-        List<String> tfsColumnHeaders = new ArrayList<String>();
+        List<String> tfsColumnHeaders = new ArrayList<>();
         for (JsonElement column : jsonColumn) {
             String col = column.getAsString();
             String parsedCol = col.substring(col.lastIndexOf(".") + 1);

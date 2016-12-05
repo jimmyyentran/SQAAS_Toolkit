@@ -21,11 +21,11 @@ public class ContainerAlgorithm implements TreeAlgorithmInterface<DataObject> {
         this.topNodeWit = topNodeWit;
     }
 
-    public void setTopNodeID(String topNodeID) {
+    void setTopNodeID(String topNodeID) {
         this.topNodeID = topNodeID;
     }
 
-    public void setChildNodeWit(String childNodeWit){
+    void setChildNodeWit(String childNodeWit) {
         this.childNodeWit = childNodeWit;
     }
 
@@ -39,25 +39,24 @@ public class ContainerAlgorithm implements TreeAlgorithmInterface<DataObject> {
             Map.Entry<String, DataObject> entry = iter.next();
             DataObject obj = entry.getValue();
 
-            if(obj.getId().equals(topNodeID)){
-                top=obj;
+            if (obj.getId().equals(topNodeID)) {
+                top = obj;
                 iter.remove();
                 continue;
             }
 
             // Remove all irrelevant items
-            if(!obj.getType().equals(removeAdditionSigns(childNodeWit))){
-                System.out.println("obj.getType() = " + obj.getType());
+            if (!obj.getType().equals(removeAdditionSigns(childNodeWit))) {
                 iter.remove();
             }
         }
 
         if (top == null) {
             throw new RuntimeException(String.format("No item with id \"%1s\" was found in the " +
-                            "given project", topNodeID));
+                    "given project", topNodeID));
         }
 
-        if (containerDeepCopy.size() == 0){
+        if (containerDeepCopy.size() == 0) {
             throw new RuntimeException(String.format("No %1s related to item \"%2s\"",
                     removeAdditionSigns(childNodeWit), topNodeID));
         }

@@ -41,10 +41,7 @@ public class LoginController implements Initializable, ControlledScreen {
             RallyWrapper.initialize();
             App.userSession.loadUserInfo();
             goToMain();
-        } catch (IOException e) {
-            e.printStackTrace();
-            errorMessage.setText("Invalid API Key!");
-        } catch (URISyntaxException e) {
+        } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             errorMessage.setText("Invalid API Key!");
         }
