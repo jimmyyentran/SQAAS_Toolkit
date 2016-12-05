@@ -234,8 +234,8 @@ public class UserSession {
         String username = getEmail();
         String password = getProperty("sqaas_password");
         if (username.length() * password.length() == 0) {
-            throw new InvalidCredentialsException("SQAAS email or password is unset! Fix in File " +
-                    "> Settings");
+            throw new InvalidCredentialsException("sqaas_email or sqaas_password is unset! Fix " +
+                    "in File > Settings");
         }
 //        try {
         appDirector.sendEmail(to, cc, subject, html, getEmail(), username, password);
@@ -254,7 +254,6 @@ public class UserSession {
             IOException {
         return appDirector.generateTestCases(pbi, project, template);
     }
-
     public void loginASM() throws IOException, InvalidCredentialsException {
         appDirector.loginASM();
     }

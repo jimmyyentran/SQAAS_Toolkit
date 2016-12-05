@@ -10,6 +10,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
@@ -31,6 +32,7 @@ import org.w3c.dom.html.HTMLAnchorElement;
 import javax.mail.MessagingException;
 import java.io.File;
 import java.io.IOException;
+import java.io.StreamCorruptedException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -428,8 +430,27 @@ public class MainController implements Initializable, ControlledScreen {
                 } catch (BackingStoreException e) {
                     e.printStackTrace();
                 }
+            } else if (buttonType == buttonTypeOk){
+                System.out.println("ButtonTypeOk pressed");
+//                }
             }
             return null;
+        });
+
+        dialog.setOnCloseRequest(new EventHandler<DialogEvent>() {
+            @Override
+            public void handle(DialogEvent event) {
+                TablePosition pos = tableView.getEditingCell();
+                if(pos != null){
+                    event.consume(); // cancel the event
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    int selected = pos.getRow();
+                    alert.setTitle("Unsaved edits");
+                    alert.setContentText(String.format("Unsaved values in row %1s", (String.valueOf
+                            (selected))));
+                    alert.showAndWait();
+                }
+            }
         });
         dialog.showAndWait();
     }
