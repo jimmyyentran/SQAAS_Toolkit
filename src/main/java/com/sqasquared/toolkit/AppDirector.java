@@ -77,9 +77,9 @@ public class AppDirector {
     }
 
     public void sendEmail(String to, String cc, String subject, String
-            html, String email) throws
+            html, String email, String username, String password) throws
             EmailException, MessagingException, IOException {
-        gen.sendEmail(to, cc, subject, html, email);
+        gen.sendEmail(to, cc, subject, html, email, username, password);
     }
 
 
@@ -92,9 +92,8 @@ public class AppDirector {
         rallyManager.refreshTasks();
     }
 
-    public String generateTestCases(String template) throws IOException {
-        tfsManager.loadWorkingTree(ASM.INSTEP2, ASM.PRODUCT_BACKLOG_ITEM_WIT, "12386", ASM
-                .TEST_CASE_WIT);
+    public String generateTestCases(String pbi, String project, String template) throws IOException {
+        tfsManager.loadWorkingTree(project, ASM.PRODUCT_BACKLOG_ITEM_WIT, pbi, ASM.TEST_CASE_WIT);
         System.out.println(gen.generateTestCase(tfsManager.getTopNode(), template));
         return gen.generateTestCase(tfsManager.getTopNode(), template);
     }

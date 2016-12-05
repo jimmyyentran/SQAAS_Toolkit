@@ -1,4 +1,4 @@
-package com.sqasquared.toolkit;
+package com.sqasquared.toolkit.ui;
 
 import javafx.application.HostServices;
 

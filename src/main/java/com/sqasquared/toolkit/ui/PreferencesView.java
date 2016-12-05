@@ -1,23 +1,18 @@
-package com.sqasquared.toolkit;
+package com.sqasquared.toolkit.ui;
 
 /**
  * Created by jimmytran on 12/4/16.
  */
 
-import javafx.application.Application;
+import com.sqasquared.toolkit.UserSession;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
-import javafx.scene.Group;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.MapValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 
@@ -26,23 +21,30 @@ import java.util.Map;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-public class TableViewSample extends Application {
+public class PreferencesView {
 
     public static final String Column1MapKey = "Key";
     public static final String Column2MapKey = "Value";
 
-    public static void main(String[] args) {
-        launch(args);
+    private ObservableList<Map> generateDataInMap() throws BackingStoreException {
+        Preferences prop = Preferences.userNodeForPackage(UserSession.class);
+        int max = 10;
+        String[] keys = prop.keys();
+
+        ObservableList<Map> allData = FXCollections.observableArrayList();
+        for (int i = 0; i < keys.length; i++) {
+            Map<String, String> dataRow = new HashMap<>();
+
+            dataRow.put(Column1MapKey, keys[i]);
+            dataRow.put(Column2MapKey, prop.get(keys[i], ""));
+            allData.add(dataRow);
+            System.out.println(keys[i] + " = " + prop.get(keys[i], ""));
+        }
+        return allData;
     }
 
-    @Override
-    public void start(Stage stage) {
-        Scene scene = new Scene(new Group());
-        stage.setTitle("Table View Sample");
-        stage.setWidth(450);
-        stage.setHeight(600);
-
-        final Label label = new Label("Student IDs");
+    public TableView generatePreferences(){
+        final Label label = new Label("Preferences");
         label.setFont(new Font("Arial", 20));
 
         TableColumn<Map, String> firstDataColumn = new TableColumn<>("key");
@@ -63,6 +65,8 @@ public class TableViewSample extends Application {
         table_view.setEditable(true);
         table_view.getSelectionModel().setCellSelectionEnabled(true);
         table_view.getColumns().setAll(firstDataColumn, secondDataColumn);
+        firstDataColumn.setEditable(false);
+        secondDataColumn.setEditable(true);
         Callback<TableColumn<Map, String>, TableCell<Map, String>>
                 cellFactoryForMap = new Callback<TableColumn<Map, String>,
                 TableCell<Map, String>>() {
@@ -77,9 +81,6 @@ public class TableViewSample extends Application {
 
                     @Override
                     public Object fromString(String string) {
-//                        System.out.println("string = " + string);
-//                        p.getColumns().get(0);
-//                        System.out.println(p.getCellData(0));
                         return string;
                     }
                 }){
@@ -95,34 +96,13 @@ public class TableViewSample extends Application {
         };
         firstDataColumn.setCellFactory(cellFactoryForMap);
         secondDataColumn.setCellFactory(cellFactoryForMap);
-
-        final VBox vbox = new VBox();
-
-        vbox.setSpacing(5);
-        vbox.setPadding(new Insets(10, 0, 0, 10));
-        vbox.getChildren().addAll(label, table_view);
-
-        ((Group) scene.getRoot()).getChildren().addAll(vbox);
-
-        stage.setScene(scene);
-
-        stage.show();
-    }
-
-    private ObservableList<Map> generateDataInMap() throws BackingStoreException {
-        Preferences prop = Preferences.userNodeForPackage(UserSession.class);
-        int max = 10;
-        String[] keys = prop.keys();
-
-        ObservableList<Map> allData = FXCollections.observableArrayList();
-        for (int i = 0; i < keys.length; i++) {
-            Map<String, String> dataRow = new HashMap<>();
-
-            dataRow.put(Column1MapKey, keys[i]);
-            dataRow.put(Column2MapKey, prop.get(keys[i], ""));
-            allData.add(dataRow);
-            System.out.println(keys[i] + " = " + prop.get(keys[i], ""));
-        }
-        return allData;
+//
+//        final VBox vbox = new VBox();
+//
+//        vbox.setSpacing(5);
+//        vbox.setPadding(new Insets(10, 0, 0, 10));
+//        vbox.getChildren().addAll(label, table_view);
+//        vbox.setFillWidth(true);
+        return table_view;
     }
 }

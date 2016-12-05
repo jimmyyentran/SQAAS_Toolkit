@@ -1,5 +1,7 @@
-package com.sqasquared.toolkit;
+package com.sqasquared.toolkit.ui;
 
+import com.sqasquared.toolkit.App;
+import com.sqasquared.toolkit.RallyLoader;
 import com.sqasquared.toolkit.connection.RallyWrapper;
 import javafx.application.HostServices;
 import javafx.event.ActionEvent;

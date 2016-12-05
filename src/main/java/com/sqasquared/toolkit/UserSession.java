@@ -65,6 +65,9 @@ public class UserSession {
 
     public void setEmail(String email) {
         prop.put("email", email);
+        if(getProperty("sqaas_username").length() == 0){
+            prop.put("sqaas_username", email);
+        }
     }
 
     public static String getTemplate(String template) {
@@ -79,7 +82,6 @@ public class UserSession {
         prop = Preferences.userNodeForPackage(UserSession.class);
         if (prop.getBoolean("first", true)) {
             prop.putBoolean("first", false);
-            prop.put("user", "");
             prop.put("api_key", "");
             prop.put("server", "https://rally1.rallydev.com");
             prop.put("cc", "sqaas@sqasquared.com");
@@ -96,6 +98,8 @@ public class UserSession {
             prop.put("version", "v1.1.0-alpha");
             prop.put("lastName", "");
             prop.put("firstName", "");
+            prop.put("sqaas_username", "");
+            prop.put("sqaas_password", "");
         } else {
             try {
                 String[] keys = prop.keys();
@@ -227,8 +231,16 @@ public class UserSession {
 
     public void sendEmail(String to, String cc, String subject, String
             html) throws EmailException, MessagingException,
-            IOException {
-        appDirector.sendEmail(to, cc, subject, html, getEmail());
+            IOException, InvalidCredentialsException {
+        String username = getEmail();
+        String password = getProperty("sqaas_password");
+        if(username.length() * password.length() == 0){
+            throw new InvalidCredentialsException("SQAAS email or password is unset! Fix in File " +
+                    "> Settings");
+        }
+//        try {
+            appDirector.sendEmail(to, cc, subject, html, getEmail(), username, password);
+//        } catch ()
     }
 
     public String getEmailSubject() {
@@ -239,8 +251,9 @@ public class UserSession {
         appDirector.refreshTasks();
     }
 
-    public String generateTestCases(String template) throws IOException {
-        return appDirector.generateTestCases(template);
+    public String generateTestCases(String pbi, String project, String template) throws
+            IOException {
+        return appDirector.generateTestCases(pbi, project, template);
     }
 
     public void loginASM() throws IOException, InvalidCredentialsException {

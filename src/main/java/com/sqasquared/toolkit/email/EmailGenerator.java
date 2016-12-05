@@ -315,16 +315,24 @@ public class EmailGenerator {
 //        email.setSslSmtpPort("465");
         email.addTo(to.split(UserSession.EMAIL_SEPARATOR));
         email.setFrom(from);
-        email.addCc(cc.split(UserSession.EMAIL_SEPARATOR));
+        String[] ccs = cc.split(UserSession.EMAIL_SEPARATOR);
+        if(ccs.length > 0 && ccs[0].length() > 0){
+            System.out.println("ccs.length = " + ccs.length);
+            System.out.println("ccs[0].length() = " + ccs[0].length());
+            System.out.println(ccs[0]);
+            System.out.println(ccs[0]);
+            email.addCc(ccs);
+        }
         email.setSubject(subject);
         email.setHtmlMsg(html);
         return email;
     }
 
     public void sendEmail (String to, String cc, String subject, String
-            html, String from) throws EmailException, IOException, MessagingException {
+            html, String from, String username, String password) throws EmailException,
+            IOException, MessagingException {
         HtmlEmail email = buildEmail(to, cc, subject, html, from);
-        email.setAuthentication("username", "pass");
+        email.setAuthentication(username, password);
         email.setSSLOnConnect(true);
         email.send();
     }

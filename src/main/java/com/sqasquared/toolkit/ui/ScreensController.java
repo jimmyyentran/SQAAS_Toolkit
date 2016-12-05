@@ -1,4 +1,4 @@
-package com.sqasquared.toolkit;
+package com.sqasquared.toolkit.ui;
 
 /**
  * Created by JTran on 11/17/2016.
@@ -19,7 +19,7 @@ import javafx.util.Duration;
 
 import java.util.HashMap;
 
-class ScreensController extends StackPane {
+public class ScreensController extends StackPane {
     //Holds the screens to be displayed
 
     private final HashMap<String, Node> screens = new HashMap<String, Node>();
@@ -56,7 +56,7 @@ class ScreensController extends StackPane {
             addScreen(name, loadScreen);
             return;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
             return;
         }
     }

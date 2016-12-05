@@ -9,6 +9,7 @@ import com.sqasquared.toolkit.connection.TaskRallyObject;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -82,10 +83,15 @@ public class RallyLoader extends Loader<TaskRallyObject> {
         Map<String, String> storyIds = new HashMap<>();
 
         // If children is not of TaskRallyObject, throw
-        if (!(objectManager.getObjectContainer().values().iterator().next()
-                instanceof TaskRallyObject)) {
-            throw new IOException("Expected values to be of TaskRallyObject!");
+        try {
+            if (!(objectManager.getObjectContainer().values().iterator().next()
+                    instanceof TaskRallyObject)) {
+                throw new IOException("Expected values to be of TaskRallyObject!");
+            }
+        } catch (NoSuchElementException nsee){
+            LOG.log(Level.WARNING, "No stories loaded!");
         }
+
 
         // Get story ID's and insert as keys into hash-map
         for (TaskRallyObject obj : objectManager.getObjectContainer().values

@@ -1,13 +1,23 @@
-package com.sqasquared.toolkit;
+package com.sqasquared.toolkit.ui;
 
+import com.sqasquared.toolkit.App;
+import com.sqasquared.toolkit.UserSession;
+import com.sqasquared.toolkit.connection.ASM;
 import javafx.application.HostServices;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 import javafx.scene.web.HTMLEditor;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
+import javafx.stage.Popup;
 import javafx.util.Callback;
 import org.apache.commons.mail.EmailException;
 import org.apache.http.auth.InvalidCredentialsException;
@@ -25,7 +35,6 @@ import java.util.ResourceBundle;
  * Created by JTran on 11/17/2016.
  */
 public class MainController implements Initializable, ControlledScreen {
-    private final UserSession userSession = App.userSession;
     public Button SSUButton;
     public HTMLEditor editor;
     public Label fullName;
@@ -35,6 +44,8 @@ public class MainController implements Initializable, ControlledScreen {
     public Button genEmailButton;
     public Button SSUPButton;
     public Button TCRButton;
+    public BorderPane basePane;
+    public Label statusLabel;
     private ScreensController screensController;
     private HostServices hostServices;
 
@@ -51,7 +62,7 @@ public class MainController implements Initializable, ControlledScreen {
     }
 
     public void initialize(URL location, ResourceBundle resources) {
-        WebView webview = (WebView) editor.lookup(".web-view");
+//        WebView webview = (WebView) editor.lookup(".web-view");
 
         // Removing internal rallyLoader
 //        webview.getEngine().getLoadWorker().stateProperty().addListener(new
@@ -96,9 +107,15 @@ public class MainController implements Initializable, ControlledScreen {
             textFieldCc.setText(cc);
             textFieldSubject.setText(subject);
             editor.setHtmlText(html);
+
+            statusLabel.setTextFill(Color.GREEN);
+            statusLabel.setText("Story status update successful!");
         } catch (Exception e) {
             e.printStackTrace();
             showAlert(e.getMessage());
+
+            statusLabel.setTextFill(Color.RED);
+            statusLabel.setText("Story status update failed!");
         }
         return;
     }
@@ -113,9 +130,15 @@ public class MainController implements Initializable, ControlledScreen {
             textFieldCc.setText(cc);
             textFieldSubject.setText(subject);
             editor.setHtmlText(html);
+
+            statusLabel.setTextFill(Color.GREEN);
+            statusLabel.setText("Story status update progress successful!");
         } catch (Exception e) {
             e.printStackTrace();
             showAlert(e.getMessage());
+
+            statusLabel.setTextFill(Color.RED);
+            statusLabel.setText("Story status update progress failed!");
         }
         return;
     }
@@ -124,9 +147,15 @@ public class MainController implements Initializable, ControlledScreen {
         try {
             String html = App.userSession.generateHtml(UserSession.EOD);
             editor.setHtmlText(html);
+
+            statusLabel.setTextFill(Color.GREEN);
+            statusLabel.setText("End of day successful!");
         } catch (Exception e) {
             e.printStackTrace();
             showAlert(e.getMessage());
+
+            statusLabel.setTextFill(Color.RED);
+            statusLabel.setText("End of day failed!");
         }
         return;
     }
@@ -135,15 +164,19 @@ public class MainController implements Initializable, ControlledScreen {
         clearFields();
         try {
             App.userSession.refreshTasks();
+
+            statusLabel.setTextFill(Color.GREEN);
+            statusLabel.setText("Refresh successful!");
         } catch (Exception e) {
             e.printStackTrace();
             showAlert(e.getMessage());
+
+            statusLabel.setTextFill(Color.RED);
+            statusLabel.setText("Refresh failed!");
         }
     }
 
     public void tcrClick(ActionEvent actionEvent) {
-//        if(App.userSession.getProperty("ASM_username").length() == 0 ||
-//                App.userSession.getProperty("ASM_password").length() == 0) {
         try {
             App.userSession.loginASM();
         } catch (Exception e) {
@@ -152,7 +185,6 @@ public class MainController implements Initializable, ControlledScreen {
             if (result.isPresent()) {
                 try {
                     App.userSession.loginASM(result.get().get(0).toString(), result.get().get(1).toString());
-                    //TODO pop up to ask for PBI
                 } catch (IOException ex) {
                     ex.printStackTrace();
                     showAlert("Internal Error! " + ex.getMessage());
@@ -168,11 +200,34 @@ public class MainController implements Initializable, ControlledScreen {
                 }
             }
         }
+
+        // Login successful
+        statusLabel.setTextFill(Color.GREEN);
+        statusLabel.setText("ASM login successful!");
+
         try {
-            editor.setHtmlText(App.userSession.generateTestCases(UserSession.TCR));
-        } catch (IOException e) {
+            Optional<List<String>> res = tfsItemChooser();
+
+            String pbi = res.get().get(0);
+            String project = "";
+
+            if(pbi.length() == 0){
+                return;
+            }
+
+            if(res.get().get(1).equals("Instep 1.0")){
+                project = ASM.INSTEP1;
+            } else if(res.get().get(1).equals("Instep 2.0")){
+                project = ASM.INSTEP2;
+            }
+
+            editor.setHtmlText(App.userSession.generateTestCases(pbi, project, UserSession.TCR));
+
+            statusLabel.setTextFill(Color.GREEN);
+            statusLabel.setText("Test case ... successful!");
+        } catch (Exception e) {
             e.printStackTrace();
-            showAlert("Internal Error! " + e.getMessage());
+            showAlert("Query failed: " + e.getMessage());
             return;
         }
     }
@@ -222,20 +277,37 @@ public class MainController implements Initializable, ControlledScreen {
     private Optional<List<String>> tfsItemChooser() {
         // Login Dialog
         Dialog<List<String>> dialog = new Dialog<>();
-        dialog.setTitle("ASM Login");
-        dialog.setHeaderText("Please enter your ASM credentials");
+        dialog.setTitle("Test Case Generator");
+        dialog.setHeaderText("Please enter the Product Backlog Item ID and Project");
         dialog.setResizable(true);
 
-        Label label1 = new Label("Username: ");
-        Label label2 = new Label("Password: ");
+        ObservableList<String> options = FXCollections.observableArrayList(
+                "Instep 1.0",
+                "Instep 2.0"
+        );
+
+        Label label1 = new Label("PBI id:" );
+        Label label2 = new Label("Project: ");
         TextField text1 = new TextField();
-        TextField text2 = new PasswordField();
+
+        //Force numbers only
+        text1.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if (!newValue.matches("\\d*")) {
+                    text1.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+            }
+        });
+
+        ComboBox comboBox = new ComboBox(options);
+        comboBox.getSelectionModel().select(0);
 
         GridPane grid = new GridPane();
         grid.add(label1, 1, 1);
         grid.add(text1, 2, 1);
         grid.add(label2, 1, 2);
-        grid.add(text2, 2, 2);
+        grid.add(comboBox, 2, 2);
         dialog.getDialogPane().setContent(grid);
 
         ButtonType buttonTypeOk = new ButtonType("Okay", ButtonBar.ButtonData
@@ -249,7 +321,7 @@ public class MainController implements Initializable, ControlledScreen {
                 if (b == buttonTypeOk) {
                     List<String> credentials = new ArrayList<String>();
                     credentials.add(text1.getText());
-                    credentials.add(text2.getText());
+                    credentials.add((String)comboBox.getValue());
 
                     return credentials;
                 }
@@ -280,6 +352,8 @@ public class MainController implements Initializable, ControlledScreen {
         String html = editor.getHtmlText();
         String loc = selectedFile.getAbsolutePath();
 
+        statusLabel.setTextFill(Color.GREEN);
+        statusLabel.setText("Save email successful!");
         try {
             App.userSession.generateEmail(to, cc, subject, html, loc);
         } catch (EmailException e) {
@@ -307,8 +381,16 @@ public class MainController implements Initializable, ControlledScreen {
         String subject = textFieldSubject.getText();
         String html = editor.getHtmlText();
 
+        statusLabel.setTextFill(Color.GREEN);
+        statusLabel.setText("Send email successful!");
         try {
             App.userSession.sendEmail(to, cc, subject, html);
+        } catch (InvalidCredentialsException e){
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Invalid Credentials");
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
         } catch (Exception e) {
             e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -326,4 +408,20 @@ public class MainController implements Initializable, ControlledScreen {
         editor.setHtmlText("");
     }
 
+    public void preferencesClick(ActionEvent actionEvent) {
+        statusLabel.setTextFill(Color.RED);
+        statusLabel.setText("WARNING: Becareful what you edit!");
+//        final Popup popup = new Popup();
+        final Dialog dialog = new Dialog();
+        BorderPane borderPane = new BorderPane();
+        PreferencesView preferencesView = new PreferencesView();
+        TableView tableView = preferencesView.generatePreferences();
+        borderPane.setCenter(tableView);
+        dialog.getDialogPane().setContent(tableView);
+        ButtonType buttonTypeOk = new ButtonType("Done", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+        dialog.showAndWait();
+//        popup.getContent().addAll(tableView);
+//        popup.show(fullName.getScene().getWindow());
+    }
 }

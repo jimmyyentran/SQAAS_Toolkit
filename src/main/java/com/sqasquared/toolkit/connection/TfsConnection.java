@@ -34,22 +34,30 @@ public class TfsConnection {
     public String formatPostForm(String parentWit, String parentId, String
             childWit) {
         String formFormatter = "wiql=" +
-                "SELECT+%%5BSystem.Id%%5D%%2C%%5BSystem" +
-                ".Title%%5D+%%2C%%5BSystem.State%%5D" +
-                "FROM+WorkItemLinks+" +
-                "WHERE" +
-                "(%%5BSource%%5D.%%5BSystem.TeamProject%%5D+%%3D+%%40project+" +
-                "AND+%%5BSource%%5D.%%5BSystem.WorkItemType%%5D+%%3D+" +
-                "'%1s'" + "+" +
-                "AND+%%5BSource%%5D.%%5BSystem.Id%%5D+%%3D+" + "%2s" + ")+" +
-                "AND+" +
-                "(%%5BTarget%%5D.%%5BSystem.TeamProject%%5D+%%3D+%%40project+" +
-                "AND+%%5BTarget%%5D.%%5BSystem.WorkItemType%%5D+%%3D+" +
-                "'%3s'" + ")+" +
-                "ORDER+BY+%%5BSystem.Id%%5D+" +
-                "mode(MustContain)";
-        String formattedPostForm = String.format(formFormatter, parentWit,
-                parentId, childWit);
+//                "SELECT+%%5BSystem.Id%%5D%%2C%%5BSystem" +
+//                ".Title%%5D+%%2C%%5BSystem.State%%5D" +
+//                "FROM+WorkItemLinks+" +
+//                "WHERE" +
+//                "(%%5BSource%%5D.%%5BSystem.TeamProject%%5D+%%3D+%%40project+" +
+//                "AND+%%5BSource%%5D.%%5BSystem.WorkItemType%%5D+%%3D+" +
+//                "'%1s'" + "+" +
+//                "AND+" +
+//                "%%5BSource%%5D.%%5BSystem.Id%%5D+%%3D+" + "%2s" + ")+" +
+//                "(%%5BSource%%5D.%%5BSystem.Id%%5D+%%3D+" + "%2s" + ")+" +
+//                "AND+" +
+//                "(%%5BTarget%%5D.%%5BSystem.TeamProject%%5D+%%3D+%%40project+" +
+//                "AND+%%5BTarget%%5D.%%5BSystem.WorkItemType%%5D+%%3D+" +
+//                "'%3s'" + ")+" +
+//                "ORDER+BY+%%5BSystem.Id%%5D+" +
+//                "mode(MustContain)";
+                "SELECT [System.Id],[System.WorkItemType],[System.Title],[System.AssignedTo]," +
+                "[System.State],[System.Tags] FROM WorkItemLinks WHERE ([Source].[System" +
+                ".TeamProject] = @project AND [Source].[System.Id] = " + "%1s" + ") AND ([Target]" +
+                " .[System" +
+                ".TeamProject] = @project) ORDER BY [System.Id] mode(MustContain)";
+//        String formattedPostForm = String.format(formFormatter, parentWit,
+//                parentId, childWit);
+        String formattedPostForm = String.format(formFormatter, parentId);
         return formattedPostForm;
     }
 
@@ -73,13 +81,8 @@ public class TfsConnection {
                 .toString());
         System.out.println("Response Code : " + responseCode);
 
-        BufferedReader in = null;
-        try {
-            in = new BufferedReader(
-                    new InputStreamReader(con.getInputStream()));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
         String inputLine;
         StringBuffer response = new StringBuffer();
 
@@ -102,8 +105,6 @@ public class TfsConnection {
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         con.setRequestMethod("GET");
         int responseCode = con.getResponseCode();
-        System.out.println(UserSession.getProperty("ASM_username"));
-        System.out.println(UserSession.getProperty("ASM_password"));
         System.out.println(responseCode);
         return responseCode == 200;
     }

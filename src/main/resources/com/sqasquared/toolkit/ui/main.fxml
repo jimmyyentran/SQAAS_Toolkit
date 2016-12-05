@@ -6,13 +6,13 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.web.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="621.0" prefWidth="908.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sqasquared.toolkit.MainController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="621.0" prefWidth="908.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sqasquared.toolkit.ui.MainController">
     <center>
-        <SplitPane dividerPositions="0.18702290076335878" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
+        <SplitPane dividerPositions="0.18702290076335878" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
             <items>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                     <children>
-                        <GridPane alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="90.0" prefWidth="908.0">
+                        <GridPane alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="90.0" prefWidth="908.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <columnConstraints>
                                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="768.0" minWidth="10.0" prefWidth="80.0" />
                                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="703.0" minWidth="10.0" prefWidth="703.0" />
@@ -34,10 +34,7 @@
                            <GridPane.margin>
                               <Insets bottom="15.0" />
                            </GridPane.margin></Button>
-                        <Button fx:id="sendEmailButton" onAction="#sendEmail"
-                                mnemonicParsing="false"
-                                text="Send"
-                                GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowSpan="2147483647" GridPane.valignment="TOP">
+                        <Button fx:id="sendEmailButton" mnemonicParsing="false" onAction="#sendEmail" text="Send" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowSpan="2147483647" GridPane.valignment="TOP">
                            <GridPane.margin>
                               <Insets top="15.0" />
                            </GridPane.margin>
@@ -46,9 +43,9 @@
                         </GridPane>
                     </children>
                 </AnchorPane>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                     <children>
-                        <HTMLEditor fx:id="editor" htmlText="&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body contenteditable=&quot;true&quot;&gt;&lt;/body&gt;&lt;/html&gt;" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="431.0" prefWidth="905.0" />
+                        <HTMLEditor fx:id="editor" htmlText="&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body contenteditable=&quot;true&quot;&gt;&lt;/body&gt;&lt;/html&gt;" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="431.0" prefWidth="905.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                     </children>
                 </AnchorPane>
             </items>
@@ -77,17 +74,7 @@
                     <menus>
                         <Menu mnemonicParsing="false" text="File">
                             <items>
-                                <MenuItem mnemonicParsing="false" text="Close" />
-                            </items>
-                        </Menu>
-                        <Menu mnemonicParsing="false" text="Edit">
-                            <items>
-                                <MenuItem mnemonicParsing="false" text="Delete" />
-                            </items>
-                        </Menu>
-                        <Menu mnemonicParsing="false" text="Help">
-                            <items>
-                                <MenuItem mnemonicParsing="false" text="About" />
+                                <MenuItem fx:id="preferencesMI" mnemonicParsing="false" onAction="#preferencesClick" text="Settings" />
                             </items>
                         </Menu>
                     </menus>
@@ -96,9 +83,13 @@
         </GridPane>
     </top>
     <bottom>
-        <FlowPane prefHeight="0.0" prefWidth="908.0" BorderPane.alignment="CENTER">
+        <FlowPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="35.0" prefWidth="500.0">
             <children>
-                <Label fx:id="fullName" alignment="CENTER" prefHeight="35.0" prefWidth="158.0" text="Label" />
+                <Label fx:id="fullName" prefHeight="35.0" prefWidth="158.0" text="Label">
+               <padding>
+                  <Insets left="15.0" />
+               </padding></Label>
+            <Label fx:id="statusLabel" alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="17.0" prefWidth="742.0" text="Label" />
             </children>
         </FlowPane>
     </bottom>
