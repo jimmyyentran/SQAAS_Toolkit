@@ -96,7 +96,6 @@ public class UserSession {
             prop.put("business_partner", "ASM");
             prop.put("ASM_username", "");
             prop.put("ASM_password", "");
-            prop.put("version", "v1.2.0-alpha");
             prop.put("lastName", "");
             prop.put("firstName", "");
             prop.put("sqaas_username", "");
