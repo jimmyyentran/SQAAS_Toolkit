@@ -94,6 +94,8 @@ public class UserSession {
             prop.put("ASM_username", "");
             prop.put("ASM_password", "");
             prop.put("version", "v1.1.0-alpha");
+            prop.put("lastName", "");
+            prop.put("firstName", "");
         } else {
             try {
                 String[] keys = prop.keys();

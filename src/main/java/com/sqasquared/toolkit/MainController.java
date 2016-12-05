@@ -142,6 +142,8 @@ public class MainController implements Initializable, ControlledScreen {
     }
 
     public void tcrClick(ActionEvent actionEvent) {
+//        if(App.userSession.getProperty("ASM_username").length() == 0 ||
+//                App.userSession.getProperty("ASM_password").length() == 0) {
         try {
             App.userSession.loginASM();
         } catch (Exception e) {
@@ -153,15 +155,15 @@ public class MainController implements Initializable, ControlledScreen {
                     //TODO pop up to ask for PBI
                 } catch (IOException ex) {
                     ex.printStackTrace();
-                    showAlert("Internal Error! " + e.getMessage());
+                    showAlert("Internal Error! " + ex.getMessage());
                     return;
                 } catch (InvalidCredentialsException ex) {
                     ex.printStackTrace();
-                    showAlert("Invalid Login: " + e.getMessage());
+                    showAlert("Invalid Login: " + ex.getMessage());
                     return;
                 } catch (Exception ex){
                     ex.printStackTrace();
-                    showAlert("Internal Error! " + e.getMessage());
+                    showAlert("Internal Error! " + ex.getMessage());
                     return;
                 }
             }
