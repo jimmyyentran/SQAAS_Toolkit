@@ -8,4 +8,6 @@ public class RALLY {
     public static final String COMPLETED = "Completed";
     public static final String DEFINED = "Defined";
     public static final String INPROGRESS = "In-Progress";
+    public static final String SQAR_WORKPLACE= "/workspace/161137096";
+
 }
