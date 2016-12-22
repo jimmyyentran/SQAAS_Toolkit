@@ -128,6 +128,9 @@ public class RallyWrapper {
 
         // Append QueryFilters to QueryRequest
         QueryRequest userStory = new QueryRequest("HierarchicalRequirement");
+
+        userStory.setWorkspace(RALLY.SQAR_WORKPLACE);
+
         QueryFilter queryFilter = null;
         for (QueryFilter qf : filters) {
             if (queryFilter == null) {
@@ -187,6 +190,8 @@ public class RallyWrapper {
             return (JsonArray) (new JsonParser()).parse(raw);
         }
         QueryRequest tasks = new QueryRequest("tasks");
+
+        tasks.setWorkspace(RALLY.SQAR_WORKPLACE);
 
         String past = new SimpleDateFormat(RALLY.DATEFORMAT).format
                 (UserSession.YESTERDAY_WORK_HOUR);

@@ -69,7 +69,9 @@ public class EmailGenerator {
                     storyLink = task.getStoryLink();
                     storySubTag = task.getSubProjectTag(false);
                     storySubTagBracket = task.getSubProjectTag(true);
-                    storyId = task.getStoryFormattedID();
+                    if(task.getStoryFormattedID() != null){
+                        storyId = task.getStoryFormattedID();
+                    }
                 }
                 Element listItemMapped = mapListItem(task.getFormattedID(),
                         task.getName(), task.getEstimate(), listItem);
@@ -236,12 +238,12 @@ public class EmailGenerator {
             Element inProgress = doc.select("sqaas[type='notCompleted']")
                     .first();
 
+
             // use today's in-progress task
             DataObject inProgressNode = topNode.getChildren().get("today")
                     .getChildren().get(RALLY.INPROGRESS);
             if (!inProgressNode.isEmpty()) {
-                lastUpdatedEmail = mapLastUpdatedStory(inProgressNode,
-                        inProgress);
+                lastUpdatedEmail = mapLastUpdatedStory(inProgressNode, inProgress);
             } else {
                 // Use yesterday's in-progress task
                 DataObject pastInProgressNode = topNode.getChildren().get
@@ -284,6 +286,7 @@ public class EmailGenerator {
                 }
             }
         }
+
 
         // Map full name
         Element fullName = doc.select("sqaas[type='fullName']").first();

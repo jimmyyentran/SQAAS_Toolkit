@@ -31,12 +31,9 @@ public class TaskRallyObject extends DataObject {
     private String baseStoryName;
     private String storyFormattedID;
 
-    public TaskRallyObject(String taskName, String objectID, String
-            formattedID, String state, String storyName,
-                           String storyRef, String projectName, String
-                                   projectRef, String creationDate, String
-                                   lastUpdateDate,
-                           String estimate) {
+    public TaskRallyObject(String taskName, String objectID, String formattedID, String state,
+                           String storyName, String storyRef, String projectName, String projectRef,
+                           String creationDate, String lastUpdateDate, String estimate) {
         super("task", objectID, taskName);
         this.formattedID = formattedID;
         this.state = state;
